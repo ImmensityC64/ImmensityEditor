@@ -18,7 +18,6 @@ SOURCES += main.cpp\
     mainwindow.cpp \
     sprite_editor.cpp \
     file.cpp \
-    _garbage.cpp \
     browser.cpp \
     color_dialog.cpp \
     general.cpp \
