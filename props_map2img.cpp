@@ -2,7 +2,7 @@
 #include "map_general.h"
 
 /* generate 3 ceiling tiles of a sector from map data */
-shared_ptr<GfxData> Props::genImgCeiling(int map_index, int sector)
+shared_ptr<GfxData> Props::map2imgCeiling(int map_index, int sector)
 {
     shared_ptr<GfxData> ret(new GfxData(GfxData::Type::CnfSketch,
                                         3*8*SCENERY_CNF_TILE_COLS,
@@ -44,7 +44,7 @@ shared_ptr<GfxData> Props::genImgCeiling(int map_index, int sector)
             {
                 for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
                 {
-                    if(tile->cnf_tile.char_ptrs.at(row).at(col) == (quint8)c)
+                    if(tile->tile.char_ptrs.at(row).at(col) == (quint8)c)
                     {
                         if(!chrImg)
                         {
@@ -76,7 +76,7 @@ BREAK_genImgCeiling_MAIN_LOOP:
 }
 
 /* generate 3 floor tiles of a sector from map data */
-shared_ptr<GfxData> Props::genImgFloor(int map_index, int sector)
+shared_ptr<GfxData> Props::map2imgFloor(int map_index, int sector)
 {
     shared_ptr<GfxData> ret(new GfxData(GfxData::Type::CnfSketch,
                                         3*8*SCENERY_CNF_TILE_COLS,
@@ -118,7 +118,7 @@ shared_ptr<GfxData> Props::genImgFloor(int map_index, int sector)
             {
                 for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
                 {
-                    if(tile->cnf_tile.char_ptrs.at(row).at(col) == (quint8)c)
+                    if(tile->tile.char_ptrs.at(row).at(col) == (quint8)c)
                     {
                         if(!chrImg)
                         {
@@ -150,7 +150,7 @@ BREAK_genImgFloor_MAIN_LOOP:
 }
 
 /* generate 3*4 background tiles of a sector from map data */
-shared_ptr<GfxData> Props::genImgBackground(int map_index, int sector)
+shared_ptr<GfxData> Props::map2imgBackground(int map_index, int sector)
 {
     shared_ptr<GfxData> ret(new GfxData(GfxData::Type::Sketch,
                                         3*8*SCENERY_BG_TILE_COLS,
@@ -199,7 +199,7 @@ shared_ptr<GfxData> Props::genImgBackground(int map_index, int sector)
                 {
                     for(int t=0; t<4; t++)
                     {
-                        if(tile[t]->bg_tile.char_ptrs.at(row).at(col) == (quint8)c)
+                        if(tile[t]->tile.char_ptrs.at(row).at(col) == (quint8)c)
                         {
                             if(!chrImg)
                             {
@@ -230,7 +230,7 @@ BREAK_genImgBackground_MAIN_LOOP:
     return ret;
 }
 
-shared_ptr<GfxData> Props::genImgBgTile(int map_index, int tile_index)
+shared_ptr<GfxData> Props::map2imgBgTile(int map_index, int tile_index)
 {
     shared_ptr<GfxData> ret(new GfxData(GfxData::Type::Sketch,
                                         8*SCENERY_BG_TILE_COLS,
@@ -246,7 +246,7 @@ shared_ptr<GfxData> Props::genImgBgTile(int map_index, int tile_index)
     {
         for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
         {
-            int c = tile->bg_tile.char_ptrs.at(row).at(col);
+            int c = tile->tile.char_ptrs.at(row).at(col);
             chr_container *chr = &(sceneries.at(s)->chr_vector.data()[c]);
             shared_ptr<GfxData> chrImg(new GfxData(chr->chr, GfxData::Type::Sketch));
             ret->paste(chrImg, col*8, row*8);
@@ -256,7 +256,7 @@ shared_ptr<GfxData> Props::genImgBgTile(int map_index, int tile_index)
     return ret;
 }
 
-shared_ptr<GfxData> Props::genImgCnfTile(int map_index, int tile_index)
+shared_ptr<GfxData> Props::map2imgCnfTile(int map_index, int tile_index)
 {
     shared_ptr<GfxData> ret(new GfxData(GfxData::Type::CnfSketch,
                                         8*SCENERY_CNF_TILE_COLS,
@@ -275,7 +275,7 @@ shared_ptr<GfxData> Props::genImgCnfTile(int map_index, int tile_index)
     {
         for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
         {
-            int c = tile->cnf_tile.char_ptrs.at(row).at(col);
+            int c = tile->tile.char_ptrs.at(row).at(col);
             chr_container *chr = &(sceneries.at(s)->chr_vector.data()[c]);
             shared_ptr<GfxData> chrImg(new GfxData(chr->chr, GfxData::Type::CnfSketch));
             ret->paste(chrImg, col*8, row*8);

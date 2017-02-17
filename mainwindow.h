@@ -123,8 +123,8 @@ private:
     shared_ptr<GfxData> charSetData;
     CharSetW *charSetWindow;
 
-    QVector<int> modifiedBgTiles;
-    QVector<int> modifiedCnfTiles;
+    QVector<quint8> modifiedBgTiles;
+    QVector<quint8> modifiedCnfTiles;
 
     Props props;
     int map_index;

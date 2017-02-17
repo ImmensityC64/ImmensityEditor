@@ -167,30 +167,34 @@ public:
  * should be moved to the first 64 position of the character table.
  */
 struct chr_container {
-    quint64 chr;            /* characters of scenery */
-    quint32 usage     = 0;  /* follow how many times a char is used by any type of tiles */
-    quint32 cnf_usage = 0;  /* follow how many times a char is used by C&F tiles */
-    quint8 mapping;         /* used to remap char indexes (see comment above!) */
+    quint64 chr       = 0; /* characters of scenery */
+    quint32 usage     = 0; /* follow how many times a char is used by any type of tiles */
+    quint32 cnf_usage = 0; /* follow how many times a char is used by C&F tiles */
+    quint8 mapping    = 0; /* used to remap char indexes (see comment above!) */
 };
 
 struct bg_tile_container {
-    BgTile bg_tile;     /* BG tiles of scenery */
+    BgTile tile;     /* BG tiles of scenery */
     quint32 usage = 0;  /* follow how many times a BG  tile is used by maps */
+    bool keep = false;  /* keep for later use? */
 };
 
 struct cnf_tile_container {
-    CnfTile cnf_tile;   /* C&F tiles of scenery */
+    CnfTile tile;   /* C&F tiles of scenery */
     quint32 usage = 0;  /* follow how many times a C&F tile is used by maps */
+    bool keep = false;  /* keep for later use? */
 };
 
 struct sprite_container {
     Sprite sprite;      /* sprites of scenery */
     quint32 usage = 0;  /* follow how many times a sprite is used by sprite walls */
+    bool keep = false;  /* keep for later use? */
 };
 
 struct wall_container {
     Wall wall;          /* sprite walls of scenery */
     quint32 usage = 0;  /* follow how many times a sprite wall is used by maps */
+    bool keep = false;  /* keep for later use? */
 };
 
 class Scenery : public VE {
@@ -216,35 +220,38 @@ public:
     friend QDataStream& operator >>(QDataStream& in, Scenery &data);
     Scenery *copy();
 
-private:
-    qint16 charInsert(quint64 chr, bool cnf);
 public:
-    qint16 findBgChar(quint64 chr);
-    qint16 findCnfChar(quint64 chr);
-    qint16 bgCharInsert(quint64 chr);
-    qint16 cnfCharInsert(quint64 chr);
-    void bgCharRemove(quint8 ind);
-    void cnfCharRemove(quint8 ind);
-    void charModify(quint8 ind, quint64 chr);
+    qint16 createChar(quint64 chr);
+    qint16 findChar(quint64 chr);
+    void modifyChar(quint8 ind, quint64 chr);
+    void useBgChar(quint8 ind);
+    void freeBgChar(quint8 ind);
+    bool useCnfChar(quint8 ind);
+    void freeCnfChar(quint8 ind);
 
+    qint16 createBgTile(BgTile tile);
     qint16 findBgTile(BgTile tile);
+    void modifyBgTile(quint8 ind, BgTile tile);
+    void useBgTile(quint8 ind);
+    void freeBgTile(quint8 ind);
+
+    qint16 createCnfTile(CnfTile tile);
     qint16 findCnfTile(CnfTile tile);
-    qint16 bgTileInsert(BgTile tile);
-    qint16 cnfTileInsert(CnfTile tile);
-    void bgTileRemove(quint8 ind);
-    void cnfTileRemove(quint8 ind);
-    void bgTileModify(quint8 ind, BgTile tile);
-    void cnfTileModify(quint8 ind, CnfTile tile);
+    void modifyCnfTile(quint8 ind, CnfTile tile);
+    void useCnfTile(quint8 ind);
+    void freeCnfTile(quint8 ind);
 
+    qint16 createSprite(Sprite sprite);
     qint16 findSprite(Sprite sprite);
-    qint16 spriteInsert(Sprite sprite);
-    void spriteRemove(quint8 ind);
-    void spriteModify(quint8 ind, Sprite sprite);
+    void modifySprite(quint8 ind, Sprite sprite);
+    void useSprite(quint8 ind);
+    void freeSprite(quint8 ind);
 
+    qint16 createWall(Wall wall);
     qint16 findWall(Wall wall);
-    qint16 wallInsert(Wall wall);
-    void wallRemove(quint8 ind);
-    void wallModify(quint8 ind, Wall wall);
+    void modifyWall(quint8 ind, Wall wall);
+    void useWall(quint8 ind);
+    void freeWall(quint8 ind);
 
     void calculateRealCharIndexes(void);
     void resetRealCharIndexes(void);
@@ -415,6 +422,14 @@ public:
     QVector<Music*>   musics;
     QVector<Map*>     maps;
 
+    bool deleteScenery(int index);
+    bool deleteTheme(int index);
+    void deleteHuman(int index);
+    void deleteCyber(int index);
+    void deleteEnemy(int index);
+    void deleteMusic(int index);
+    bool deleteMap(int index);
+
     void sectorInc(int &sector)
     {
         if(SCENERY_MAP_SECTOR_LAST <= sector) sector = 0;
@@ -446,129 +461,19 @@ public:
     int block2sector(int block) { return block/3; }
 
     /* generate map editor's images from map data */
-    shared_ptr<GfxData> genImgCeiling(int map_index, int sector);
-    shared_ptr<GfxData> genImgFloor(int map_index, int sector);
-    shared_ptr<GfxData> genImgBackground(int map_index, int sector);
-    shared_ptr<GfxData> genImgBgTile(int map_index, int tile_index);
-    shared_ptr<GfxData> genImgCnfTile(int map_index, int tile_index);
+    shared_ptr<GfxData> map2imgCeiling(int map_index, int sector);
+    shared_ptr<GfxData> map2imgFloor(int map_index, int sector);
+    shared_ptr<GfxData> map2imgBackground(int map_index, int sector);
+    shared_ptr<GfxData> map2imgBgTile(int map_index, int tile_index);
+    shared_ptr<GfxData> map2imgCnfTile(int map_index, int tile_index);
 
     /* generate map data from map editor's images */
-    void genMapData(int map_index, int sector,
-                    shared_ptr<GfxData> ceilingFg,
-                    shared_ptr<GfxData> background,
-                    shared_ptr<GfxData> floorFg);
+    bool img2mapCeiling(   int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img);
+    bool img2mapBackground(int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img);
+    bool img2mapFloor(     int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img);
+private:
+    bool img2mapCnf(int sector, Scenery *scenery, shared_ptr<GfxData> img, QVector<quint8> *block_cnf_ptrs);
 
-    bool deleteScenery(int index)
-    {
-        bool ret=false;
-        QString map_list = "";
-
-        /* Verify that current scenery is not used by any map */
-        for(int i=0; i<maps.size(); i++)
-        {
-            if(maps.at(i)->scenery_index == index)
-                map_list += "- " + maps.at(i)->name + "\n";
-        }
-
-        if(map_list.isEmpty())
-        {
-            for(int i=0; i<maps.size(); i++)
-            {
-                if(index < maps.at(i)->scenery_index)
-                    maps[i]->scenery_index--;
-            }
-            delete sceneries[index];
-            sceneries.remove(index);
-            ret=true;
-        }
-        else
-        {
-            /* Current scenery is used in some maps, it cannot be deleted */
-            QMessageBox msgBox;
-            msgBox.setText("Scenery is used by the following maps:\n"+map_list+"It cannot be deleted!");
-            msgBox.exec();
-        }
-
-        return ret;
-    }
-
-    bool deleteTheme(int index)
-    {
-        bool ret=false;
-        QString map_list = "";
-
-        /* Verify that current theme is not used by any map */
-        for(int i=0; i<maps.size(); i++)
-        {
-            if(maps.at(i)->theme_index == index)
-                map_list += "- " + maps.at(i)->name + "\n";
-            /* TODO: also verify scripts of the map */
-        }
-
-        if(map_list.isEmpty())
-        {
-            for(int i=0; i<maps.size(); i++)
-            {
-                if(index < maps.at(i)->theme_index)
-                    maps[i]->theme_index--;
-            }
-            delete themes[index];
-            themes.remove(index);
-            ret=true;
-        }
-        else
-        {
-            /* Current theme is used in some maps, it cannot be deleted */
-            QMessageBox msgBox;
-            msgBox.setText("Theme is used by the following maps:\n"+map_list+"It cannot be deleted!");
-            msgBox.exec();
-        }
-
-        return ret;
-    }
-
-    void deleteHuman(int index)
-    {
-
-    }
-
-    void deleteCyber(int index)
-    {
-
-    }
-
-    void deleteEnemy(int index)
-    {
-        /* TODO: reindex enemies in scripts */
-    }
-
-    void deleteMusic(int index)
-    {
-
-    }
-
-    bool deleteMap(int index)
-    {
-        bool ret=false;
-
-        /* TODO: verify if map is used in the project */
-
-        if(maps.size() <= 1)
-        {
-            /* There is no other map, do not let the last one to be deleted! */
-            maps[0]->loadDefaultValues();
-        }
-        else
-        {
-            /* TODO: reindex maps in project */
-            delete maps[index];
-            maps.remove(index);
-            ret=true;
-        }
-
-        return ret;
-    }
-
-};
+}; /* Props */
 
 #endif // MAP_GENERAL_H

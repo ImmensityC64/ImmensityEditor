@@ -39,132 +39,87 @@ Scenery *Scenery::copy()
 ****
 *******************************************************************************/
 
-qint16 Scenery::findBgChar(quint64 chr)
+qint16 Scenery::createChar(quint64 chr)
 {
-    qint16 match = -1;
     for(qint16 i=0; i<SCENERY_CHR_NUM; i++)
     {
-        if(chr_vector.at(i).chr == chr)
+        if(!chr_vector.at(i).usage)
         {
-            match = i;
-            break;
+            /* We have just found an unused character.
+             * Let's overwrite it with the new data.
+             * It is the caller's responsibility to register usage of the character!
+             * Caller must check that return value is non-negative (means success)
+             * and call useBgChar() or useCnfChar()!
+             */
+            modifyChar(i,chr);
+            return i; /* return index of created character */
         }
     }
-    return match;
+    return -1; /* failure, all characters are in use */
 }
 
-qint16 Scenery::findCnfChar(quint64 chr)
+qint16 Scenery::findChar(quint64 chr)
 {
-    qint16 match = findBgChar(chr);
-    if(-1 < match && chr_vector.at(match).cnf_usage > 0)
+    for(qint16 i=0; i<SCENERY_CHR_NUM; i++)
     {
-        return match;
+        if(!chr_vector.at(i).usage)
+        {
+             /* Unused characters are not allowed to be returned even if they match!
+              * It would break functions of props_img2map.cpp!
+              */
+            continue;
+        }
+        if(chr_vector.at(i).chr == chr)
+        {
+            return i; /* found a match */
+        }
     }
-    return -1;
+    return -1; /* no match was found */
 }
 
-qint16 Scenery::bgCharInsert(quint64 chr)
+void Scenery::modifyChar(quint8 ind, quint64 chr)
 {
-    return charInsert(chr, false); /* BG char */
+    chr_vector[ind].chr = chr;
 }
 
-qint16 Scenery::cnfCharInsert(quint64 chr)
-{
-    return charInsert(chr, true); /* C&F char */
-}
-
-void Scenery::bgCharRemove(quint8 ind)
+void Scenery::useBgChar(quint8 ind)
 {
     quint32 usage = chr_vector.at(ind).usage;
-    usage--;
-    if(!usage) chr_counter--;
+    if(!usage) chr_counter++; /* overall character usage in scenery */
+    usage++;
     chr_vector[ind].usage = usage;
 }
 
-void Scenery::cnfCharRemove(quint8 ind)
+void Scenery::freeBgChar(quint8 ind)
+{
+    quint32 usage = chr_vector.at(ind).usage;
+    usage--;
+    if(!usage) chr_counter--; /* overall character usage in scenery */
+    chr_vector[ind].usage = usage;
+}
+
+bool Scenery::useCnfChar(quint8 ind)
+{
+    quint32 cnf_usage = chr_vector.at(ind).cnf_usage;
+    if(!cnf_usage)
+    {
+        /* check if there is room for a new ECM character */
+        if(cnf_chr_counter == SCENERY_CNF_CHR_NUM-1) return false;
+        cnf_chr_counter++; /* overall ECM character usage in scenery */
+    }
+    cnf_usage++;
+    chr_vector[ind].cnf_usage = cnf_usage;
+    useBgChar(ind);
+    return true;
+}
+
+void Scenery::freeCnfChar(quint8 ind)
 {
     quint32 cnf_usage = chr_vector.at(ind).cnf_usage;
     cnf_usage--;
-    if(!cnf_usage) cnf_chr_counter--;
+    if(!cnf_usage) cnf_chr_counter--; /* overall ECM character usage in scenery */
     chr_vector[ind].cnf_usage = cnf_usage;
-    bgCharRemove(ind); /* also remove overall usage */
-}
-
-/* Looks for the given character in the character table.
- * Inserts the character into the table if it has not been found.
- * Returns the index of the character or -1 in case of failure.
- */
-qint16 Scenery::charInsert(quint64 chr, bool cnf)
-{
-    /* Look for the first matching character and for the first unused index */
-    qint16 match = -1;
-    qint16 empty = -1;
-
-    for(qint16 i=0; i<SCENERY_CHR_NUM; i++)
-    {
-        if(match < 0 && chr_vector.at(i).chr == chr) match = i;
-        if(empty < 0 && chr_vector.at(i).usage == 0) empty = i;
-    }
-
-    if( 0 < match ) /* there is a matching character */
-    {
-        if(cnf)
-        {
-            /* Has this char already been used by any C&F tiles? */
-            if(chr_vector.at(match).cnf_usage == 0)
-            {
-                /* No, it has not been used by any C&F tiles yet */
-
-                /* It can happen that there is a matching char but it is not used
-                 * by any C&F tiles and there is no more space for a new C&F char.
-                 */
-                if(cnf_chr_counter >= SCENERY_CNF_CHR_NUM) return -1;
-
-                cnf_chr_counter++;
-            }
-
-            chr_vector[match].cnf_usage++;
-        }
-
-        /* Has this char already been used at all? */
-        /* Do not forget that matching does not ensure that it is actually used! */
-        if(chr_vector.at(match).usage == 0)
-        {
-            /* No, it has not been used by any C&F tiles yet */
-            chr_counter++;
-        }
-
-        chr_vector[match].usage++;
-
-        return match;
-    }
-
-    if( 0 < empty ) /* there was no matching character, but we have an unused index */
-    {
-        if(cnf)
-        {
-            /* It can happen that there is an unused index but we do not have
-             * more space for a new C&F char.
-             */
-            if(cnf_chr_counter >= SCENERY_CNF_CHR_NUM) return -1;
-
-            cnf_chr_counter++;
-            chr_vector[empty].cnf_usage++;
-        }
-
-        chr_vector[empty].chr = chr; /* store the new char */
-        chr_counter++;
-        chr_vector[empty].usage++;
-
-        return empty;
-    }
-
-    return -1; /* no matching char, no unused index :-( */
-}
-
-void Scenery::charModify(quint8 ind, quint64 chr)
-{
-    chr_vector[ind].chr = chr;
+    freeBgChar(ind);
 }
 
 /*******************************************************************************
@@ -173,118 +128,122 @@ void Scenery::charModify(quint8 ind, quint64 chr)
 ****
 *******************************************************************************/
 
-qint16 Scenery::findBgTile(BgTile tile)
+qint16 Scenery::createBgTile(BgTile tile)
 {
-    qint16 match = -1;
     for(qint16 i=0; i<SCENERY_BG_TILE_NUM; i++)
     {
-        if(bg_tile_vector.at(i).bg_tile == tile)
+        if(!bg_tile_vector.at(i).usage && !bg_tile_vector.at(i).keep)
         {
-            match = i;
-            break;
+            /* We have just found an unused tile.
+             * Let's overwrite it with the new data.
+             * It is the caller's responsibility to register usage of the tile!
+             * Caller must check that return value is non-negative (means success)
+             * and call useBgTile()!
+             */
+            modifyBgTile(i,tile);
+            return i; /* return index of created tile */
         }
     }
-    return match;
+    return -1; /* failure, all tiles are in use */
+}
+
+qint16 Scenery::findBgTile(BgTile tile)
+{
+    for(qint16 i=0; i<SCENERY_BG_TILE_NUM; i++)
+    {
+        if(!bg_tile_vector.at(i).usage && !bg_tile_vector.at(i).keep)
+        {
+             /* Unused but not protected tiles are not allowed to be returned even if they match!
+              * It would break functions of props_img2map.cpp!
+              */
+            continue;
+        }
+        if(bg_tile_vector.at(i).tile == tile)
+        {
+            return i; /* found a match */
+        }
+    }
+    return -1; /* no match was found */
+}
+
+void Scenery::modifyBgTile(quint8 ind, BgTile tile)
+{
+    bg_tile_vector[ind].tile = tile;
+}
+
+void Scenery::useBgTile(quint8 ind)
+{
+    quint32 usage = bg_tile_vector.at(ind).usage;
+    if(!usage) bg_tile_counter++; /* overall tile usage in scenery */
+    usage++;
+    bg_tile_vector[ind].usage = usage;
+}
+
+void Scenery::freeBgTile(quint8 ind)
+{
+    quint32 usage = bg_tile_vector.at(ind).usage;
+    usage--;
+    if(!usage) bg_tile_counter--; /* overall tile usage in scenery */
+    bg_tile_vector[ind].usage = usage;
+}
+
+qint16 Scenery::createCnfTile(CnfTile tile)
+{
+    for(qint16 i=0; i<SCENERY_CNF_TILE_NUM; i++)
+    {
+        if(!cnf_tile_vector.at(i).usage && !cnf_tile_vector.at(i).keep)
+        {
+            /* We have just found an unused tile.
+             * Let's overwrite it with the new data.
+             * It is the caller's responsibility to register usage of the tile!
+             * Caller must check that return value is non-negative (means success)
+             * and call useCnfTile()!
+             */
+            modifyCnfTile(i,tile);
+            return i; /* return index of created tile */
+        }
+    }
+    return -1; /* failure, all tiles are in use */
 }
 
 qint16 Scenery::findCnfTile(CnfTile tile)
 {
-    qint16 match = -1;
     for(qint16 i=0; i<SCENERY_CNF_TILE_NUM; i++)
     {
-        if(cnf_tile_vector.at(i).cnf_tile == tile)
+        if(!cnf_tile_vector.at(i).usage && !cnf_tile_vector.at(i).keep)
         {
-            match = i;
-            break;
+             /* Unused but not protected tiles are not allowed to be returned even if they match!
+              * It would break functions of props_img2map.cpp!
+              */
+            continue;
+        }
+        if(cnf_tile_vector.at(i).tile == tile)
+        {
+            return i; /* found a match */
         }
     }
-    return match;
+    return -1; /* no match was found */
 }
 
-qint16 Scenery::bgTileInsert(BgTile tile)
+void Scenery::modifyCnfTile(quint8 ind, CnfTile tile)
 {
-    /* Look for the first match and for the first unused index */
-    qint16 match = -1;
-    qint16 empty = -1;
-
-    for(qint16 i=0; i<SCENERY_BG_TILE_NUM; i++)
-    {
-        if(match < 0 && bg_tile_vector.at(i).bg_tile == tile) match = i;
-        if(empty < 0 && bg_tile_vector.at(i).usage == 0) empty = i;
-    }
-
-    if( 0 < match ) /* there is a match */
-    {
-        if(bg_tile_vector.at(match).usage == 0) bg_tile_counter++;
-        bg_tile_vector[match].usage++;
-        return match;
-    }
-
-    if( 0 < empty ) /* there was no match, but we have an unused index */
-    {
-        bg_tile_vector[empty].bg_tile = tile; /* store the new char */
-        bg_tile_counter++;
-        bg_tile_vector[empty].usage++;
-        return empty;
-    }
-
-    return -1; /* no match, no unused index :-( */
+    cnf_tile_vector[ind].tile = tile;
 }
 
-qint16 Scenery::cnfTileInsert(CnfTile tile)
-{
-    /* Look for the first match and for the first unused index */
-    qint16 match = -1;
-    qint16 empty = -1;
-
-    for(qint16 i=0; i<SCENERY_CNF_TILE_NUM; i++)
-    {
-        if(match < 0 && cnf_tile_vector.at(i).cnf_tile == tile) match = i;
-        if(empty < 0 && cnf_tile_vector.at(i).usage == 0) empty = i;
-    }
-
-    if( 0 < match ) /* there is a match */
-    {
-        if(cnf_tile_vector.at(match).usage == 0) cnf_tile_counter++;
-        cnf_tile_vector[match].usage++;
-        return match;
-    }
-
-    if( 0 < empty ) /* there was no match, but we have an unused index */
-    {
-        cnf_tile_vector[empty].cnf_tile = tile; /* store the new char */
-        cnf_tile_counter++;
-        cnf_tile_vector[empty].usage++;
-        return empty;
-    }
-
-    return -1; /* no match, no unused index :-( */
-}
-
-void Scenery::bgTileRemove(quint8 ind)
-{
-    quint32 usage = bg_tile_vector.at(ind).usage;
-    usage--;
-    if(!usage) bg_tile_counter--;
-    bg_tile_vector[ind].usage = usage;
-}
-
-void Scenery::cnfTileRemove(quint8 ind)
+void Scenery::useCnfTile(quint8 ind)
 {
     quint32 usage = cnf_tile_vector.at(ind).usage;
-    usage--;
-    if(!usage) cnf_tile_counter--;
+    if(!usage) cnf_tile_counter++; /* overall tile usage in scenery */
+    usage++;
     cnf_tile_vector[ind].usage = usage;
 }
 
-void Scenery::bgTileModify(quint8 ind, BgTile tile)
+void Scenery::freeCnfTile(quint8 ind)
 {
-    bg_tile_vector[ind].bg_tile = tile;
-}
-
-void Scenery::cnfTileModify(quint8 ind, CnfTile tile)
-{
-    cnf_tile_vector[ind].cnf_tile = tile;
+    quint32 usage = cnf_tile_vector.at(ind).usage;
+    usage--;
+    if(!usage) cnf_tile_counter--; /* overall tile usage in scenery */
+    cnf_tile_vector[ind].usage = usage;
 }
 
 /*******************************************************************************
@@ -293,125 +252,135 @@ void Scenery::cnfTileModify(quint8 ind, CnfTile tile)
 ****
 *******************************************************************************/
 
-qint16 Scenery::findSprite(Sprite sprite)
+qint16 Scenery::createSprite(Sprite sprite)
 {
-    qint16 match = -1;
     for(qint16 i=0; i<SCENERY_SPRITE_NUM; i++)
     {
-        if(sprite_vector.at(i).sprite == sprite)
+        if(!sprite_vector.at(i).usage && !sprite_vector.at(i).keep)
         {
-            match = i;
-            break;
+            /* We have just found an unused sprite.
+             * Let's overwrite it with the new data.
+             * It is the caller's responsibility to register usage of the sprite!
+             * Caller must check that return value is non-negative (means success)
+             * and call useSprite()!
+             */
+            modifySprite(i,sprite);
+            return i; /* return index of created sprite */
         }
     }
-    return match;
+    return -1; /* failure, all sprites are in use */
 }
 
-qint16 Scenery::spriteInsert(Sprite sprite)
+qint16 Scenery::findSprite(Sprite sprite)
 {
-    /* Look for the first match and for the first unused index */
-    qint16 match = -1;
-    qint16 empty = -1;
-
     for(qint16 i=0; i<SCENERY_SPRITE_NUM; i++)
     {
-        if(match < 0 && sprite_vector.at(i).sprite == sprite) match = i;
-        if(empty < 0 && sprite_vector.at(i).usage == 0) empty = i;
+        if(!sprite_vector.at(i).usage && !sprite_vector.at(i).keep)
+        {
+             /* Unused but not protected sprites are not allowed to be returned even if they match!
+              * It would break functions of props_img2map.cpp!
+              */
+            continue;
+        }
+        if(sprite_vector.at(i).sprite == sprite)
+        {
+            return i; /* found a match */
+        }
     }
-
-    if( 0 < match ) /* there is a match */
-    {
-        if(sprite_vector.at(match).usage == 0) sprite_counter++;
-        sprite_vector[match].usage++;
-        return match;
-    }
-
-    if( 0 < empty ) /* there was no match, but we have an unused index */
-    {
-        sprite_vector[empty].sprite = sprite; /* store the new char */
-        sprite_counter++;
-        sprite_vector[empty].usage++;
-        return empty;
-    }
-
-    return -1; /* no match, no unused index :-( */
+    return -1; /* no match was found */
 }
 
-void Scenery::spriteRemove(quint8 ind)
-{
-    quint32 usage = sprite_vector.at(ind).usage;
-    usage--;
-    if(!usage) sprite_counter--;
-    sprite_vector[ind].usage = usage;
-}
-
-void Scenery::spriteModify(quint8 ind, Sprite sprite)
+void Scenery::modifySprite(quint8 ind, Sprite sprite)
 {
     sprite_vector[ind].sprite = sprite;
 }
 
+void Scenery::useSprite(quint8 ind)
+{
+    quint32 usage = sprite_vector.at(ind).usage;
+    if(!usage) sprite_counter++; /* overall sprite usage in scenery */
+    usage++;
+    sprite_vector[ind].usage = usage;
+}
+
+void Scenery::freeSprite(quint8 ind)
+{
+    quint32 usage = sprite_vector.at(ind).usage;
+    usage--;
+    if(!usage) sprite_counter--; /* overall sprite usage in scenery */
+    sprite_vector[ind].usage = usage;
+}
+
 /*******************************************************************************
 ****
-****    S P R I T E   W A L L
+****    W A L L
 ****
 *******************************************************************************/
 
-qint16 Scenery::findWall(Wall wall)
+qint16 Scenery::createWall(Wall wall)
 {
-    qint16 match = -1;
     for(qint16 i=0; i<SCENERY_WALL_NUM; i++)
     {
-        if(wall_vector.at(i).wall == wall)
+        if(!wall_vector.at(i).usage && !wall_vector.at(i).keep)
         {
-            match = i;
-            break;
+            /* We have just found an unused wall.
+             * Let's overwrite it with the new data.
+             * It is the caller's responsibility to register usage of the wall!
+             * Caller must check that return value is non-negative (means success)
+             * and call useWall()!
+             */
+            modifyWall(i,wall);
+            return i; /* return index of created wall */
         }
     }
-    return match;
+    return -1; /* failure, all walls are in use */
 }
 
-qint16 Scenery::wallInsert(Wall wall)
+qint16 Scenery::findWall(Wall wall)
 {
-    /* Look for the first match and for the first unused index */
-    qint16 match = -1;
-    qint16 empty = -1;
-
     for(qint16 i=0; i<SCENERY_WALL_NUM; i++)
     {
-        if(match < 0 && wall_vector.at(i).wall == wall) match = i;
-        if(empty < 0 && wall_vector.at(i).usage == 0) empty = i;
+        if(!wall_vector.at(i).usage && !wall_vector.at(i).keep)
+        {
+             /* Unused but not protected walls are not allowed to be returned even if they match!
+              * It would break functions of props_img2map.cpp!
+              */
+            continue;
+        }
+        if(wall_vector.at(i).wall == wall)
+        {
+            return i; /* found a match */
+        }
     }
-
-    if( 0 < match ) /* there is a match */
-    {
-        if(wall_vector.at(match).usage == 0) wall_counter++;
-        wall_vector[match].usage++;
-        return match;
-    }
-
-    if( 0 < empty ) /* there was no match, but we have an unused index */
-    {
-        wall_vector[empty].wall = wall; /* store the new char */
-        wall_counter++;
-        wall_vector[empty].usage++;
-        return empty;
-    }
-
-    return -1; /* no match, no unused index :-( */
+    return -1; /* no match was found */
 }
 
-void Scenery::wallRemove(quint8 ind)
-{
-    quint32 usage = wall_vector.at(ind).usage;
-    usage--;
-    if(!usage) wall_counter--;
-    wall_vector[ind].usage = usage;
-}
-
-void Scenery::wallModify(quint8 ind, Wall wall)
+void Scenery::modifyWall(quint8 ind, Wall wall)
 {
     wall_vector[ind].wall = wall;
 }
+
+void Scenery::useWall(quint8 ind)
+{
+    quint32 usage = wall_vector.at(ind).usage;
+    if(!usage) wall_counter++; /* overall wall usage in scenery */
+    usage++;
+    wall_vector[ind].usage = usage;
+}
+
+void Scenery::freeWall(quint8 ind)
+{
+    quint32 usage = wall_vector.at(ind).usage;
+    usage--;
+    if(!usage) wall_counter--; /* overall wall usage in scenery */
+    wall_vector[ind].usage = usage;
+}
+
+/*******************************************************************************
+****
+****    R E M A P
+****
+*******************************************************************************/
 
 /* Remap characters in order to move every EMC char
  * into the first quarter of character set (0-63 indexes).

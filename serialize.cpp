@@ -149,7 +149,7 @@ QDataStream& operator <<(QDataStream& out, Scenery const &src)
     /* C&F Tiles */
     for(int i=0; i<SCENERY_CNF_TILE_NUM; i++)
     {
-        const CnfTile &tile = src.cnf_tile_vector.at(i).cnf_tile;
+        const CnfTile &tile = src.cnf_tile_vector.at(i).tile;
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
                 out << src.realCharIndex(tile.char_ptrs.at(row).at(col));
@@ -158,7 +158,7 @@ QDataStream& operator <<(QDataStream& out, Scenery const &src)
     /* BG Tiles */
     for(int i=0; i<SCENERY_BG_TILE_NUM; i++)
     {
-        const BgTile &tile = src.bg_tile_vector.at(i).bg_tile;
+        const BgTile &tile = src.bg_tile_vector.at(i).tile;
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
                 out << src.realCharIndex(tile.char_ptrs.at(row).at(col));
@@ -216,7 +216,7 @@ QDataStream& operator >>(QDataStream& in, Scenery &dst)
     /* C&F Tiles */
     for(int i=0; i<SCENERY_CNF_TILE_NUM; i++)
     {
-        CnfTile &tile = dst.cnf_tile_vector[i].cnf_tile;
+        CnfTile &tile = dst.cnf_tile_vector[i].tile;
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
                 in >> tile.char_ptrs[row][col];
@@ -225,7 +225,7 @@ QDataStream& operator >>(QDataStream& in, Scenery &dst)
     /* BG Tiles */
     for(int i=0; i<SCENERY_BG_TILE_NUM; i++)
     {
-        BgTile &tile = dst.bg_tile_vector[i].bg_tile;
+        BgTile &tile = dst.bg_tile_vector[i].tile;
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
                 in >> tile.char_ptrs[row][col];

@@ -256,17 +256,17 @@ void MainWindow::bgLoad(void)
     int sL = sector; props.sectorDec(sL);
     int sR = sector; props.sectorInc(sR);
 
-    scrDatas.at((int)ScrPart::CeilingFgL)->load(props.genImgCeiling(map_index, sL));
-    scrDatas.at((int)ScrPart::CeilingFgC)->load(props.genImgCeiling(map_index, sector));
-    scrDatas.at((int)ScrPart::CeilingFgR)->load(props.genImgCeiling(map_index, sR));
+    scrDatas.at((int)ScrPart::CeilingFgL)->load(props.map2imgCeiling(map_index, sL));
+    scrDatas.at((int)ScrPart::CeilingFgC)->load(props.map2imgCeiling(map_index, sector));
+    scrDatas.at((int)ScrPart::CeilingFgR)->load(props.map2imgCeiling(map_index, sR));
 
-    scrDatas.at((int)ScrPart::BackgroundL)->load(props.genImgBackground(map_index, sL));
-    scrDatas.at((int)ScrPart::BackgroundC)->load(props.genImgBackground(map_index, sector));
-    scrDatas.at((int)ScrPart::BackgroundR)->load(props.genImgBackground(map_index, sR));
+    scrDatas.at((int)ScrPart::BackgroundL)->load(props.map2imgBackground(map_index, sL));
+    scrDatas.at((int)ScrPart::BackgroundC)->load(props.map2imgBackground(map_index, sector));
+    scrDatas.at((int)ScrPart::BackgroundR)->load(props.map2imgBackground(map_index, sR));
 
-    scrDatas.at((int)ScrPart::FloorFgL)->load(props.genImgFloor(map_index, sL));
-    scrDatas.at((int)ScrPart::FloorFgC)->load(props.genImgFloor(map_index, sector));
-    scrDatas.at((int)ScrPart::FloorFgR)->load(props.genImgFloor(map_index, sR));
+    scrDatas.at((int)ScrPart::FloorFgL)->load(props.map2imgFloor(map_index, sL));
+    scrDatas.at((int)ScrPart::FloorFgC)->load(props.map2imgFloor(map_index, sector));
+    scrDatas.at((int)ScrPart::FloorFgR)->load(props.map2imgFloor(map_index, sR));
 
     scrImgs.at((int)ScrPart::CeilingFgL)->refresh();
     scrImgs.at((int)ScrPart::CeilingFgC)->refresh();
@@ -306,6 +306,9 @@ void MainWindow::bgSave(void)
 
 void MainWindow::refreshSceneryBrowsers(void)
 {
+    /* TODO: Move modifiedBgTiles and modifiedCnfTiles under Props ?
+     * That could be a better place for it, as Props updates map data...
+     */
     while(!modifiedCnfTiles.isEmpty())
     {
         int i = modifiedCnfTiles.takeLast();

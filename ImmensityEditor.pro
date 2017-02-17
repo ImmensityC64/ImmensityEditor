@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     scenery_editor.cpp \
     props_map2img.cpp \
     props_img2map.cpp \
-    char_set_w.cpp
+    char_set_w.cpp \
+    props.cpp
 
 HEADERS  += general.h \
     theme_editor.h \
