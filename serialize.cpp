@@ -153,6 +153,7 @@ QDataStream& operator <<(QDataStream& out, Scenery const &src)
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
                 out << src.realCharIndex(tile.char_ptrs.at(row).at(col));
+        out << src.cnf_tile_vector.at(i).keep;
     }
 
     /* BG Tiles */
@@ -165,6 +166,7 @@ QDataStream& operator <<(QDataStream& out, Scenery const &src)
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
                 out << tile.colors.at(row).at(col);
+        out << src.bg_tile_vector.at(i).keep;
     }
 
     /* Sprites */
@@ -186,6 +188,7 @@ QDataStream& operator <<(QDataStream& out, Scenery const &src)
                 }
             }
         }
+        out << src.sprite_vector.at(i).keep;
     }
 
     /* Walls */
@@ -194,6 +197,7 @@ QDataStream& operator <<(QDataStream& out, Scenery const &src)
         const Wall &wall = src.wall_vector.at(i).wall;
         for(int row=0; row<SCENERY_WALL_ROWS; row++)
             out << wall.sprite_ptrs.at(row);
+        out << src.wall_vector.at(i).keep;
     }
 
     return out;
@@ -220,6 +224,7 @@ QDataStream& operator >>(QDataStream& in, Scenery &dst)
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
                 in >> tile.char_ptrs[row][col];
+        in >> dst.cnf_tile_vector[i].keep;
     }
 
     /* BG Tiles */
@@ -232,6 +237,7 @@ QDataStream& operator >>(QDataStream& in, Scenery &dst)
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
                 in >> tile.colors[row][col];
+        in >> dst.bg_tile_vector[i].keep;
     }
 
     /* Sprites */
@@ -249,6 +255,7 @@ QDataStream& operator >>(QDataStream& in, Scenery &dst)
                 sprite.sprite_bits[row].setBit(col, byte & (1<<bit) );
             }
         }
+        in >> dst.sprite_vector[i].keep;
     }
 
     /* Walls */
@@ -257,6 +264,7 @@ QDataStream& operator >>(QDataStream& in, Scenery &dst)
         Wall &wall = dst.wall_vector[i].wall;
         for(int row=0; row<SCENERY_WALL_ROWS; row++)
             in >> wall.sprite_ptrs[row];
+        in >> dst.wall_vector[i].keep;
     }
 
     return in;

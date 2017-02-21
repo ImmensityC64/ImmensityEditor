@@ -127,6 +127,7 @@ private:
     QVector<quint8> modifiedCnfTiles;
 
     Props props;
+    Scenery *scenery;
     int map_index;
     int sector;
 
@@ -165,6 +166,7 @@ private:
     void dndLoad();
     void dndRefresh();
     void dndImport(QByteArray &src, QPoint p);
+    bool dndTest(QPoint p);
     void dndSave(QPoint p);
 
     /* Other Editors */

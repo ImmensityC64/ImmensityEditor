@@ -196,7 +196,10 @@ void MainWindow::dndDrop(QByteArray &src, QPoint p)
 {
     dndLoad();
     dndImport(src,p);
-    dndSave(p);
+    if(dndTest(p))
+        dndSave(p);
+    else
+        dndLoad();
     dndRefresh();
 //    selTgt->hide();
 }
@@ -229,6 +232,14 @@ void MainWindow::dndImport(QByteArray &src, QPoint p)
     if      ( y < -40 ) scrImgs.at((int)ScrPart::CeilingFgC)-> importDataToImage(src, QPoint(x+72,y+72));
     else if ( y <  40 ) scrImgs.at((int)ScrPart::BackgroundC)->importDataToImage(src, QPoint(x+60,y+32));
     else                scrImgs.at((int)ScrPart::FloorFgC)->   importDataToImage(src, QPoint(x+72,y-48));
+}
+
+bool MainWindow::dndTest(QPoint p)
+{
+    int y = p.y();
+    if      ( y < -40 ) return props.img2mapCeiling(   map_index, sector, &scenery, scrDatas.at((int)ScrPart::CeilingFgC));
+    else if ( y <  40 ) return props.img2mapBackground(map_index, sector, &scenery, scrDatas.at((int)ScrPart::BackgroundC));
+    else                return props.img2mapFloor(     map_index, sector, &scenery, scrDatas.at((int)ScrPart::FloorFgC));
 }
 
 void MainWindow::dndSave(QPoint p)
@@ -284,13 +295,17 @@ void MainWindow::bgLoad(void)
     scrHisC->save(scrDatas.at((int)ScrPart::CeilingFgC));
     scrHisB->save(scrDatas.at((int)ScrPart::BackgroundC));
     scrHisF->save(scrDatas.at((int)ScrPart::FloorFgC));
+
+    /* Create a temporary scenery which will store modifications until they are saved */
+    if(scenery) delete scenery;
+    scenery = props.sceneries.at(props.maps.at(map_index)->scenery_index)->copy();
 }
 
 void MainWindow::bgSave(void)
 {
     if(!backgroundModified) return;
 
-    /* TODO */
+    /* TODO: save modifications from temporary scenery */
 
     backgroundModified = false;
 }

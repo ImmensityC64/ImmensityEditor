@@ -1,6 +1,54 @@
 
 #include "map_general.h"
 
+void Props::useSceneryInMap(int scenery_index, int map_index)
+{
+    Scenery *s = sceneries.at(scenery_index);
+    Map *m = maps.at(map_index);
+    for(int i=0; i<SCENERY_MAP_BLOCKS; i++)
+    {
+        s->useCnfTile(m->block_c_ptrs.at(i));
+        s->useCnfTile(m->block_f_ptrs.at(i));
+
+        s->useBgTile(m->block_0_ptrs.at(i));
+        s->useBgTile(m->block_1_ptrs.at(i));
+        s->useBgTile(m->block_2_ptrs.at(i));
+        s->useBgTile(m->block_3_ptrs.at(i));
+    }
+    for(int i=0; i<SCENERY_MAP_SECTORS; i++)
+    {
+        s->useSprite(m->ceiling_ptrs.at(i));
+        s->useSprite(m->floor_ptrs.at(i));
+
+        s->useWall(m->wall_ptrs.at(i));
+    }
+    /* TODO: also check scripts and animatied tiles */
+}
+
+void Props::freeSceneryInMap(int scenery_index, int map_index)
+{
+    Scenery *s = sceneries.at(scenery_index);
+    Map *m = maps.at(map_index);
+    for(int i=0; i<SCENERY_MAP_BLOCKS; i++)
+    {
+        s->freeCnfTile(m->block_c_ptrs.at(i));
+        s->freeCnfTile(m->block_f_ptrs.at(i));
+
+        s->freeBgTile(m->block_0_ptrs.at(i));
+        s->freeBgTile(m->block_1_ptrs.at(i));
+        s->freeBgTile(m->block_2_ptrs.at(i));
+        s->freeBgTile(m->block_3_ptrs.at(i));
+    }
+    for(int i=0; i<SCENERY_MAP_SECTORS; i++)
+    {
+        s->freeSprite(m->ceiling_ptrs.at(i));
+        s->freeSprite(m->floor_ptrs.at(i));
+
+        s->freeWall(m->wall_ptrs.at(i));
+    }
+    /* TODO: also check scripts and animatied tiles */
+}
+
 bool Props::deleteScenery(int index)
 {
     bool ret=false;

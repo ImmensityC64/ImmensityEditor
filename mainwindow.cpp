@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     scrRects((int)ScrPart::Size),
     scrImgs((int)ScrPart::Size),
     scrDatas((int)ScrPart::Size),
+    scenery(nullptr),
     map_index(0),
     sector(0),
     modifiedBgTiles(SCENERY_BG_TILE_NUM),
@@ -226,6 +227,7 @@ void MainWindow::createNew()
         tMap->name = name;
         map_index = props.maps.size();
         props.maps.append(tMap);
+        props.useSceneryInMap(tMap->scenery_index,props.maps.size()-1);
         int box_last_index = ui->mapBox->count();
         ui->mapBox->addItem(props.maps.at(map_index)->name, QVariant(map_index));
         ui->mapBox->setCurrentIndex(box_last_index);

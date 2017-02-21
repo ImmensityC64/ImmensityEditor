@@ -122,8 +122,15 @@ void SceneryEditor::createNew()
     if(!name.isEmpty())
     {
         Scenery *tScenery;
-        if(-1 == copy) tScenery = new Scenery();
-        else tScenery = props.sceneries.at(copy)->copy();
+        if(-1 == copy)
+        {
+            tScenery = new Scenery();
+        }
+        else
+        {
+            tScenery = props.sceneries.at(copy)->copy();
+            tScenery->clearUsage();
+        }
         tScenery->name = name;
         scenery_index = props.sceneries.size(); // will be the index of last element after append
         props.sceneries.append(tScenery);

@@ -190,6 +190,7 @@ void MainWindow::loadMapVector(QDataStream &in)
         Map *map = new Map();
         in >> *map;
         props.maps.append(map);
+        props.useSceneryInMap(map->scenery_index,i);
     }
 
     if(!size)
@@ -197,6 +198,7 @@ void MainWindow::loadMapVector(QDataStream &in)
         /* Create a default map if there is none */
         Map *map = new Map();
         props.maps.append(map);
+        props.useSceneryInMap(0,0);
     }
 }
 

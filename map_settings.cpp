@@ -112,6 +112,9 @@ void MapSettings::btnOkClicked()
     int   cyber_index = ui->cyber->currentIndex();
     int   music_index = ui->music->currentIndex();
 
+    props.freeSceneryInMap(tMap->scenery_index,map_index);
+    props.useSceneryInMap(scenery_index,map_index);
+
     tMap->name = name;
     tMap->scenery_index = scenery_index;
     tMap->theme_index   = theme_index;

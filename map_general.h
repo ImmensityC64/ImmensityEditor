@@ -56,8 +56,8 @@ public:
     QVector<QVector<quint8>> char_ptrs;
     QVector<QVector<quint8>> colors;
     explicit BgTile():
-        char_ptrs(SCENERY_BG_TILE_ROWS,QVector<quint8>(SCENERY_BG_TILE_COLS)),
-        colors(SCENERY_BG_TILE_ROWS,QVector<quint8>(SCENERY_BG_TILE_COLS)){}
+        char_ptrs(SCENERY_BG_TILE_ROWS,QVector<quint8>(SCENERY_BG_TILE_COLS, 0)),
+        colors(SCENERY_BG_TILE_ROWS,QVector<quint8>(SCENERY_BG_TILE_COLS, 0)){}
     virtual ~BgTile(){}
 
     bool operator ==(BgTile &other) const
@@ -89,7 +89,7 @@ class CnfTile {
 public:
     QVector<QVector<quint8>> char_ptrs;
     explicit CnfTile():
-        char_ptrs(SCENERY_CNF_TILE_ROWS,QVector<quint8>(SCENERY_CNF_TILE_COLS)){}
+        char_ptrs(SCENERY_CNF_TILE_ROWS,QVector<quint8>(SCENERY_CNF_TILE_COLS, 0)){}
     virtual ~CnfTile(){}
 
     bool operator ==(CnfTile &other) const
@@ -167,34 +167,39 @@ public:
  * should be moved to the first 64 position of the character table.
  */
 struct chr_container {
-    quint64 chr       = 0; /* characters of scenery */
+    quint64 chr       = 0; /* character data */
     quint32 usage     = 0; /* follow how many times a char is used by any type of tiles */
     quint32 cnf_usage = 0; /* follow how many times a char is used by C&F tiles */
     quint8 mapping    = 0; /* used to remap char indexes (see comment above!) */
+    bool reserved = false; /* it is going to be used */
 };
 
 struct bg_tile_container {
-    BgTile tile;     /* BG tiles of scenery */
+    BgTile tile;        /* tile data */
     quint32 usage = 0;  /* follow how many times a BG  tile is used by maps */
-    bool keep = false;  /* keep for later use? */
+    bool keep = false;  /* keep for later use */
+    bool reserved = false; /* it is going to be used */
 };
 
 struct cnf_tile_container {
-    CnfTile tile;   /* C&F tiles of scenery */
+    CnfTile tile;       /* tile data */
     quint32 usage = 0;  /* follow how many times a C&F tile is used by maps */
-    bool keep = false;  /* keep for later use? */
+    bool keep = false;  /* keep for later use */
+    bool reserved = false; /* it is going to be used */
 };
 
 struct sprite_container {
-    Sprite sprite;      /* sprites of scenery */
+    Sprite sprite;      /* sprites data */
     quint32 usage = 0;  /* follow how many times a sprite is used by sprite walls */
-    bool keep = false;  /* keep for later use? */
+    bool keep = false;  /* keep for later use */
+    bool reserved = false; /* it is going to be used */
 };
 
 struct wall_container {
-    Wall wall;          /* sprite walls of scenery */
+    Wall wall;          /* sprite wall data */
     quint32 usage = 0;  /* follow how many times a sprite wall is used by maps */
-    bool keep = false;  /* keep for later use? */
+    bool keep = false;  /* keep for later use */
+    bool reserved = false; /* it is going to be used */
 };
 
 class Scenery : public VE {
@@ -205,8 +210,9 @@ public:
     QVector<sprite_container> sprite_vector;
     QVector<wall_container> wall_vector;
 
-    quint32 chr_counter;     /* follow overall char usage (0..255) */
-    quint32 cnf_chr_counter; /* follow   C&F   char usage (0..63)  */
+    /* follow overall gfx element usage in scenery */
+    quint32 chr_counter;     /* (0..255) */
+    quint32 cnf_chr_counter; /* ECM aka. C&F (0..63)  */
     quint32 bg_tile_counter;
     quint32 cnf_tile_counter;
     quint32 sprite_counter;
@@ -215,6 +221,8 @@ public:
     explicit Scenery();
     virtual ~Scenery();
     void loadDefaultValues(void);
+    void clearUsage(void);
+    void clearReservations(void);
 
     friend QDataStream& operator <<(QDataStream& out, Scenery const &data);
     friend QDataStream& operator >>(QDataStream& in, Scenery &data);
@@ -223,6 +231,7 @@ public:
 public:
     qint16 createChar(quint64 chr);
     qint16 findChar(quint64 chr);
+    void reserveChar(quint8 ind);
     void modifyChar(quint8 ind, quint64 chr);
     void useBgChar(quint8 ind);
     void freeBgChar(quint8 ind);
@@ -231,24 +240,28 @@ public:
 
     qint16 createBgTile(BgTile tile);
     qint16 findBgTile(BgTile tile);
+    void reserveBgTile(quint8 ind);
     void modifyBgTile(quint8 ind, BgTile tile);
     void useBgTile(quint8 ind);
     void freeBgTile(quint8 ind);
 
     qint16 createCnfTile(CnfTile tile);
     qint16 findCnfTile(CnfTile tile);
+    void reserveCnfTile(quint8 ind);
     void modifyCnfTile(quint8 ind, CnfTile tile);
-    void useCnfTile(quint8 ind);
+    bool useCnfTile(quint8 ind);
     void freeCnfTile(quint8 ind);
 
     qint16 createSprite(Sprite sprite);
     qint16 findSprite(Sprite sprite);
+    void reserveSprite(quint8 ind);
     void modifySprite(quint8 ind, Sprite sprite);
     void useSprite(quint8 ind);
     void freeSprite(quint8 ind);
 
     qint16 createWall(Wall wall);
     qint16 findWall(Wall wall);
+    void reserveWall(quint8 ind);
     void modifyWall(quint8 ind, Wall wall);
     void useWall(quint8 ind);
     void freeWall(quint8 ind);
@@ -422,6 +435,9 @@ public:
     QVector<Music*>   musics;
     QVector<Map*>     maps;
 
+    void useSceneryInMap(int scenery_index, int map_index);
+    void freeSceneryInMap(int scenery_index, int map_index);
+
     bool deleteScenery(int index);
     bool deleteTheme(int index);
     void deleteHuman(int index);
@@ -468,11 +484,11 @@ public:
     shared_ptr<GfxData> map2imgCnfTile(int map_index, int tile_index);
 
     /* generate map data from map editor's images */
-    bool img2mapCeiling(   int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img);
-    bool img2mapBackground(int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img);
-    bool img2mapFloor(     int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img);
+    bool img2mapCeiling(   int map_index, int sector, Scenery **scenery, shared_ptr<GfxData> img);
+    bool img2mapBackground(int map_index, int sector, Scenery **scenery, shared_ptr<GfxData> img);
+    bool img2mapFloor(     int map_index, int sector, Scenery **scenery, shared_ptr<GfxData> img);
 private:
-    bool img2mapCnf(int sector, Scenery *scenery, shared_ptr<GfxData> img, QVector<quint8> *block_cnf_ptrs);
+    bool img2mapCnf(int sector, Scenery **scenery, shared_ptr<GfxData> img, QVector<quint8> *block_ptrs);
 
 }; /* Props */
 

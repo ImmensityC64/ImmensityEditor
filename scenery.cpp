@@ -2,11 +2,12 @@
 #include "map_general.h"
 
 Scenery::Scenery():
-    chr_vector(SCENERY_CHR_NUM),           chr_counter(0), cnf_chr_counter(0),
-    bg_tile_vector(SCENERY_BG_TILE_NUM),    bg_tile_counter(0),
-    cnf_tile_vector(SCENERY_CNF_TILE_NUM),  cnf_tile_counter(0),
-    sprite_vector(SCENERY_SPRITE_NUM),      sprite_counter(0),
-    wall_vector(SCENERY_WALL_NUM),          wall_counter(0)
+    /* container vectors */
+    chr_vector(SCENERY_CHR_NUM),
+    bg_tile_vector(SCENERY_BG_TILE_NUM),
+    cnf_tile_vector(SCENERY_CNF_TILE_NUM),
+    sprite_vector(SCENERY_SPRITE_NUM),
+    wall_vector(SCENERY_WALL_NUM)
 {
     loadDefaultValues();
 }
@@ -19,18 +20,73 @@ Scenery::~Scenery()
 void Scenery::loadDefaultValues()
 {
     name = "Default Scenery";
+    clearUsage();
+}
+
+void Scenery::clearUsage()
+{
+    for(int i=0; i<SCENERY_CHR_NUM; i++)
+    {
+        chr_vector[i].usage     = 0;
+        chr_vector[i].cnf_usage = 0;
+    }
+
+    for(int i=0; i<SCENERY_BG_TILE_NUM; i++)
+        bg_tile_vector[i].usage = 0;
+
+    for(int i=0; i<SCENERY_CNF_TILE_NUM; i++)
+        cnf_tile_vector[i].usage = 0;
+
+    for(int i=0; i<SCENERY_SPRITE_NUM; i++)
+        sprite_vector[i].usage = 0;
+
+    for(int i=0; i<SCENERY_WALL_NUM; i++)
+        wall_vector[i].usage = 0;
+
+    /* overall usage counters */
+    chr_counter      = 0;
+    cnf_chr_counter  = 0;
+    bg_tile_counter  = 0;
+    cnf_tile_counter = 0;
+    sprite_counter   = 0;
+    wall_counter     = 0;
 }
 
 Scenery *Scenery::copy()
 {
     Scenery *ret = new Scenery();
-    ret->chr_vector      = chr_vector;      ret->chr_counter      = chr_counter;
-                                            ret->cnf_chr_counter  = cnf_chr_counter;
-    ret->bg_tile_vector  = bg_tile_vector;  ret->bg_tile_counter  = bg_tile_counter;
-    ret->cnf_tile_vector = cnf_tile_vector; ret->cnf_tile_counter = cnf_tile_counter;
-    ret->sprite_vector   = sprite_vector;   ret->sprite_counter   = sprite_counter;
-    ret->wall_vector     = wall_vector;     ret->wall_counter     = wall_counter;
+    ret->chr_vector      = chr_vector;
+    ret->bg_tile_vector  = bg_tile_vector;
+    ret->cnf_tile_vector = cnf_tile_vector;
+    ret->sprite_vector   = sprite_vector;
+    ret->wall_vector     = wall_vector;
+
+    ret->chr_counter      = chr_counter;
+    ret->cnf_chr_counter  = cnf_chr_counter;
+    ret->bg_tile_counter  = bg_tile_counter;
+    ret->cnf_tile_counter = cnf_tile_counter;
+    ret->sprite_counter   = sprite_counter;
+    ret->wall_counter     = wall_counter;
+
     return ret;
+}
+
+void Scenery::clearReservations()
+{
+    for(int i=0; i<SCENERY_CHR_NUM; i++)
+        chr_vector[i].reserved  = false;
+
+    for(int i=0; i<SCENERY_BG_TILE_NUM; i++)
+        bg_tile_vector[i].reserved = false;
+
+    for(int i=0; i<SCENERY_CNF_TILE_NUM; i++)
+        cnf_tile_vector[i].reserved = false;
+
+    for(int i=0; i<SCENERY_SPRITE_NUM; i++)
+        sprite_vector[i].reserved = false;
+
+    for(int i=0; i<SCENERY_WALL_NUM; i++)
+        wall_vector[i].reserved = false;
 }
 
 /*******************************************************************************
@@ -43,7 +99,8 @@ qint16 Scenery::createChar(quint64 chr)
 {
     for(qint16 i=0; i<SCENERY_CHR_NUM; i++)
     {
-        if(!chr_vector.at(i).usage)
+        if(!chr_vector.at(i).usage &&
+           !chr_vector.at(i).reserved)
         {
             /* We have just found an unused character.
              * Let's overwrite it with the new data.
@@ -61,20 +118,14 @@ qint16 Scenery::createChar(quint64 chr)
 qint16 Scenery::findChar(quint64 chr)
 {
     for(qint16 i=0; i<SCENERY_CHR_NUM; i++)
-    {
-        if(!chr_vector.at(i).usage)
-        {
-             /* Unused characters are not allowed to be returned even if they match!
-              * It would break functions of props_img2map.cpp!
-              */
-            continue;
-        }
         if(chr_vector.at(i).chr == chr)
-        {
             return i; /* found a match */
-        }
-    }
     return -1; /* no match was found */
+}
+
+void Scenery::reserveChar(quint8 ind)
+{
+    chr_vector[ind].reserved = true;
 }
 
 void Scenery::modifyChar(quint8 ind, quint64 chr)
@@ -93,8 +144,34 @@ void Scenery::useBgChar(quint8 ind)
 void Scenery::freeBgChar(quint8 ind)
 {
     quint32 usage = chr_vector.at(ind).usage;
-    usage--;
-    if(!usage) chr_counter--; /* overall character usage in scenery */
+
+    /* Decrease element usage */
+    if(!usage)
+    {
+        /* Report error, this function should have not been called if element is unused! */
+        cerr << __func__ << "(" << ind << ") was called, but element is unused!" << endl;
+    }
+    else
+    {
+        /* It can be decreased, do it! */
+        usage--;
+
+        /* Has element just become unused? */
+        if(!usage)
+        {
+            /* Decrease overall usage counter in scenery */
+            if(!chr_counter)
+            {
+                /* Report error, this counter should not be zero! */
+                cerr << __func__ << "(" << ind << ") tries to decrease overall counter but it is zero already!" << endl;
+            }
+            else
+            {
+                chr_counter--;
+            }
+        }
+    }
+
     chr_vector[ind].usage = usage;
 }
 
@@ -109,6 +186,7 @@ bool Scenery::useCnfChar(quint8 ind)
     }
     cnf_usage++;
     chr_vector[ind].cnf_usage = cnf_usage;
+    /* ECM characters are a subset of character set, so, they counted among bgChars too */
     useBgChar(ind);
     return true;
 }
@@ -116,9 +194,37 @@ bool Scenery::useCnfChar(quint8 ind)
 void Scenery::freeCnfChar(quint8 ind)
 {
     quint32 cnf_usage = chr_vector.at(ind).cnf_usage;
-    cnf_usage--;
-    if(!cnf_usage) cnf_chr_counter--; /* overall ECM character usage in scenery */
+
+    /* Decrease element usage */
+    if(!cnf_usage)
+    {
+        /* Report error, this function should have not been called if element is unused! */
+        cerr << __func__ << "(" << ind << ") was called, but element is unused!" << endl;
+    }
+    else
+    {
+        /* It can be decreased, do it! */
+        cnf_usage--;
+
+        /* Has element just become unused? */
+        if(!cnf_usage)
+        {
+            /* Decrease overall usage counter in scenery */
+            if(!cnf_chr_counter)
+            {
+                /* Report error, this counter should not be zero! */
+                cerr << __func__ << "(" << ind << ") tries to decrease overall counter but it is zero already!" << endl;
+            }
+            else
+            {
+                cnf_chr_counter--;
+            }
+        }
+    }
+
     chr_vector[ind].cnf_usage = cnf_usage;
+
+    /* ECM characters are a subset of character set, so, they counted among bgChars too */
     freeBgChar(ind);
 }
 
@@ -132,7 +238,9 @@ qint16 Scenery::createBgTile(BgTile tile)
 {
     for(qint16 i=0; i<SCENERY_BG_TILE_NUM; i++)
     {
-        if(!bg_tile_vector.at(i).usage && !bg_tile_vector.at(i).keep)
+        if(!bg_tile_vector.at(i).usage &&
+           !bg_tile_vector.at(i).keep  &&
+           !bg_tile_vector.at(i).reserved)
         {
             /* We have just found an unused tile.
              * Let's overwrite it with the new data.
@@ -150,20 +258,14 @@ qint16 Scenery::createBgTile(BgTile tile)
 qint16 Scenery::findBgTile(BgTile tile)
 {
     for(qint16 i=0; i<SCENERY_BG_TILE_NUM; i++)
-    {
-        if(!bg_tile_vector.at(i).usage && !bg_tile_vector.at(i).keep)
-        {
-             /* Unused but not protected tiles are not allowed to be returned even if they match!
-              * It would break functions of props_img2map.cpp!
-              */
-            continue;
-        }
         if(bg_tile_vector.at(i).tile == tile)
-        {
             return i; /* found a match */
-        }
-    }
     return -1; /* no match was found */
+}
+
+void Scenery::reserveBgTile(quint8 ind)
+{
+    bg_tile_vector[ind].reserved = true;
 }
 
 void Scenery::modifyBgTile(quint8 ind, BgTile tile)
@@ -174,7 +276,15 @@ void Scenery::modifyBgTile(quint8 ind, BgTile tile)
 void Scenery::useBgTile(quint8 ind)
 {
     quint32 usage = bg_tile_vector.at(ind).usage;
-    if(!usage) bg_tile_counter++; /* overall tile usage in scenery */
+    if(!usage)
+    {
+        /* it is being used the first time */
+        bg_tile_counter++; /* overall tile usage in scenery */
+        BgTile tile = bg_tile_vector.at(ind).tile;
+        for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
+            for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
+                useBgChar(tile.char_ptrs.at(row).at(col));
+    }
     usage++;
     bg_tile_vector[ind].usage = usage;
 }
@@ -182,8 +292,39 @@ void Scenery::useBgTile(quint8 ind)
 void Scenery::freeBgTile(quint8 ind)
 {
     quint32 usage = bg_tile_vector.at(ind).usage;
-    usage--;
-    if(!usage) bg_tile_counter--; /* overall tile usage in scenery */
+
+    /* Decrease element usage */
+    if(!usage)
+    {
+        /* Report error, this function should have not been called if element is unused! */
+        cerr << __func__ << "(" << ind << ") was called, but element is unused!" << endl;
+    }
+    else
+    {
+        /* It can be decreased, do it! */
+        usage--;
+
+        /* Has element just become unused? */
+        if(!usage)
+        {
+            /* Decrease overall usage counter in scenery */
+            if(!bg_tile_counter)
+            {
+                /* Report error, this counter should not be zero! */
+                cerr << __func__ << "(" << ind << ") tries to decrease overall counter but it is zero already!" << endl;
+            }
+            else
+            {
+                bg_tile_counter--;
+            }
+
+            BgTile tile = bg_tile_vector.at(ind).tile;
+            for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
+                for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
+                    freeBgChar(tile.char_ptrs.at(row).at(col));
+        }
+    }
+
     bg_tile_vector[ind].usage = usage;
 }
 
@@ -191,7 +332,9 @@ qint16 Scenery::createCnfTile(CnfTile tile)
 {
     for(qint16 i=0; i<SCENERY_CNF_TILE_NUM; i++)
     {
-        if(!cnf_tile_vector.at(i).usage && !cnf_tile_vector.at(i).keep)
+        if(!cnf_tile_vector.at(i).usage &&
+           !cnf_tile_vector.at(i).keep  &&
+           !cnf_tile_vector.at(i).reserved)
         {
             /* We have just found an unused tile.
              * Let's overwrite it with the new data.
@@ -209,20 +352,14 @@ qint16 Scenery::createCnfTile(CnfTile tile)
 qint16 Scenery::findCnfTile(CnfTile tile)
 {
     for(qint16 i=0; i<SCENERY_CNF_TILE_NUM; i++)
-    {
-        if(!cnf_tile_vector.at(i).usage && !cnf_tile_vector.at(i).keep)
-        {
-             /* Unused but not protected tiles are not allowed to be returned even if they match!
-              * It would break functions of props_img2map.cpp!
-              */
-            continue;
-        }
         if(cnf_tile_vector.at(i).tile == tile)
-        {
             return i; /* found a match */
-        }
-    }
     return -1; /* no match was found */
+}
+
+void Scenery::reserveCnfTile(quint8 ind)
+{
+    cnf_tile_vector[ind].reserved = true;
 }
 
 void Scenery::modifyCnfTile(quint8 ind, CnfTile tile)
@@ -230,19 +367,62 @@ void Scenery::modifyCnfTile(quint8 ind, CnfTile tile)
     cnf_tile_vector[ind].tile = tile;
 }
 
-void Scenery::useCnfTile(quint8 ind)
+bool Scenery::useCnfTile(quint8 ind)
 {
     quint32 usage = cnf_tile_vector.at(ind).usage;
-    if(!usage) cnf_tile_counter++; /* overall tile usage in scenery */
+    if(!usage)
+    {
+        /* it is being used the first time */
+        cnf_tile_counter++; /* overall tile usage in scenery */
+        CnfTile tile = cnf_tile_vector.at(ind).tile;
+        for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
+            for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
+            {
+                if(!useCnfChar(tile.char_ptrs.at(row).at(col)))
+                    return false;
+            }
+    }
     usage++;
     cnf_tile_vector[ind].usage = usage;
+    return true;
 }
 
 void Scenery::freeCnfTile(quint8 ind)
 {
     quint32 usage = cnf_tile_vector.at(ind).usage;
-    usage--;
-    if(!usage) cnf_tile_counter--; /* overall tile usage in scenery */
+
+    /* Decrease element usage */
+    if(!usage)
+    {
+        /* Report error, this function should have not been called if element is unused! */
+        cerr << __func__ << "(" << ind << ") was called, but element is unused!" << endl;
+    }
+    else
+    {
+        /* It can be decreased, do it! */
+        usage--;
+
+        /* Has element just become unused? */
+        if(!usage)
+        {
+            /* Decrease overall usage counter in scenery */
+            if(!cnf_tile_counter)
+            {
+                /* Report error, this counter should not be zero! */
+                cerr << __func__ << "(" << ind << ") tries to decrease overall counter but it is zero already!" << endl;
+            }
+            else
+            {
+                cnf_tile_counter--;
+            }
+
+            CnfTile tile = cnf_tile_vector.at(ind).tile;
+            for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
+                for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
+                    freeCnfChar(tile.char_ptrs.at(row).at(col));
+        }
+    }
+
     cnf_tile_vector[ind].usage = usage;
 }
 
@@ -254,40 +434,17 @@ void Scenery::freeCnfTile(quint8 ind)
 
 qint16 Scenery::createSprite(Sprite sprite)
 {
-    for(qint16 i=0; i<SCENERY_SPRITE_NUM; i++)
-    {
-        if(!sprite_vector.at(i).usage && !sprite_vector.at(i).keep)
-        {
-            /* We have just found an unused sprite.
-             * Let's overwrite it with the new data.
-             * It is the caller's responsibility to register usage of the sprite!
-             * Caller must check that return value is non-negative (means success)
-             * and call useSprite()!
-             */
-            modifySprite(i,sprite);
-            return i; /* return index of created sprite */
-        }
-    }
-    return -1; /* failure, all sprites are in use */
+    return -1;
 }
 
 qint16 Scenery::findSprite(Sprite sprite)
 {
-    for(qint16 i=0; i<SCENERY_SPRITE_NUM; i++)
-    {
-        if(!sprite_vector.at(i).usage && !sprite_vector.at(i).keep)
-        {
-             /* Unused but not protected sprites are not allowed to be returned even if they match!
-              * It would break functions of props_img2map.cpp!
-              */
-            continue;
-        }
-        if(sprite_vector.at(i).sprite == sprite)
-        {
-            return i; /* found a match */
-        }
-    }
-    return -1; /* no match was found */
+    return -1;
+}
+
+void Scenery::reserveSprite(quint8 ind)
+{
+    sprite_vector[ind].reserved = true;
 }
 
 void Scenery::modifySprite(quint8 ind, Sprite sprite)
@@ -297,18 +454,12 @@ void Scenery::modifySprite(quint8 ind, Sprite sprite)
 
 void Scenery::useSprite(quint8 ind)
 {
-    quint32 usage = sprite_vector.at(ind).usage;
-    if(!usage) sprite_counter++; /* overall sprite usage in scenery */
-    usage++;
-    sprite_vector[ind].usage = usage;
+
 }
 
 void Scenery::freeSprite(quint8 ind)
 {
-    quint32 usage = sprite_vector.at(ind).usage;
-    usage--;
-    if(!usage) sprite_counter--; /* overall sprite usage in scenery */
-    sprite_vector[ind].usage = usage;
+
 }
 
 /*******************************************************************************
@@ -319,40 +470,17 @@ void Scenery::freeSprite(quint8 ind)
 
 qint16 Scenery::createWall(Wall wall)
 {
-    for(qint16 i=0; i<SCENERY_WALL_NUM; i++)
-    {
-        if(!wall_vector.at(i).usage && !wall_vector.at(i).keep)
-        {
-            /* We have just found an unused wall.
-             * Let's overwrite it with the new data.
-             * It is the caller's responsibility to register usage of the wall!
-             * Caller must check that return value is non-negative (means success)
-             * and call useWall()!
-             */
-            modifyWall(i,wall);
-            return i; /* return index of created wall */
-        }
-    }
-    return -1; /* failure, all walls are in use */
+    return -1;
 }
 
 qint16 Scenery::findWall(Wall wall)
 {
-    for(qint16 i=0; i<SCENERY_WALL_NUM; i++)
-    {
-        if(!wall_vector.at(i).usage && !wall_vector.at(i).keep)
-        {
-             /* Unused but not protected walls are not allowed to be returned even if they match!
-              * It would break functions of props_img2map.cpp!
-              */
-            continue;
-        }
-        if(wall_vector.at(i).wall == wall)
-        {
-            return i; /* found a match */
-        }
-    }
-    return -1; /* no match was found */
+    return -1;
+}
+
+void Scenery::reserveWall(quint8 ind)
+{
+    wall_vector[ind].reserved = true;
 }
 
 void Scenery::modifyWall(quint8 ind, Wall wall)
@@ -362,18 +490,12 @@ void Scenery::modifyWall(quint8 ind, Wall wall)
 
 void Scenery::useWall(quint8 ind)
 {
-    quint32 usage = wall_vector.at(ind).usage;
-    if(!usage) wall_counter++; /* overall wall usage in scenery */
-    usage++;
-    wall_vector[ind].usage = usage;
+
 }
 
 void Scenery::freeWall(quint8 ind)
 {
-    quint32 usage = wall_vector.at(ind).usage;
-    usage--;
-    if(!usage) wall_counter--; /* overall wall usage in scenery */
-    wall_vector[ind].usage = usage;
+
 }
 
 /*******************************************************************************
