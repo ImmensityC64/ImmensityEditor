@@ -237,9 +237,9 @@ void MainWindow::dndImport(QByteArray &src, QPoint p)
 bool MainWindow::dndTest(QPoint p)
 {
     int y = p.y();
-    if      ( y < -40 ) return props.img2mapCeiling(   map_index, sector, &scenery, scrDatas.at((int)ScrPart::CeilingFgC));
-    else if ( y <  40 ) return props.img2mapBackground(map_index, sector, &scenery, scrDatas.at((int)ScrPart::BackgroundC));
-    else                return props.img2mapFloor(     map_index, sector, &scenery, scrDatas.at((int)ScrPart::FloorFgC));
+    if      ( y < -40 ) return props.img2mapCeiling(   map_index, sector, scenery, scrDatas.at((int)ScrPart::CeilingFgC));
+    else if ( y <  40 ) return props.img2mapBackground(map_index, sector, scenery, scrDatas.at((int)ScrPart::BackgroundC));
+    else                return props.img2mapFloor(     map_index, sector, scenery, scrDatas.at((int)ScrPart::FloorFgC));
 }
 
 void MainWindow::dndSave(QPoint p)
@@ -254,6 +254,7 @@ void MainWindow::dndSave(QPoint p)
 /****    B A C K G R O U N D
  ******************************************************************************/
 
+/* Generate and load background images from map data. */
 void MainWindow::bgLoad(void)
 {
     /* TODO: Check if there is unsaved modification.
@@ -296,18 +297,17 @@ void MainWindow::bgLoad(void)
     scrHisB->save(scrDatas.at((int)ScrPart::BackgroundC));
     scrHisF->save(scrDatas.at((int)ScrPart::FloorFgC));
 
-    /* Create a temporary scenery which will store modifications until they are saved */
-    if(scenery) delete scenery;
-    scenery = props.sceneries.at(props.maps.at(map_index)->scenery_index)->copy();
+    /* Temporary scenery will store modifications until they are saved */
+    *scenery = *(props.sceneries.at(props.maps.at(map_index)->scenery_index));
 }
 
 void MainWindow::bgSave(void)
 {
-    if(!backgroundModified) return;
-
-    /* TODO: save modifications from temporary scenery */
-
-    backgroundModified = false;
+    if(backgroundModified)
+    {
+        *(props.sceneries.at(props.maps.at(map_index)->scenery_index)) = *scenery;
+        backgroundModified = false;
+    }
 }
 
 /****    S P R I T E S

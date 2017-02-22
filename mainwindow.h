@@ -123,9 +123,6 @@ private:
     shared_ptr<GfxData> charSetData;
     CharSetW *charSetWindow;
 
-    QVector<quint8> modifiedBgTiles;
-    QVector<quint8> modifiedCnfTiles;
-
     Props props;
     Scenery *scenery;
     int map_index;
@@ -140,6 +137,9 @@ private:
     GfxHistory * scrHisB;
     GfxHistory * scrHisF;
     GfxRectItemSelection *selTgt; /* Selection target */
+
+    QVector<quint8> modifiedBgTiles;
+    QVector<quint8> modifiedCnfTiles;
     bool backgroundModified;
 
     void initScrPart(ScrPart part, GfxData::Type type, int width, int height, GfxImage::Mode mode);

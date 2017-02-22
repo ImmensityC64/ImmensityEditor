@@ -74,16 +74,16 @@ QDataStream& operator <<(QDataStream& out, Map const &src)
 {
     out << src.name;
 
-    out << src.ceiling_ptrs;
-    out << src.wall_ptrs;
-    out << src.floor_ptrs;
+    out << src.ceiling_idxs;
+    out << src.wall_idxs;
+    out << src.floor_idxs;
 
-    out << src.block_c_ptrs;
-    out << src.block_f_ptrs;
-    out << src.block_0_ptrs;
-    out << src.block_1_ptrs;
-    out << src.block_2_ptrs;
-    out << src.block_3_ptrs;
+    out << src.block_c_idxs;
+    out << src.block_f_idxs;
+    out << src.block_0_idxs;
+    out << src.block_1_idxs;
+    out << src.block_2_idxs;
+    out << src.block_3_idxs;
 
     out << src.human_comm0_index;
     out << src.human_comm1_index;
@@ -97,16 +97,16 @@ QDataStream& operator >>(QDataStream& in, Map &dst)
 {
     in >> dst.name;
 
-    in >> dst.ceiling_ptrs;
-    in >> dst.wall_ptrs;
-    in >> dst.floor_ptrs;
+    in >> dst.ceiling_idxs;
+    in >> dst.wall_idxs;
+    in >> dst.floor_idxs;
 
-    in >> dst.block_c_ptrs;
-    in >> dst.block_f_ptrs;
-    in >> dst.block_0_ptrs;
-    in >> dst.block_1_ptrs;
-    in >> dst.block_2_ptrs;
-    in >> dst.block_3_ptrs;
+    in >> dst.block_c_idxs;
+    in >> dst.block_f_idxs;
+    in >> dst.block_0_idxs;
+    in >> dst.block_1_idxs;
+    in >> dst.block_2_idxs;
+    in >> dst.block_3_idxs;
 
     in >> dst.scenery_index;
     in >> dst.theme_index;
@@ -152,7 +152,7 @@ QDataStream& operator <<(QDataStream& out, Scenery const &src)
         const CnfTile &tile = src.cnf_tile_vector.at(i).tile;
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
-                out << src.realCharIndex(tile.char_ptrs.at(row).at(col));
+                out << src.realCharIndex(tile.char_idxs.at(row).at(col));
         out << src.cnf_tile_vector.at(i).keep;
     }
 
@@ -162,7 +162,7 @@ QDataStream& operator <<(QDataStream& out, Scenery const &src)
         const BgTile &tile = src.bg_tile_vector.at(i).tile;
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
-                out << src.realCharIndex(tile.char_ptrs.at(row).at(col));
+                out << src.realCharIndex(tile.char_idxs.at(row).at(col));
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
                 out << tile.colors.at(row).at(col);
@@ -196,7 +196,7 @@ QDataStream& operator <<(QDataStream& out, Scenery const &src)
     {
         const Wall &wall = src.wall_vector.at(i).wall;
         for(int row=0; row<SCENERY_WALL_ROWS; row++)
-            out << wall.sprite_ptrs.at(row);
+            out << wall.sprite_idxs.at(row);
         out << src.wall_vector.at(i).keep;
     }
 
@@ -223,7 +223,7 @@ QDataStream& operator >>(QDataStream& in, Scenery &dst)
         CnfTile &tile = dst.cnf_tile_vector[i].tile;
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
-                in >> tile.char_ptrs[row][col];
+                in >> tile.char_idxs[row][col];
         in >> dst.cnf_tile_vector[i].keep;
     }
 
@@ -233,7 +233,7 @@ QDataStream& operator >>(QDataStream& in, Scenery &dst)
         BgTile &tile = dst.bg_tile_vector[i].tile;
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
-                in >> tile.char_ptrs[row][col];
+                in >> tile.char_idxs[row][col];
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
                 in >> tile.colors[row][col];
@@ -263,7 +263,7 @@ QDataStream& operator >>(QDataStream& in, Scenery &dst)
     {
         Wall &wall = dst.wall_vector[i].wall;
         for(int row=0; row<SCENERY_WALL_ROWS; row++)
-            in >> wall.sprite_ptrs[row];
+            in >> wall.sprite_idxs[row];
         in >> dst.wall_vector[i].keep;
     }
 

@@ -38,7 +38,7 @@ shared_ptr<GfxData> Props::map2imgCeiling(int map_index, int sector)
         shared_ptr<GfxData> chrImg;
         for(int b=0; b<=2; b++)
         {
-            quint8 tile_ptr = maps.at(map_index)->block_c_ptrs.at(blockL+b);
+            quint8 tile_ptr = maps.at(map_index)->block_c_idxs.at(blockL+b);
             cnf_tile_container *tile = &(sceneries.at(s)->cnf_tile_vector.data()[tile_ptr]);
 
             for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
@@ -47,7 +47,7 @@ shared_ptr<GfxData> Props::map2imgCeiling(int map_index, int sector)
                 int px = b*8*SCENERY_CNF_TILE_COLS + col*8;
                 int py = row*8;
 
-                if(tile->tile.char_ptrs.at(row).at(col) == (quint8)c)
+                if(tile->tile.char_idxs.at(row).at(col) == (quint8)c)
                 {
                     if(!chrImg)
                     {
@@ -112,7 +112,7 @@ shared_ptr<GfxData> Props::map2imgFloor(int map_index, int sector)
         shared_ptr<GfxData> chrImg;
         for(int b=0; b<=2; b++)
         {
-            quint8 tile_ptr = maps.at(map_index)->block_f_ptrs.at(blockL+b);
+            quint8 tile_ptr = maps.at(map_index)->block_f_idxs.at(blockL+b);
             cnf_tile_container *tile = &(sceneries.at(s)->cnf_tile_vector.data()[tile_ptr]);
 
             for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
@@ -121,7 +121,7 @@ shared_ptr<GfxData> Props::map2imgFloor(int map_index, int sector)
                 int px = b*8*SCENERY_CNF_TILE_COLS + col*8;
                 int py = row*8;
 
-                if(tile->tile.char_ptrs.at(row).at(col) == (quint8)c)
+                if(tile->tile.char_idxs.at(row).at(col) == (quint8)c)
                 {
                     if(!chrImg)
                     {
@@ -183,10 +183,10 @@ shared_ptr<GfxData> Props::map2imgBackground(int map_index, int sector)
         shared_ptr<GfxData> chrImg;
         for(int b=0; b<=2; b++)
         {
-            quint8 tile0_ind = maps.at(map_index)->block_0_ptrs.at(blockL+b);
-            quint8 tile1_ind = maps.at(map_index)->block_1_ptrs.at(blockL+b);
-            quint8 tile2_ind = maps.at(map_index)->block_2_ptrs.at(blockL+b);
-            quint8 tile3_ind = maps.at(map_index)->block_3_ptrs.at(blockL+b);
+            quint8 tile0_ind = maps.at(map_index)->block_0_idxs.at(blockL+b);
+            quint8 tile1_ind = maps.at(map_index)->block_1_idxs.at(blockL+b);
+            quint8 tile2_ind = maps.at(map_index)->block_2_idxs.at(blockL+b);
+            quint8 tile3_ind = maps.at(map_index)->block_3_idxs.at(blockL+b);
             bg_tile_container *tile[4];
             tile[0] = &(sceneries.at(s)->bg_tile_vector.data()[tile0_ind]);
             tile[1] = &(sceneries.at(s)->bg_tile_vector.data()[tile1_ind]);
@@ -201,7 +201,7 @@ shared_ptr<GfxData> Props::map2imgBackground(int map_index, int sector)
 
                 for(int t=0; t<=3; t++)
                 {
-                    if(tile[t]->tile.char_ptrs.at(row).at(col) == (quint8)c)
+                    if(tile[t]->tile.char_idxs.at(row).at(col) == (quint8)c)
                     {
                         if(!chrImg)
                         {
@@ -244,7 +244,7 @@ shared_ptr<GfxData> Props::map2imgBgTile(int map_index, int tile_index)
     for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
     for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
     {
-        int c = tile->tile.char_ptrs.at(row).at(col);
+        int c = tile->tile.char_idxs.at(row).at(col);
         chr_container *chr = &(sceneries.at(s)->chr_vector.data()[c]);
         shared_ptr<GfxData> chrImg(new GfxData(chr->chr, GfxData::Type::Sketch));
         ret->paste(chrImg, col*8, row*8);
@@ -272,7 +272,7 @@ shared_ptr<GfxData> Props::map2imgCnfTile(int map_index, int tile_index)
     for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
     for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
     {
-        int c = tile->tile.char_ptrs.at(row).at(col);
+        int c = tile->tile.char_idxs.at(row).at(col);
         chr_container *chr = &(sceneries.at(s)->chr_vector.data()[c]);
         shared_ptr<GfxData> chrImg(new GfxData(chr->chr, GfxData::Type::CnfSketch));
         ret->paste(chrImg, col*8, row*8);

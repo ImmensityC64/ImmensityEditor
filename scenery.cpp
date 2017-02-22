@@ -52,21 +52,30 @@ void Scenery::clearUsage()
     wall_counter     = 0;
 }
 
+
+Scenery &Scenery::operator=(const Scenery& other)
+{
+    chr_vector      = other.chr_vector;
+    bg_tile_vector  = other.bg_tile_vector;
+    cnf_tile_vector = other.cnf_tile_vector;
+    sprite_vector   = other.sprite_vector;
+    wall_vector     = other.wall_vector;
+
+    chr_counter      = other.chr_counter;
+    cnf_chr_counter  = other.cnf_chr_counter;
+    bg_tile_counter  = other.bg_tile_counter;
+    cnf_tile_counter = other.cnf_tile_counter;
+    sprite_counter   = other.sprite_counter;
+    wall_counter     = other.wall_counter;
+
+    return *this;
+}
+
 Scenery *Scenery::copy()
 {
     Scenery *ret = new Scenery();
-    ret->chr_vector      = chr_vector;
-    ret->bg_tile_vector  = bg_tile_vector;
-    ret->cnf_tile_vector = cnf_tile_vector;
-    ret->sprite_vector   = sprite_vector;
-    ret->wall_vector     = wall_vector;
 
-    ret->chr_counter      = chr_counter;
-    ret->cnf_chr_counter  = cnf_chr_counter;
-    ret->bg_tile_counter  = bg_tile_counter;
-    ret->cnf_tile_counter = cnf_tile_counter;
-    ret->sprite_counter   = sprite_counter;
-    ret->wall_counter     = wall_counter;
+    *ret = *this;
 
     return ret;
 }
@@ -283,7 +292,7 @@ void Scenery::useBgTile(quint8 ind)
         BgTile tile = bg_tile_vector.at(ind).tile;
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
-                useBgChar(tile.char_ptrs.at(row).at(col));
+                useBgChar(tile.char_idxs.at(row).at(col));
     }
     usage++;
     bg_tile_vector[ind].usage = usage;
@@ -321,7 +330,7 @@ void Scenery::freeBgTile(quint8 ind)
             BgTile tile = bg_tile_vector.at(ind).tile;
             for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
                 for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
-                    freeBgChar(tile.char_ptrs.at(row).at(col));
+                    freeBgChar(tile.char_idxs.at(row).at(col));
         }
     }
 
@@ -378,7 +387,7 @@ bool Scenery::useCnfTile(quint8 ind)
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
             {
-                if(!useCnfChar(tile.char_ptrs.at(row).at(col)))
+                if(!useCnfChar(tile.char_idxs.at(row).at(col)))
                     return false;
             }
     }
@@ -419,7 +428,7 @@ void Scenery::freeCnfTile(quint8 ind)
             CnfTile tile = cnf_tile_vector.at(ind).tile;
             for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
                 for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
-                    freeCnfChar(tile.char_ptrs.at(row).at(col));
+                    freeCnfChar(tile.char_idxs.at(row).at(col));
         }
     }
 

@@ -7,7 +7,6 @@ MainWindow::MainWindow(QWidget *parent) :
     scrRects((int)ScrPart::Size),
     scrImgs((int)ScrPart::Size),
     scrDatas((int)ScrPart::Size),
-    scenery(nullptr),
     map_index(0),
     sector(0),
     modifiedBgTiles(SCENERY_BG_TILE_NUM),
@@ -153,6 +152,7 @@ MainWindow::MainWindow(QWidget *parent) :
     for(int i=0; i<SCENERY_BG_TILE_NUM; i++)  modifiedBgTiles.append(i);
     for(int i=0; i<SCENERY_CNF_TILE_NUM; i++) modifiedCnfTiles.append(i);
 
+    scenery = new Scenery();
     refreshEditor();
 }
 

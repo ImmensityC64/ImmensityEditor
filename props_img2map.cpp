@@ -1,26 +1,28 @@
 
 #include "map_general.h"
 
-bool Props::img2mapCeiling(int map_index, int sector, Scenery **scenery, shared_ptr<GfxData> img)
+bool Props::img2mapCeiling(int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img)
 {
     Map *m = maps.at(map_index);
-    return img2mapCnf(sector, scenery, img, &m->block_c_ptrs);
+    return img2mapCnf(sector, scenery, img, &m->block_c_idxs);
 }
 
-bool Props::img2mapFloor(int map_index, int sector, Scenery **scenery, shared_ptr<GfxData> img)
+bool Props::img2mapFloor(int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img)
 {
     Map *m = maps.at(map_index);
-    return img2mapCnf(sector, scenery, img, &m->block_f_ptrs);
+    return img2mapCnf(sector, scenery, img, &m->block_f_idxs);
 }
 
-bool Props::img2mapCnf(int sector, Scenery **scenery, shared_ptr<GfxData> img, QVector<quint8> *block_ptrs)
+bool Props::img2mapCnf(int sector, Scenery *scenery, shared_ptr<GfxData> img, QVector<quint8> *block_idxs)
 {
+    bool ret = true;
+
     /* Temporary scenery
      * All modificiations will be done in the temporary scenery below.
      * It will be dropped in case of failure (lack of resources to store new data).
      * It will be replaced with scenery got in paramaterers in case of success.
      */
-    Scenery *s = (*scenery)->copy();
+    Scenery *s = scenery->copy();
 
     int blockL = sector2blockL(sector);  /* index of left block of sector */
     QVector<CnfTile> tile_v(3);/* tiles being identified */
@@ -42,7 +44,7 @@ bool Props::img2mapCnf(int sector, Scenery **scenery, shared_ptr<GfxData> img, Q
     for(int b=blockL; b<=blockL+2; b++)
     {
         /* Note that freeCnfTile() frees up unused characters automatically! */
-        s->freeCnfTile( block_ptrs->at(b) );
+        s->freeCnfTile( block_idxs->at(b) );
     }
 
     /* Identify existing characters */
@@ -65,8 +67,8 @@ bool Props::img2mapCnf(int sector, Scenery **scenery, shared_ptr<GfxData> img, Q
              * a new character will not override it until it will be
              * registered as used! Note that it may not be used at this moment!
              */
-            tile_v[b].char_ptrs[row][col] = chr_ind;
-            identified_chars_v[b].char_ptrs[row][col] = 1;
+            tile_v[b].char_idxs[row][col] = chr_ind;
+            identified_chars_v[b].char_idxs[row][col] = 1;
             s->reserveChar(chr_ind);
         }
         else
@@ -82,28 +84,30 @@ bool Props::img2mapCnf(int sector, Scenery **scenery, shared_ptr<GfxData> img, Q
     for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
     {
         /* Skip if it has already been identified */
-        if(identified_chars_v.at(b).char_ptrs.at(row).at(col))
+        if(identified_chars_v[b].char_idxs[row][col])
             continue;
 
         /* It is a new character, let's create it! */
-        quint64 chr = new_chr_v.takeFirst();
+        quint64 chr = new_chr_v.takeLast();
         qint16 chr_ind = s->createChar(chr);
 
         if(0 <= chr_ind)
         {
-            tile_v[b].char_ptrs[row][col] = chr_ind;
+            tile_v[b].char_idxs[row][col] = chr_ind;
             s->reserveChar(chr_ind);
         }
         else
         {
-            goto IMG2MAP_C_EXIT; /* out of resources */
+            /* out of resources */
+            ret = false;
+            goto IMG2MAP_CNF_EXIT;
         }
     } /* foreach b & row & col */
 
     /* Identify existing tiles */
     for(int b=0; b<=2; b++)
     {
-        qint16 tile_ind = s->findCnfTile(tile_v.at(b));
+        qint16 tile_ind = s->findCnfTile(tile_v[b]);
         if(0 <= tile_ind)
         {
             identified_tiles_v[b] = tile_ind;
@@ -115,10 +119,10 @@ bool Props::img2mapCnf(int sector, Scenery **scenery, shared_ptr<GfxData> img, Q
     for(int b=0; b<=2; b++)
     {
         /* Skip if it has already been identified */
-        if(0 <= identified_tiles_v.at(b))
+        if(0 <= identified_tiles_v[b])
             continue;
 
-        qint16 tile_ind = s->createCnfTile(tile_v.at(b));
+        qint16 tile_ind = s->createCnfTile(tile_v[b]);
 
         if(0 <= tile_ind)
         {
@@ -127,108 +131,188 @@ bool Props::img2mapCnf(int sector, Scenery **scenery, shared_ptr<GfxData> img, Q
         }
         else
         {
-            goto IMG2MAP_C_EXIT; /* out of resources */
+            /* out of resources */
+            ret = false;
+            goto IMG2MAP_CNF_EXIT;
         }
     }
 
     /* Use new tiles */
     for(int b=0; b<=2; b++)
     {
-        if( ! s->useCnfTile(identified_tiles_v.at(b)) )
+        if( ! s->useCnfTile(identified_tiles_v[b]) )
         {
-            goto IMG2MAP_C_EXIT; /* out of resources */
+            /* out of resources */
+            ret = false;
+            goto IMG2MAP_CNF_EXIT;
         }
     }
 
     /* Everything was successful, we can save the changes */
     s->clearReservations();
-    delete *scenery;
-    *scenery = s;
+    *scenery = *s;
     for(int b=0; b<=2; b++)
-        block_ptrs->data()[blockL+b] = (quint8)identified_tiles_v.at(b);
-    return true;
+        block_idxs->data()[blockL+b] = (quint8)identified_tiles_v[b];
 
-IMG2MAP_C_EXIT:
+IMG2MAP_CNF_EXIT:
     delete s;
-    return false;
-}
-
-bool Props::img2mapBackground(int map_index, int sector, Scenery **scenery, shared_ptr<GfxData> img)
-{
-    bool ret = true;
-    Scenery *tScenery = (*scenery)->copy(); /* temporary scenery */
-    int blockL = sector2blockL(sector);  /* left block of sector */
-    int s = maps.at(map_index)->scenery_index; /* scenery_index */
-
-    delete tScenery;
     return ret;
 }
 
-#if 0
-bool Props::img2mapTest(int map_index, int sector,
-                        shared_ptr<GfxData> oldC, /* old ceiling    */
-                        shared_ptr<GfxData> oldB, /* old background */
-                        shared_ptr<GfxData> oldF, /* old floor      */
-                        shared_ptr<GfxData> newC, /* new ceiling    */
-                        shared_ptr<GfxData> newB, /* new background */
-                        shared_ptr<GfxData> newF) /* new floor      */
+bool Props::img2mapBackground(int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img)
 {
+    Map *m = maps.at(map_index);
+
     bool ret = true;
 
-    newChars.clear();
-    newBgTiles.clear();
-    newCnfTiles.clear();
-
-    unusedChars.clear();
-    unusedBgTiles.clear();
-    unusedCnfTiles.clear();
-
-    int blockL = sector2blockL(sector); /* left block of sector */
-    int s = maps.at(map_index)->scenery_index; /* scenery_index */
-
-    /* Explode GfxData to chars & tiles
-     * Find existing chars & tiles
-     * Create a list of new chars & tiles
+    /* Temporary scenery
+     * All modificiations will be done in the temporary scenery below.
+     * It will be dropped in case of failure (lack of resources to store new data).
+     * It will be replaced with scenery got in paramaterers in case of success.
      */
+    Scenery *s = scenery->copy();
+
+    int blockL = sector2blockL(sector);  /* index of left block of sector */
+    QVector<quint64> new_chr_v;
+
+    /* tiles being identified */
+    QVector<QVector<BgTile>> tile_v(3, QVector<BgTile>(4));
+
+    /* Temporary storage for tile indexes
+     * -1 = not identified
+     */
+    QVector<QVector<qint16>> identified_tiles_v(3, QVector<qint16>(4, -1));
+
+    /* Use another tile to track which characters have been identified.
+     * 0 = not identified (default value in constructor)
+     * 1 = identified
+     */
+    QVector<QVector<BgTile>> identified_chars_v(3, QVector<BgTile>(4));
+
+    /* Free up tiles of sector */
+    /* Note that 'b' cannot overflow as we are in one sector */
+    for(int b=blockL; b<=blockL+2; b++)
+    {
+        /* Note that freeBgTile() frees up unused characters automatically! */
+        s->freeBgTile( m->block_0_idxs[b] );
+        s->freeBgTile( m->block_1_idxs[b] );
+        s->freeBgTile( m->block_2_idxs[b] );
+        s->freeBgTile( m->block_3_idxs[b] );
+    }
+
+    /* Identify existing characters */
+    for(int b=0; b<=2; b++)
+    for(int t=0; t<=3; t++)
+    for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
+    for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
+    {
+         /* Get character data from 'img' and find matching character.
+          * Note that functions of 'img' use different parameter order!
+          * 'x' coord is 'col' and 'y' coord is 'row'!
+          */
+        quint64 chr = img->chr(b*SCENERY_BG_TILE_COLS + col, t*SCENERY_BG_TILE_ROWS + row);
+        qint16 chr_ind = s->findChar(chr); /* index of character */
+
+        if(0 <= chr_ind)
+        {
+            /* Matching character found
+             * Store its index to the tile.
+             * Reserve the character, to make sure that creation of
+             * a new character will not override it until it will be
+             * registered as used! Note that it may not be used at this moment!
+             */
+            tile_v[b][t].char_idxs[row][col] = chr_ind;
+            identified_chars_v[b][t].char_idxs[row][col] = 1;
+            s->reserveChar(chr_ind);
+        }
+        else
+        {
+            /* Found a new character, we will create it later */
+            new_chr_v.append(chr);
+        }
+    } /* foreach b & t & row & col */
+
+    /* Create new characters */
+    for(int b=0; b<=2; b++)
+    for(int t=0; t<=3; t++)
+    for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
+    for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
+    {
+        /* Skip if it has already been identified */
+        if(identified_chars_v[b][t].char_idxs[row][col])
+            continue;
+
+        /* It is a new character, let's create it! */
+        quint64 chr = new_chr_v.takeLast();
+        qint16 chr_ind = s->createChar(chr);
+
+        if(0 <= chr_ind)
+        {
+            tile_v[b][t].char_idxs[row][col] = chr_ind;
+            s->reserveChar(chr_ind);
+        }
+        else
+        {
+            /* out of resources */
+            ret = false;
+            goto IMG2MAP_BG_EXIT;
+        }
+    } /* foreach b & t & row & col */
+
+    /* Identify existing tiles */
+    for(int b=0; b<=2; b++)
+    for(int t=0; t<=3; t++)
+    {
+        qint16 tile_ind = s->findBgTile(tile_v[b][t]);
+        if(0 <= tile_ind)
+        {
+            identified_tiles_v[b][t] = tile_ind;
+            s->reserveBgTile(tile_ind);
+        }
+    }
+
+    /* Create new tiles */
+    for(int b=0; b<=2; b++)
+    for(int t=0; t<=3; t++)
+    {
+        /* Skip if it has already been identified */
+        if(0 <= identified_tiles_v[b][t])
+            continue;
+
+        qint16 tile_ind = s->createBgTile(tile_v[b][t]);
+
+        if(0 <= tile_ind)
+        {
+            identified_tiles_v[b][t] = tile_ind;
+            s->reserveBgTile(tile_ind);
+        }
+        else
+        {
+            /* out of resources */
+            ret = false;
+            goto IMG2MAP_BG_EXIT;
+        }
+    }
+
+    /* Use new tiles */
+    for(int b=0; b<=2; b++)
+    for(int t=0; t<=3; t++)
+    {
+        s->useBgTile(identified_tiles_v[b][t]);
+    }
+
+    /* Everything was successful, we can save the changes */
+    s->clearReservations();
+    *scenery = *s;
     for(int b=0; b<=2; b++)
     {
-        for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
-        {
-            for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
-            {
-
-            }
-        }
+        m->block_0_idxs[blockL+b] = (quint8)identified_tiles_v[b][0];
+        m->block_1_idxs[blockL+b] = (quint8)identified_tiles_v[b][1];
+        m->block_2_idxs[blockL+b] = (quint8)identified_tiles_v[b][2];
+        m->block_3_idxs[blockL+b] = (quint8)identified_tiles_v[b][3];
     }
 
-    /* Find unused chars & tiles */
-    /* TODO: also check whether an element is protected against overwrite!
-     * See TODO above struct chr_container{} in map_general.h for more info!
-     */
-    for(int i=0; i<SCENERY_CHR_NUM; i++)
-    {
-        if(sceneries.at(s)->chr_vector.at(i).usage == 0)
-        {
-            unusedChars.append((qint8)i);
-        }
-    }
-    for(int i=0; i<SCENERY_BG_TILE_NUM; i++)
-    {
-        if(sceneries.at(s)->bg_tile_vector.at(i).usage == 0)
-        {
-            unusedBgTiles.append((qint8)i);
-        }
-    }
-    for(int i=0; i<SCENERY_CNF_TILE_NUM; i++)
-    {
-        if(sceneries.at(s)->cnf_tile_vector.at(i).usage == 0)
-        {
-            unusedCnfTiles.append((qint8)i);
-        }
-    }
-
-    /* Are there enough unused chars & tiles? */
-
+IMG2MAP_BG_EXIT:
+    delete s;
     return ret;
 }
-#endif

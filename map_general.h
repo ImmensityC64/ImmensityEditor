@@ -53,10 +53,10 @@ class MainWindow;
 
 class BgTile {
 public:
-    QVector<QVector<quint8>> char_ptrs;
+    QVector<QVector<quint8>> char_idxs;
     QVector<QVector<quint8>> colors;
     explicit BgTile():
-        char_ptrs(SCENERY_BG_TILE_ROWS,QVector<quint8>(SCENERY_BG_TILE_COLS, 0)),
+        char_idxs(SCENERY_BG_TILE_ROWS,QVector<quint8>(SCENERY_BG_TILE_COLS, 0)),
         colors(SCENERY_BG_TILE_ROWS,QVector<quint8>(SCENERY_BG_TILE_COLS, 0)){}
     virtual ~BgTile(){}
 
@@ -65,7 +65,7 @@ public:
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
             {
-                if(char_ptrs.at(row).at(col) != other.char_ptrs.at(row).at(col)) return false;
+                if(char_idxs.at(row).at(col) != other.char_idxs.at(row).at(col)) return false;
                 if(colors.at(row).at(col)    != other.colors.at(row).at(col))    return false;
             }
         return true;
@@ -75,7 +75,7 @@ public:
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
             {
-                char_ptrs[row][col] = other.char_ptrs.at(row).at(col);
+                char_idxs[row][col] = other.char_idxs.at(row).at(col);
                 colors[row][col]    = other.colors.at(row).at(col);
             }
         return *this;
@@ -87,16 +87,16 @@ public:
 
 class CnfTile {
 public:
-    QVector<QVector<quint8>> char_ptrs;
+    QVector<QVector<quint8>> char_idxs;
     explicit CnfTile():
-        char_ptrs(SCENERY_CNF_TILE_ROWS,QVector<quint8>(SCENERY_CNF_TILE_COLS, 0)){}
+        char_idxs(SCENERY_CNF_TILE_ROWS,QVector<quint8>(SCENERY_CNF_TILE_COLS, 0)){}
     virtual ~CnfTile(){}
 
     bool operator ==(CnfTile &other) const
     {
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
-                if(char_ptrs.at(row).at(col) != other.char_ptrs.at(row).at(col))
+                if(char_idxs.at(row).at(col) != other.char_idxs.at(row).at(col))
                     return false;
         return true;
     }
@@ -104,7 +104,7 @@ public:
     {
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
             for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
-                char_ptrs[row][col] = other.char_ptrs.at(row).at(col);
+                char_idxs[row][col] = other.char_idxs.at(row).at(col);
         return *this;
     }
 
@@ -139,20 +139,20 @@ public:
 
 class Wall { /* Sprite Wall */
 public:
-    QVector<quint8> sprite_ptrs;
-    explicit Wall():sprite_ptrs(SCENERY_WALL_ROWS){}
+    QVector<quint8> sprite_idxs;
+    explicit Wall():sprite_idxs(SCENERY_WALL_ROWS){}
     virtual ~Wall(){}
     bool operator ==(Wall &other) const
     {
         for(int row=0; row<SCENERY_WALL_ROWS; row++)
-            if(sprite_ptrs.at(row) != other.sprite_ptrs.at(row))
+            if(sprite_idxs.at(row) != other.sprite_idxs.at(row))
                 return false;
         return true;
     }
     Wall& operator=(const Wall& other)
     {
         for(int row=0; row<SCENERY_WALL_ROWS; row++)
-            sprite_ptrs[row] = other.sprite_ptrs.at(row);
+            sprite_idxs[row] = other.sprite_idxs.at(row);
         return *this;
     }
 
@@ -226,6 +226,7 @@ public:
 
     friend QDataStream& operator <<(QDataStream& out, Scenery const &data);
     friend QDataStream& operator >>(QDataStream& in, Scenery &data);
+    Scenery& operator=(const Scenery& other);
     Scenery *copy();
 
 public:
@@ -389,17 +390,17 @@ public:
 class Map : public VE {
 public:
     /* Sprite Pointers */
-    QVector<quint8> ceiling_ptrs;
-    QVector<quint8> wall_ptrs;
-    QVector<quint8> floor_ptrs;
+    QVector<quint8> ceiling_idxs;
+    QVector<quint8> wall_idxs;
+    QVector<quint8> floor_idxs;
 
     /* Tile Pointers */
-    QVector<quint8> block_c_ptrs;
-    QVector<quint8> block_f_ptrs;
-    QVector<quint8> block_0_ptrs;
-    QVector<quint8> block_1_ptrs;
-    QVector<quint8> block_2_ptrs;
-    QVector<quint8> block_3_ptrs;
+    QVector<quint8> block_c_idxs;
+    QVector<quint8> block_f_idxs;
+    QVector<quint8> block_0_idxs;
+    QVector<quint8> block_1_idxs;
+    QVector<quint8> block_2_idxs;
+    QVector<quint8> block_3_idxs;
 
     int scenery_index;
     int   theme_index;
@@ -484,11 +485,11 @@ public:
     shared_ptr<GfxData> map2imgCnfTile(int map_index, int tile_index);
 
     /* generate map data from map editor's images */
-    bool img2mapCeiling(   int map_index, int sector, Scenery **scenery, shared_ptr<GfxData> img);
-    bool img2mapBackground(int map_index, int sector, Scenery **scenery, shared_ptr<GfxData> img);
-    bool img2mapFloor(     int map_index, int sector, Scenery **scenery, shared_ptr<GfxData> img);
+    bool img2mapCeiling(   int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img);
+    bool img2mapBackground(int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img);
+    bool img2mapFloor(     int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img);
 private:
-    bool img2mapCnf(int sector, Scenery **scenery, shared_ptr<GfxData> img, QVector<quint8> *block_ptrs);
+    bool img2mapCnf(int sector, Scenery *scenery, shared_ptr<GfxData> img, QVector<quint8> *block_idxs);
 
 }; /* Props */
 
