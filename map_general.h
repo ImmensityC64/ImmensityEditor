@@ -224,7 +224,7 @@ public:
     void clearUsage(void);
     void clearReservations(void);
 
-    friend QDataStream& operator <<(QDataStream& out, Scenery const &data);
+    friend QDataStream& operator <<(QDataStream& out, Scenery &data);
     friend QDataStream& operator >>(QDataStream& in, Scenery &data);
     Scenery& operator=(const Scenery& other);
     Scenery *copy();

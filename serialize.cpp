@@ -122,13 +122,13 @@ QDataStream& operator >>(QDataStream& in, Map &dst)
     return in;
 }
 
-QDataStream& operator <<(QDataStream& out, Scenery const &src)
+QDataStream& operator <<(QDataStream& out, Scenery &src)
 {
     out << src.name;
 
     /* Character Set */
 
-    //src.calculateRealCharIndexes();
+    src.calculateRealCharIndexes();
 
     /* loop through character SET */
     for(int set=0; set<SCENERY_CHR_NUM; set++)

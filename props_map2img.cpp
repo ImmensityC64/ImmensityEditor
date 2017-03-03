@@ -286,12 +286,23 @@ shared_ptr<GfxData> Props::map2imgCharSet(int map_index)
     shared_ptr<GfxData> ret(new GfxData(GfxData::Type::CharSet));
     ret->setColor((int)GfxData::ColorIndex::Backg, (quint8)C64::IndexWhite);
     int s = maps.at(map_index)->scenery_index;
+    sceneries.at(s)->calculateRealCharIndexes();
 
     for(int row=0; row< 8; row++)
     for(int col=0; col<32; col++)
     {
-        chr_container *chr = &(sceneries.at(s)->chr_vector.data()[row*32 + col]);
-        shared_ptr<GfxData> chrImg(new GfxData(chr->chr));
+        int set = row*32+col;
+        quint64 chr_data = 0;
+        /* loop through char MAPping vector */
+        for(int map=0; map<SCENERY_CHR_NUM; map++)
+        {
+            if(sceneries.at(s)->realCharIndex(map) == set)
+            {
+                chr_data = sceneries.at(s)->chr_vector.at(map).chr;
+                break;
+            }
+        }
+        shared_ptr<GfxData> chrImg(new GfxData(chr_data));
         chrImg->setClrVal(0,0,C64::IndexBlack);
         ret->paste(chrImg, col*8, row*8);
     } /* foreach row & col */
