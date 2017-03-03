@@ -3,6 +3,7 @@
 
 CharSetW::CharSetW(shared_ptr<GfxData> init, QWidget *parent) :
     QMainWindow(parent),
+    gfx_data(init),
     ui(new Ui::CharSetW)
 {
     ui->setupUi(this);
@@ -36,7 +37,6 @@ CharSetW::CharSetW(shared_ptr<GfxData> init, QWidget *parent) :
     /* Grids */
 
     grid = new Grid(ui->view, img->width(), img->height());
-    grid->setDependsOnScale(true);
     createGrids();
     grid->fineVisible(ui->checkFineGrid->checkState());
     grid->mainVisible(ui->checkMainGrid->checkState());
@@ -49,6 +49,12 @@ CharSetW::CharSetW(shared_ptr<GfxData> init, QWidget *parent) :
 CharSetW::~CharSetW()
 {
     delete grid;
+}
+
+void CharSetW::refresh(shared_ptr<GfxData> data)
+{
+    gfx_data->load(data);
+    img->refresh();
 }
 
 /****    G R I D S

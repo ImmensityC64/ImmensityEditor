@@ -29,6 +29,7 @@ public:
         Cyber,
         Sketch,
         CnfSketch,
+        HiRes,
     };
 protected:
     Mode              M; /* Mode */

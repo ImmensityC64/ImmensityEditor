@@ -128,6 +128,12 @@ void GfxData::init(Type tType, int tWidth, int tHeight)
             H = 24 * 8;
             break;
         }
+        case Type::CharSet:
+        {
+            W = 8 * C64::CharSetCols;
+            H = 8 * C64::CharSetRows;
+            break;
+        }
         case Type::Nothing:
         default:
         {
@@ -290,11 +296,11 @@ GfxData::GfxData(quint64 chr, Type tType)
     init(tType, 8, 8);
     quint64 mask = 0x8000000000000000;
     for(int x=0; x<8; x++)
-        for(int y=0; y<8; y++)
-        {
-            if(chr && mask) bitmap->at(y)->setBit(x,true);
-            mask >>= 1;
-        }
+    for(int y=0; y<8; y++)
+    {
+        if(chr & mask) bitmap->at(y)->setBit(x,true);
+        mask >>= 1;
+    }
 }
 
 /* Get character data from image */
@@ -452,6 +458,7 @@ GfxData::PixelMode GfxData::get_mode(void)
     case Type::Sprite:
     case Type::Wall:
     case Type::CnfSketch:
+    case Type::CharSet:
     case Type::Nothing:
     default:
         return PixelMode::HiRes;

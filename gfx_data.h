@@ -49,6 +49,7 @@ public:
          * are all generated from Scenery DB.
          * These entities do not have GfxData storage.
          */
+        CharSet,    /* 32x8 chars by default */
     };
 
     enum class ColorIndex {
@@ -151,12 +152,12 @@ public:
     explicit GfxData(Type tType);
     explicit GfxData(Type tType, int tWidth, int tHeight);
     explicit GfxData(shared_ptr<GfxData> src);
+    explicit GfxData(quint64 chr, Type tType=Type::CharSet);
     shared_ptr<GfxData> copy(void);
     shared_ptr<GfxData> copy(QPoint a, QPoint c);
     shared_ptr<GfxData> copy(int ax, int ay, int cx, int cy);
     void paste(shared_ptr<GfxData> src, QPoint p);
     void paste(shared_ptr<GfxData> src, int px, int py);
-    explicit GfxData(quint64 chr, Type tType=Type::Sketch);
     quint64 chr(int cx=0, int cy=0);
     virtual ~GfxData();
 

@@ -97,7 +97,7 @@ void MainWindow::openSceneryCharSet()
 {
     if(nullptr == charSetWindow)
     {
-        CharSetW *w = new CharSetW(charSetData);
+        CharSetW *w = new CharSetW(props.map2imgCharSet(map_index));
         w->setAttribute(Qt::WA_DeleteOnClose, true);
         w->show();
         charSetWindow = w;

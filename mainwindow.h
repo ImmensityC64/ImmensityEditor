@@ -65,6 +65,7 @@ private slots:
     void deleteMap();
     void settingsClicked();
 
+    void saveModifications();
     void refreshEditor();
 
 public slots:
@@ -120,7 +121,6 @@ private:
     GfxVector gvSceneryBgTiles;
     GfxVector gvSceneryCnfTiles;
 
-    shared_ptr<GfxData> charSetData;
     CharSetW *charSetWindow;
 
     Props props;

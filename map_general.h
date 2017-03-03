@@ -483,6 +483,7 @@ public:
     shared_ptr<GfxData> map2imgBackground(int map_index, int sector);
     shared_ptr<GfxData> map2imgBgTile(int map_index, int tile_index);
     shared_ptr<GfxData> map2imgCnfTile(int map_index, int tile_index);
+    shared_ptr<GfxData> map2imgCharSet(int map_index);
 
     /* generate map data from map editor's images */
     bool img2mapCeiling(   int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img);

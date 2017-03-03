@@ -11,7 +11,6 @@ MainWindow::MainWindow(QWidget *parent) :
     sector(0),
     modifiedBgTiles(SCENERY_BG_TILE_NUM),
     modifiedCnfTiles(SCENERY_CNF_TILE_NUM),
-    charSetData(new GfxData(GfxData::Type::Nothing, 256, 64)),
     ui(new Ui::MainWindow)
 {
     /***   W I N D O W
@@ -153,6 +152,10 @@ MainWindow::MainWindow(QWidget *parent) :
     for(int i=0; i<SCENERY_CNF_TILE_NUM; i++) modifiedCnfTiles.append(i);
 
     scenery = new Scenery();
+
+    connect(ui->btnReload, SIGNAL(clicked()), this, SLOT(refreshEditor()));
+    connect(ui->btnApply,  SIGNAL(clicked()), this, SLOT(saveModifications()));
+
     refreshEditor();
 }
 
@@ -261,6 +264,12 @@ void MainWindow::sceneryChanged(int i)
 {
     if(props.maps.at(map_index)->scenery_index == i)
         refreshEditor();
+}
+
+void MainWindow::saveModifications()
+{
+    bgSave();
+    refreshEditor();
 }
 
 void MainWindow::refreshEditor()

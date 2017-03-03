@@ -280,3 +280,21 @@ shared_ptr<GfxData> Props::map2imgCnfTile(int map_index, int tile_index)
 
     return ret;
 }
+
+shared_ptr<GfxData> Props::map2imgCharSet(int map_index)
+{
+    shared_ptr<GfxData> ret(new GfxData(GfxData::Type::CharSet));
+    ret->setColor((int)GfxData::ColorIndex::Backg, (quint8)C64::IndexWhite);
+    int s = maps.at(map_index)->scenery_index;
+
+    for(int row=0; row< 8; row++)
+    for(int col=0; col<32; col++)
+    {
+        chr_container *chr = &(sceneries.at(s)->chr_vector.data()[row*32 + col]);
+        shared_ptr<GfxData> chrImg(new GfxData(chr->chr));
+        chrImg->setClrVal(0,0,C64::IndexBlack);
+        ret->paste(chrImg, col*8, row*8);
+    } /* foreach row & col */
+
+    return ret;
+}

@@ -299,6 +299,7 @@ void MainWindow::bgLoad(void)
 
     /* Temporary scenery will store modifications until they are saved */
     *scenery = *(props.sceneries.at(props.maps.at(map_index)->scenery_index));
+    backgroundModified = false;
 }
 
 void MainWindow::bgSave(void)
@@ -334,4 +335,6 @@ void MainWindow::refreshSceneryBrowsers(void)
         int i = modifiedBgTiles.takeLast();
         /* TODO: generate GfxData for tile #i */
     }
+
+    if(charSetWindow) charSetWindow->refresh(props.map2imgCharSet(map_index));
 }

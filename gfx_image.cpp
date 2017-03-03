@@ -37,6 +37,8 @@ void GfxImage::init(shared_ptr<GfxData> src)
     case GfxData::Type::Cyber:     M = Mode::Cyber;     break;
     case GfxData::Type::Sketch:    M = Mode::Sketch;    break;
     case GfxData::Type::CnfSketch: M = Mode::CnfSketch; break;
+    case GfxData::Type::CharSet:   M = Mode::HiRes;     break;
+    case GfxData::Type::Nothing:   M = Mode::Nothing;   break;
     default:
     case GfxData::Type::Sprite:    M = Mode::Expanded;  break;
     }
@@ -95,7 +97,6 @@ void GfxImage::refresh(void)
         case Mode::Ceiling:
         case Mode::Floor:
         case Mode::Wall:
-        default:
         {
             /* Data width is not proportional to image width
                 * in case of perspective display of sprites.
@@ -225,6 +226,21 @@ void GfxImage::refresh(void)
             } /* for(cy) */
             break; /* SketchCnF */
         }
+        case Mode::HiRes:
+        case Mode::Nothing:
+        default:
+        {
+            int alp = (int)C64::IndexAlpha;
+            for(int cy=0; cy<iH; cy+=8)
+            for(int cx=0; cx<iW; cx+=8)
+            {
+                int clr = tD->clrVal(tD->bit2clr(cx),tD->bit2clr(cy));
+                for(int py=cy; py<cy+8; py++)
+                for(int px=cx; px<cx+8; px++)
+                    setPixel(px,py,tD->bitVal(px,py) ? clr : alp);
+            }
+            break;
+        } /* HiRes, Nothing, default */
         } /* switch(mode) */
 
         cnt = tD->imageEqualsCnt();

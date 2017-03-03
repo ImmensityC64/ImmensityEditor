@@ -175,6 +175,9 @@ public:
 
         SpriteHeight    = 21,
         SpriteWidth     = 24,
+
+        CharSetRows =  8,
+        CharSetCols = 32,
     };
 
     static C64& ins();
