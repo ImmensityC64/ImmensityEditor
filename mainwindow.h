@@ -65,6 +65,10 @@ private slots:
     void deleteMap();
     void settingsClicked();
 
+    void incSector();
+    void decSector();
+    void setSector(int s);
+    void setSector(QString s);
     void saveModifications();
     void refreshEditor();
 

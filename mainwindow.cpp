@@ -153,6 +153,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     scenery = new Scenery();
 
+    QValidator *validator = new QIntValidator(0, 84, this);
+    ui->sector->setValidator(validator);
+    ui->sectorSlider->setMinimum(0);
+    ui->sectorSlider->setMaximum(84);
+    connect(ui->sector, SIGNAL(textEdited(QString)), SLOT(setSector(QString)));
+    connect(ui->sectorSlider, SIGNAL(valueChanged(int)), this, SLOT(setSector(int)));
+    connect(ui->sectorInc, SIGNAL(clicked()), this, SLOT(incSector()));
+    connect(ui->sectorDec, SIGNAL(clicked()), this, SLOT(decSector()));
+
     connect(ui->btnReload, SIGNAL(clicked()), this, SLOT(refreshEditor()));
     connect(ui->btnApply,  SIGNAL(clicked()), this, SLOT(saveModifications()));
 
@@ -266,6 +275,34 @@ void MainWindow::sceneryChanged(int i)
         refreshEditor();
 }
 
+void MainWindow::incSector()
+{
+    bgSave();
+    props.sectorInc(sector);
+    refreshEditor();
+}
+
+void MainWindow::decSector()
+{
+    bgSave();
+    props.sectorDec(sector);
+    refreshEditor();
+}
+
+void MainWindow::setSector(int s)
+{
+    bgSave();
+    sector = s;
+    refreshEditor();
+}
+
+void MainWindow::setSector(QString s)
+{
+    bgSave();
+    sector = s.toInt();
+    refreshEditor();
+}
+
 void MainWindow::saveModifications()
 {
     bgSave();
@@ -279,4 +316,7 @@ void MainWindow::refreshEditor()
     refreshSceneryBrowsers();
     ui->checkDelete->setChecked(false);
     enableDeletBtn(false);
+    QString s = QString::number(sector);
+    ui->sector->setText(s);
+    ui->sectorSlider->setSliderPosition(sector);
 }
