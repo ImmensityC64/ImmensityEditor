@@ -84,24 +84,27 @@ bool Props::img2mapCnf(int sector, Scenery *scenery, shared_ptr<GfxData> img, QV
     for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
     {
         /* Skip if it has already been identified */
-        if(identified_chars_v[b].char_idxs[row][col])
-            continue;
-
-        /* It is a new character, let's create it! */
-        quint64 chr = new_chr_v.takeLast();
-        qint16 chr_ind = s->createChar(chr);
-
-        if(0 <= chr_ind)
+        if(!identified_chars_v[b].char_idxs[row][col])
         {
-            tile_v[b].char_idxs[row][col] = chr_ind;
-            s->reserveChar(chr_ind);
+            /* It is a new character, let's create it! */
+            quint64 chr = new_chr_v.takeLast();
+            qint16 chr_ind = s->createChar(chr);
+
+            if(0 <= chr_ind)
+            {
+                tile_v[b].char_idxs[row][col] = chr_ind;
+                s->reserveChar(chr_ind);
+            }
+            else
+            {
+                /* out of resources */
+                ret = false;
+                goto IMG2MAP_CNF_EXIT;
+            }
         }
-        else
-        {
-            /* out of resources */
-            ret = false;
-            goto IMG2MAP_CNF_EXIT;
-        }
+
+        /* Store color value */
+        tile_v[b].colors[row][col] = img->clrVal(b*SCENERY_CNF_TILE_COLS+col,row);
     } /* foreach b & row & col */
 
     /* Identify existing tiles */

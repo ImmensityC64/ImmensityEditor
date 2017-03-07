@@ -63,21 +63,21 @@ public:
     bool operator ==(BgTile &other) const
     {
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
-            for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
-            {
-                if(char_idxs.at(row).at(col) != other.char_idxs.at(row).at(col)) return false;
-                if(colors.at(row).at(col)    != other.colors.at(row).at(col))    return false;
-            }
+        for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
+        {
+            if(char_idxs.at(row).at(col) != other.char_idxs.at(row).at(col)) return false;
+            if(colors.at(row).at(col)    != other.colors.at(row).at(col))    return false;
+        }
         return true;
     }
     BgTile& operator=(const BgTile& other)
     {
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
-            for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
-            {
-                char_idxs[row][col] = other.char_idxs.at(row).at(col);
-                colors[row][col]    = other.colors.at(row).at(col);
-            }
+        for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
+        {
+            char_idxs[row][col] = other.char_idxs.at(row).at(col);
+            colors[row][col]    = other.colors.at(row).at(col);
+        }
         return *this;
     }
 
@@ -88,23 +88,30 @@ public:
 class CnfTile {
 public:
     QVector<QVector<quint8>> char_idxs;
+    QVector<QVector<quint8>> colors;
     explicit CnfTile():
-        char_idxs(SCENERY_CNF_TILE_ROWS,QVector<quint8>(SCENERY_CNF_TILE_COLS, 0)){}
+        char_idxs(SCENERY_CNF_TILE_ROWS,QVector<quint8>(SCENERY_CNF_TILE_COLS, 0)),
+        colors(SCENERY_CNF_TILE_ROWS,QVector<quint8>(SCENERY_CNF_TILE_COLS, 0)){}
     virtual ~CnfTile(){}
 
     bool operator ==(CnfTile &other) const
     {
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
-            for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
-                if(char_idxs.at(row).at(col) != other.char_idxs.at(row).at(col))
-                    return false;
+        for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
+        {
+            if(char_idxs.at(row).at(col) != other.char_idxs.at(row).at(col)) return false;
+            if(colors.at(row).at(col)    != other.colors.at(row).at(col))    return false;
+        }
         return true;
     }
     CnfTile& operator=(const CnfTile& other)
     {
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
-            for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
-                char_idxs[row][col] = other.char_idxs.at(row).at(col);
+        for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
+        {
+            char_idxs[row][col] = other.char_idxs.at(row).at(col);
+            colors[row][col]    = other.colors.at(row).at(col);
+        }
         return *this;
     }
 
