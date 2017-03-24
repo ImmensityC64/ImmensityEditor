@@ -96,7 +96,7 @@ shared_ptr<GfxData> Props::map2imgBgTile(int map_index, int tile_index)
         int c = tile->tile.char_idxs.at(row).at(col);
         chr_container *chr = &(sceneries.at(s)->chr_vector.data()[c]);
         shared_ptr<GfxData> chrImg(new GfxData(chr->chr, GfxData::Type::Sketch));
-        chrImg->setClrVal(col,row,tile->tile.colors.at(row).at(col));
+        chrImg->setClrVal(0,0,tile->tile.colors.at(row).at(col));
         ret->paste(chrImg, col*8, row*8);
     } /* foreach row & col */
 
@@ -125,7 +125,7 @@ shared_ptr<GfxData> Props::map2imgCnfTile(int map_index, int tile_index)
         int c = tile->tile.char_idxs.at(row).at(col);
         chr_container *chr = &(sceneries.at(s)->chr_vector.data()[c]);
         shared_ptr<GfxData> chrImg(new GfxData(chr->chr, GfxData::Type::CnfSketch));
-        chrImg->setClrVal(col,row,tile->tile.colors.at(row).at(col));
+        chrImg->setClrVal(0,0,tile->tile.colors.at(row).at(col));
         ret->paste(chrImg, col*8, row*8);
     } /* foreach row & col */
 

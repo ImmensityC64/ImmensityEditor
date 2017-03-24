@@ -87,7 +87,7 @@ bool Props::img2mapCnf(int sector, Scenery *scenery, shared_ptr<GfxData> img, QV
         if(!identified_chars_v[b].char_idxs[row][col])
         {
             /* It is a new character, let's create it! */
-            quint64 chr = new_chr_v.takeLast();
+            quint64 chr = new_chr_v.takeFirst();
             qint16 chr_ind = s->createChar(chr);
 
             if(0 <= chr_ind)
@@ -245,7 +245,7 @@ bool Props::img2mapBackground(int map_index, int sector, Scenery *scenery, share
         if(!identified_chars_v[b][t].char_idxs[row][col])
         {
             /* It is a new character, let's create it! */
-            quint64 chr = new_chr_v.takeLast();
+            quint64 chr = new_chr_v.takeFirst();
             qint16 chr_ind = s->createChar(chr);
 
             if(0 <= chr_ind)
