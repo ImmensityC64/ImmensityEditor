@@ -1,7 +1,7 @@
 
 #include "mainwindow.h"
 
-#define ENABLE_SAVE 0
+#define ENABLE_SAVE 1
 
 void MainWindow::loadGfxData(void)
 {
@@ -64,12 +64,13 @@ void MainWindow::saveGfxData(void)
         QDataStream file(projFile);
         file << quint8(1); /* version */
 
-        saveGfxVector(gvSketch,     file);
-        saveGfxVector(gvCnFSketch,  file);
-        saveGfxVector(gvCeiling,    file);
-        saveGfxVector(gvFloor,      file);
-        saveGfxVector(gvWall,       file);
+        saveGfxVector(gvSketchesBgTiles,  file);
+        saveGfxVector(gvSketchesCnfTiles, file);
+        saveGfxVector(gvSketchesCeilings, file);
+        saveGfxVector(gvSketchesFloors,   file);
+        saveGfxVector(gvSketchesWalls,    file);
         saveSceneryVector(file); /* it must precede saveMapVector() */
+        saveThemeVector(file);   /* it must precede saveMapVector() */
         saveMapVector(file);
 
         projFile->close();

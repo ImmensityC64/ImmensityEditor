@@ -130,16 +130,16 @@ QDataStream& operator <<(QDataStream& out, Scenery &src)
 
     src.calculateRealCharIndexes();
 
-    /* loop through character SET */
-    for(int set=0; set<SCENERY_CHR_NUM; set++)
+    /* loop through character set */
+    for(int mapped_index=0; mapped_index<SCENERY_CHR_NUM; mapped_index++)
     {
         quint64 chr_data = 0;
-        /* loop through char MAPping vector */
-        for(int map=0; map<SCENERY_CHR_NUM; map++)
+        /* loop through char mapping vector */
+        for(int index=0; index<SCENERY_CHR_NUM; index++)
         {
-            if(src.realCharIndex(map) == set)
+            if(src.realCharIndex(index) == mapped_index)
             {
-                chr_data = src.chr_vector.at(map).chr;
+                chr_data = src.chr_vector.at(index).chr;
                 break;
             }
         }
@@ -151,8 +151,8 @@ QDataStream& operator <<(QDataStream& out, Scenery &src)
     {
         const CnfTile &tile = src.cnf_tile_vector.at(i).tile;
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
-            for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
-                out << src.realCharIndex(tile.char_idxs.at(row).at(col));
+        for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
+            out << src.realCharIndex(tile.char_idxs.at(row).at(col));
         out << src.cnf_tile_vector.at(i).keep;
     }
 
@@ -161,11 +161,11 @@ QDataStream& operator <<(QDataStream& out, Scenery &src)
     {
         const BgTile &tile = src.bg_tile_vector.at(i).tile;
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
-            for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
-                out << src.realCharIndex(tile.char_idxs.at(row).at(col));
+        for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
+            out << src.realCharIndex(tile.char_idxs.at(row).at(col));
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
-            for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
-                out << tile.colors.at(row).at(col);
+        for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
+            out << tile.colors.at(row).at(col);
         out << src.bg_tile_vector.at(i).keep;
     }
 
@@ -176,16 +176,14 @@ QDataStream& operator <<(QDataStream& out, Scenery &src)
 
         quint8 byte=0;
         for(int row=0; row<(int)C64::SpriteHeight; row++)
+        for(int col=0; col<(int)C64::SpriteWidth; col++)
         {
-            for(int col=0; col<(int)C64::SpriteWidth; col++)
+            int bit = col%8;
+            byte |= sprite.sprite_bits.at(row).at(col) << bit ;
+            if( 7==bit )
             {
-                int bit = col%8;
-                byte |= sprite.sprite_bits.at(row).at(col) << bit ;
-                if( 7==bit )
-                {
-                    out << byte;
-                    byte = 0;
-                }
+                out << byte;
+                byte = 0;
             }
         }
         out << src.sprite_vector.at(i).keep;
@@ -212,59 +210,73 @@ QDataStream& operator >>(QDataStream& in, Scenery &dst)
     //dst.resetRealCharIndexes();
 
     /* loop through character SET */
-    for(int set=0; set<SCENERY_CHR_NUM; set++)
+    for(int i=0; i<SCENERY_CHR_NUM; i++)
     {
-        in >> dst.chr_vector[set].chr;
+        chr_container &chr_c = dst.chr_vector[i];
+        in >> chr_c.chr;
+        chr_c.usage     = 0;
+        chr_c.cnf_usage = 0;
+        chr_c.mapping   = i;
+        chr_c.reserved  = false;
     }
 
     /* C&F Tiles */
     for(int i=0; i<SCENERY_CNF_TILE_NUM; i++)
     {
-        CnfTile &tile = dst.cnf_tile_vector[i].tile;
+        cnf_tile_container &tile_c = dst.cnf_tile_vector[i];
+        CnfTile &tile = tile_c.tile;
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
-            for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
+        for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
                 in >> tile.char_idxs[row][col];
-        in >> dst.cnf_tile_vector[i].keep;
+        in >> tile_c.keep;
+        tile_c.usage = 0;
+        tile_c.reserved = false;
     }
 
     /* BG Tiles */
     for(int i=0; i<SCENERY_BG_TILE_NUM; i++)
     {
-        BgTile &tile = dst.bg_tile_vector[i].tile;
+        bg_tile_container &tile_c = dst.bg_tile_vector[i];
+        BgTile &tile = tile_c.tile;
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
-            for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
-                in >> tile.char_idxs[row][col];
+        for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
+            in >> tile.char_idxs[row][col];
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
-            for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
-                in >> tile.colors[row][col];
-        in >> dst.bg_tile_vector[i].keep;
+        for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
+            in >> tile.colors[row][col];
+        in >> tile_c.keep;
+        tile_c.usage = 0;
+        tile_c.reserved = false;
     }
 
     /* Sprites */
     for(int i=0; i<SCENERY_SPRITE_NUM; i++)
     {
-        Sprite &sprite = dst.sprite_vector[i].sprite;
-
-        quint8 byte;
+        sprite_container &sprite_c = dst.sprite_vector[i];
+        Sprite &sprite = sprite_c.sprite;
         for(int row=0; row<(int)C64::SpriteHeight; row++)
+        for(int col=0; col<(int)C64::SpriteWidth; col++)
         {
-            for(int col=0; col<(int)C64::SpriteWidth; col++)
-            {
-                int bit = col%8;
-                if( 0==bit ) in >> byte;
-                sprite.sprite_bits[row].setBit(col, byte & (1<<bit) );
-            }
+            quint8 byte;
+            int bit = col%8;
+            if( 0==bit ) in >> byte;
+            sprite.sprite_bits[row].setBit(col, byte & (1<<bit) );
         }
-        in >> dst.sprite_vector[i].keep;
+        in >> sprite_c.keep;
+        sprite_c.usage = 0;
+        sprite_c.reserved = false;
     }
 
     /* Walls */
     for(int i=0; i<SCENERY_WALL_NUM; i++)
     {
-        Wall &wall = dst.wall_vector[i].wall;
+        wall_container &wall_c = dst.wall_vector[i];
+        Wall &wall = wall_c.wall;
         for(int row=0; row<SCENERY_WALL_ROWS; row++)
             in >> wall.sprite_idxs[row];
-        in >> dst.wall_vector[i].keep;
+        in >> wall_c.keep;
+        wall_c.usage = 0;
+        wall_c.reserved = false;
     }
 
     return in;

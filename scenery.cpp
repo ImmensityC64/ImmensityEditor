@@ -518,26 +518,53 @@ void Scenery::freeWall(quint8 ind)
  */
 void Scenery::calculateRealCharIndexes(void)
 {
-    int cnf = 0; /* C&F - EMC char index */
-    int  bg = SCENERY_CHR_NUM-1; /* BG - normal char index */
+    int m = 0; /* mapping index */
 
-    /* search for C&F chars first */
+    /* search for C&F chars first and move them to the beginning of character set */
     for(int i=0; i<SCENERY_CHR_NUM; i++)
     {
-        if(chr_vector.at(i).cnf_usage > 0)
+        if(chr_vector.at(i).cnf_usage)
         {
-            chr_vector[i].mapping = cnf;
-            cnf++;
+            chr_vector[i].mapping = m;
+            m++;
         }
-        else
+    }
+
+    /* get rid of garbage */
+    for(int i=0; i<SCENERY_CHR_NUM; i++)
+    {
+        if(!chr_vector.at(i).usage)
+        {
+            chr_vector[i].chr = 0; /* delete unused chars */
+            chr_vector[i].mapping = m;
+            m++;
+        }
+    }
+
+    /* search for BG chars and move them to the end of character set */
+    for(int i=0; i<SCENERY_CHR_NUM; i++)
+    {
+        if(chr_vector.at(i).usage && !chr_vector.at(i).cnf_usage)
         {
             /* Note that unused chars are also stored!
              * It is intentional. Perhaps, they will be
              * used again later...
              */
-            chr_vector[i].mapping = bg;
-            bg--;
+            chr_vector[i].mapping = m;
+            m++;
         }
+    }
+
+    /* report error */
+    if(m != 256)
+    {
+        cerr << __func__ << "() mapping index should reach 256 and not " << m << endl;
+        int cnt = 0;
+        for(int i=0; i<SCENERY_CHR_NUM; i++)
+        {
+            if(!chr_vector.at(i).usage && chr_vector.at(i).cnf_usage) cnt++;
+        }
+        cerr << cnt << " characters has cnf_usage while they are not used" << endl;
     }
 }
 
