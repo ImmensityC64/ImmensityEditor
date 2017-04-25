@@ -237,9 +237,9 @@ void MainWindow::dndImport(QByteArray &src, QPoint p)
 bool MainWindow::dndTest(QPoint p)
 {
     int y = p.y();
-    if      ( y < -40 ) return props.img2mapCeiling(   map_index, sector, scenery, scrDatas.at((int)ScrPart::CeilingFgC));
-    else if ( y <  40 ) return props.img2mapBackground(map_index, sector, scenery, scrDatas.at((int)ScrPart::BackgroundC));
-    else                return props.img2mapFloor(     map_index, sector, scenery, scrDatas.at((int)ScrPart::FloorFgC));
+    if      ( y < -40 ) return props.img2mapCeiling(   sector, scrDatas.at((int)ScrPart::CeilingFgC));
+    else if ( y <  40 ) return props.img2mapBackground(sector, scrDatas.at((int)ScrPart::BackgroundC));
+    else                return props.img2mapFloor(     sector, scrDatas.at((int)ScrPart::FloorFgC));
 }
 
 void MainWindow::dndSave(QPoint p)
@@ -298,7 +298,20 @@ void MainWindow::bgLoad(void)
     scrHisF->save(scrDatas.at((int)ScrPart::FloorFgC));
 
     /* Temporary scenery will store modifications until they are saved */
-    *scenery = *(props.sceneries.at(props.maps.at(map_index)->scenery_index));
+    props.editor_scenery = *(props.sceneries.at(props.maps.at(map_index)->scenery_index));
+    props.editor_ceiling_idx = props.maps.at(map_index)->ceiling_idxs.at(sector);
+    props.editor_wall_idx    = props.maps.at(map_index)->wall_idxs.at(sector);
+    props.editor_floor_idx   = props.maps.at(map_index)->floor_idxs.at(sector);
+    int blockL = props.sector2blockL(sector);
+    for(int b=0; b<=2; b++)
+    {
+        props.editor_block_c_idxs[b]=props.maps.at(map_index)->block_c_idxs.at(blockL+b);
+        props.editor_block_f_idxs[b]=props.maps.at(map_index)->block_f_idxs.at(blockL+b);
+        props.editor_block_0_idxs[b]=props.maps.at(map_index)->block_0_idxs.at(blockL+b);
+        props.editor_block_1_idxs[b]=props.maps.at(map_index)->block_1_idxs.at(blockL+b);
+        props.editor_block_2_idxs[b]=props.maps.at(map_index)->block_2_idxs.at(blockL+b);
+        props.editor_block_3_idxs[b]=props.maps.at(map_index)->block_3_idxs.at(blockL+b);
+    }
     backgroundModified = false;
 }
 
@@ -306,7 +319,21 @@ void MainWindow::bgSave(void)
 {
     if(backgroundModified)
     {
-        *(props.sceneries.at(props.maps.at(map_index)->scenery_index)) = *scenery;
+        /* Save modifications made on temporary scenery */
+        *(props.sceneries.at(props.maps.at(map_index)->scenery_index)) = props.editor_scenery;
+        props.maps.at(map_index)->ceiling_idxs[sector] = props.editor_ceiling_idx;
+        props.maps.at(map_index)->wall_idxs[sector]    = props.editor_wall_idx;
+        props.maps.at(map_index)->floor_idxs[sector]   = props.editor_floor_idx;
+        int blockL = props.sector2blockL(sector);
+        for(int b=0; b<=2; b++)
+        {
+            props.maps.at(map_index)->block_c_idxs[blockL+b] = props.editor_block_c_idxs.at(b);
+            props.maps.at(map_index)->block_f_idxs[blockL+b] = props.editor_block_f_idxs.at(b);
+            props.maps.at(map_index)->block_0_idxs[blockL+b] = props.editor_block_0_idxs.at(b);
+            props.maps.at(map_index)->block_1_idxs[blockL+b] = props.editor_block_1_idxs.at(b);
+            props.maps.at(map_index)->block_2_idxs[blockL+b] = props.editor_block_2_idxs.at(b);
+            props.maps.at(map_index)->block_3_idxs[blockL+b] = props.editor_block_3_idxs.at(b);
+        }
         backgroundModified = false;
     }
 }
@@ -322,18 +349,22 @@ void MainWindow::bgSave(void)
 
 void MainWindow::refreshSceneryBrowsers(void)
 {
-    /* TODO: Move modifiedBgTiles and modifiedCnfTiles under Props ?
-     * That could be a better place for it, as Props updates map data...
-     */
-    while(!modifiedCnfTiles.isEmpty())
+    for(int i=0; i<SCENERY_BG_TILE_NUM; i++)
     {
-        int i = modifiedCnfTiles.takeLast();
-        /* TODO: generate GfxData for tile #i */
+        if(props.editor_modified_bg_tiles.at(i))
+        {
+            /* TODO: generate GfxData for tile #i */
+            props.editor_modified_bg_tiles.clearBit(i);
+        }
     }
-    while(!modifiedBgTiles.isEmpty())
+
+    for(int i=0; i<SCENERY_CNF_TILE_NUM; i++)
     {
-        int i = modifiedBgTiles.takeLast();
-        /* TODO: generate GfxData for tile #i */
+        if(props.editor_modified_cnf_tiles.at(i))
+        {
+            /* TODO: generate GfxData for tile #i */
+            props.editor_modified_cnf_tiles.clearBit(i);
+        }
     }
 
     if(charSetWindow) charSetWindow->refresh(props.map2imgCharSet(map_index));

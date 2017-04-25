@@ -9,8 +9,6 @@ MainWindow::MainWindow(QWidget *parent) :
     scrDatas((int)ScrPart::Size),
     map_index(0),
     sector(0),
-    modifiedBgTiles(SCENERY_BG_TILE_NUM),
-    modifiedCnfTiles(SCENERY_CNF_TILE_NUM),
     ui(new Ui::MainWindow)
 {
     /***   W I N D O W
@@ -148,11 +146,6 @@ MainWindow::MainWindow(QWidget *parent) :
     themeEditor   = nullptr;
     sceneryEditor = nullptr;
 
-    for(int i=0; i<SCENERY_BG_TILE_NUM; i++)  modifiedBgTiles.append(i);
-    for(int i=0; i<SCENERY_CNF_TILE_NUM; i++) modifiedCnfTiles.append(i);
-
-    scenery = new Scenery();
-
     QValidator *validator = new QIntValidator(0, 84, this);
     ui->sector->setValidator(validator);
     ui->sectorSlider->setMinimum(0);
@@ -220,6 +213,7 @@ void MainWindow::selectMap(int index)
     if(0 <= index)
     {
         map_index = index;
+        props.all_tiles_need_refresh();
         refreshEditor();
     }
 }

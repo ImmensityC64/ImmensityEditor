@@ -433,8 +433,35 @@ public:
 class Props
 {
 public:
-    explicit Props(){}
+    /* Main editor's temporary scenery and map */
+    Scenery editor_scenery;
+    quint8 editor_ceiling_idx;
+    quint8 editor_wall_idx;
+    quint8 editor_floor_idx;
+    QVector<quint8> editor_block_c_idxs;
+    QVector<quint8> editor_block_f_idxs;
+    QVector<quint8> editor_block_0_idxs;
+    QVector<quint8> editor_block_1_idxs;
+    QVector<quint8> editor_block_2_idxs;
+    QVector<quint8> editor_block_3_idxs;
+    QBitArray editor_modified_bg_tiles;
+    QBitArray editor_modified_cnf_tiles;
+
+    explicit Props() :
+        editor_ceiling_idx(0),
+        editor_wall_idx(0),
+        editor_floor_idx(0),
+        editor_block_c_idxs(3,0),
+        editor_block_f_idxs(3,0),
+        editor_block_0_idxs(3,0),
+        editor_block_1_idxs(3,0),
+        editor_block_2_idxs(3,0),
+        editor_block_3_idxs(3,0),
+        editor_modified_bg_tiles(SCENERY_BG_TILE_NUM, true),
+        editor_modified_cnf_tiles(SCENERY_CNF_TILE_NUM, true)
+    {}
     ~Props(){}
+
     QVector<Scenery*> sceneries;
     QVector<Theme*>   themes;
     QVector<Human*>   humans;
@@ -484,6 +511,12 @@ public:
     int sector2blockR(int sector) { return sector*3+2; }
     int block2sector(int block) { return block/3; }
 
+    void all_tiles_need_refresh()
+    {
+        for(int i=0; i<SCENERY_BG_TILE_NUM; i++) editor_modified_bg_tiles.setBit(i, true);
+        for(int i=0; i<SCENERY_CNF_TILE_NUM; i++) editor_modified_cnf_tiles.setBit(i, true);
+    }
+
     /* generate map editor's images from map data */
     shared_ptr<GfxData> map2imgCeiling(int map_index, int sector);
     shared_ptr<GfxData> map2imgFloor(int map_index, int sector);
@@ -493,11 +526,11 @@ public:
     shared_ptr<GfxData> map2imgCharSet(int map_index);
 
     /* generate map data from map editor's images */
-    bool img2mapCeiling(   int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img);
-    bool img2mapBackground(int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img);
-    bool img2mapFloor(     int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img);
+    bool img2mapCeiling(   int sector, shared_ptr<GfxData> img);
+    bool img2mapBackground(int sector, shared_ptr<GfxData> img);
+    bool img2mapFloor(     int sector, shared_ptr<GfxData> img);
 private:
-    bool img2mapCnf(int sector, Scenery *scenery, shared_ptr<GfxData> img, QVector<quint8> *block_idxs);
+    bool img2mapCnf(int sector, shared_ptr<GfxData> img, QVector<quint8> *block_idxs);
 
 }; /* Props */
 

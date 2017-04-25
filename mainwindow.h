@@ -128,9 +128,9 @@ private:
     CharSetW *charSetWindow;
 
     Props props;
-    Scenery *scenery;
     int map_index;
     int sector;
+    bool backgroundModified;
 
     /* Map Editor */
     QVector<QGraphicsRectItem *> scrBgs;
@@ -141,10 +141,6 @@ private:
     GfxHistory * scrHisB;
     GfxHistory * scrHisF;
     GfxRectItemSelection *selTgt; /* Selection target */
-
-    QVector<quint8> modifiedBgTiles;
-    QVector<quint8> modifiedCnfTiles;
-    bool backgroundModified;
 
     void initScrPart(ScrPart part, GfxData::Type type, int width, int height, GfxImage::Mode mode);
     void initScrRects();

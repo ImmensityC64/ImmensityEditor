@@ -1,19 +1,17 @@
 
 #include "map_general.h"
 
-bool Props::img2mapCeiling(int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img)
+bool Props::img2mapCeiling(int sector, shared_ptr<GfxData> img)
 {
-    Map *m = maps.at(map_index);
-    return img2mapCnf(sector, scenery, img, &m->block_c_idxs);
+    return img2mapCnf(sector, img, &editor_block_c_idxs);
 }
 
-bool Props::img2mapFloor(int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img)
+bool Props::img2mapFloor(int sector, shared_ptr<GfxData> img)
 {
-    Map *m = maps.at(map_index);
-    return img2mapCnf(sector, scenery, img, &m->block_f_idxs);
+    return img2mapCnf(sector, img, &editor_block_f_idxs);
 }
 
-bool Props::img2mapCnf(int sector, Scenery *scenery, shared_ptr<GfxData> img, QVector<quint8> *block_idxs)
+bool Props::img2mapCnf(int sector, shared_ptr<GfxData> img, QVector<quint8> *block_idxs)
 {
     bool ret = true;
 
@@ -22,7 +20,7 @@ bool Props::img2mapCnf(int sector, Scenery *scenery, shared_ptr<GfxData> img, QV
      * It will be dropped in case of failure (lack of resources to store new data).
      * It will be replaced with scenery got in paramaterers in case of success.
      */
-    Scenery *s = scenery->copy();
+    Scenery *s = editor_scenery.copy();
 
     int blockL = sector2blockL(sector);  /* index of left block of sector */
     QVector<CnfTile> tile_v(3);/* tiles being identified */
@@ -153,19 +151,17 @@ bool Props::img2mapCnf(int sector, Scenery *scenery, shared_ptr<GfxData> img, QV
 
     /* Everything was successful, we can save the changes */
     s->clearReservations();
-    *scenery = *s;
+    editor_scenery = *s;
     for(int b=0; b<=2; b++)
-        block_idxs->data()[blockL+b] = (quint8)identified_tiles_v[b];
+        block_idxs->data()[b] = (quint8)identified_tiles_v[b];
 
 IMG2MAP_CNF_EXIT:
     delete s;
     return ret;
 }
 
-bool Props::img2mapBackground(int map_index, int sector, Scenery *scenery, shared_ptr<GfxData> img)
+bool Props::img2mapBackground(int sector, shared_ptr<GfxData> img)
 {
-    Map *m = maps.at(map_index);
-
     bool ret = true;
 
     /* Temporary scenery
@@ -173,7 +169,7 @@ bool Props::img2mapBackground(int map_index, int sector, Scenery *scenery, share
      * It will be dropped in case of failure (lack of resources to store new data).
      * It will be replaced with scenery got in paramaterers in case of success.
      */
-    Scenery *s = scenery->copy();
+    Scenery *s = editor_scenery.copy();
 
     int blockL = sector2blockL(sector);  /* index of left block of sector */
     QVector<quint64> new_chr_v;
@@ -197,10 +193,10 @@ bool Props::img2mapBackground(int map_index, int sector, Scenery *scenery, share
     for(int b=blockL; b<=blockL+2; b++)
     {
         /* Note that freeBgTile() frees up unused characters automatically! */
-        s->freeBgTile( m->block_0_idxs[b] );
-        s->freeBgTile( m->block_1_idxs[b] );
-        s->freeBgTile( m->block_2_idxs[b] );
-        s->freeBgTile( m->block_3_idxs[b] );
+        s->freeBgTile( editor_block_0_idxs[b] );
+        s->freeBgTile( editor_block_1_idxs[b] );
+        s->freeBgTile( editor_block_2_idxs[b] );
+        s->freeBgTile( editor_block_3_idxs[b] );
     }
 
     /* Identify existing characters */
@@ -309,13 +305,13 @@ bool Props::img2mapBackground(int map_index, int sector, Scenery *scenery, share
 
     /* Everything was successful, we can save the changes */
     s->clearReservations();
-    *scenery = *s;
+    editor_scenery = *s;
     for(int b=0; b<=2; b++)
     {
-        m->block_0_idxs[blockL+b] = (quint8)identified_tiles_v[b][0];
-        m->block_1_idxs[blockL+b] = (quint8)identified_tiles_v[b][1];
-        m->block_2_idxs[blockL+b] = (quint8)identified_tiles_v[b][2];
-        m->block_3_idxs[blockL+b] = (quint8)identified_tiles_v[b][3];
+        editor_block_0_idxs[b] = (quint8)identified_tiles_v[b][0];
+        editor_block_1_idxs[b] = (quint8)identified_tiles_v[b][1];
+        editor_block_2_idxs[b] = (quint8)identified_tiles_v[b][2];
+        editor_block_3_idxs[b] = (quint8)identified_tiles_v[b][3];
     }
 
 IMG2MAP_BG_EXIT:

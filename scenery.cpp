@@ -564,7 +564,7 @@ void Scenery::calculateRealCharIndexes(void)
         {
             if(!chr_vector.at(i).usage && chr_vector.at(i).cnf_usage) cnt++;
         }
-        cerr << cnt << " characters has cnf_usage while they are not used" << endl;
+        cerr << cnt << " characters have cnf_usage while they are not used" << endl;
     }
 }
 
