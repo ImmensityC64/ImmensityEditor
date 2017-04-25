@@ -55,6 +55,8 @@ void Scenery::clearUsage()
 
 Scenery &Scenery::operator=(const Scenery& other)
 {
+    name = other.name;
+
     chr_vector      = other.chr_vector;
     bg_tile_vector  = other.bg_tile_vector;
     cnf_tile_vector = other.cnf_tile_vector;

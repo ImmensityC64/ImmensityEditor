@@ -150,9 +150,8 @@ private:
     void initScrBgs();
     void initScrBgColors();
 
-    void bgColorRefresh(void);
-    void bgLoad(void);
-    void bgSave(void);
+    void editorImgLoad(void);
+    void editorImgSave(void);
 
     void refreshSceneryBrowsers(void);
 

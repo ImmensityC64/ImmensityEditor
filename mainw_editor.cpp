@@ -250,11 +250,11 @@ void MainWindow::dndSave(QPoint p)
     else                { editor_img_f_modified=true; scrHisF->save(scrDatas.at((int)ScrPart::FloorFgC));    }
 }
 
-/****    B A C K G R O U N D
+/****    E D I T O R   I M G
  ******************************************************************************/
 
 /* Generate and load background images from map data. */
-void MainWindow::bgLoad(void)
+void MainWindow::editorImgLoad(void)
 {
     /* TODO: Check if there is unsaved modification.
      * E.g. if current theme is changed, this function is called and changes in bg image will be lost.
@@ -317,7 +317,7 @@ void MainWindow::bgLoad(void)
     editor_img_s_modified = false;
 }
 
-void MainWindow::bgSave(void)
+void MainWindow::editorImgSave(void)
 {
     bool save_scenery=false;
     int blockL = props.sector2blockL(sector);
@@ -396,7 +396,7 @@ void MainWindow::refreshSceneryBrowsers(void)
     {
         if(props.editor_modified_bg_tiles.at(i))
         {
-            /* TODO: generate GfxData for tile #i */
+            gvSceneryBgTiles.setDataAt(i, props.map2imgBgTile(map_index, i));
             props.editor_modified_bg_tiles.clearBit(i);
         }
     }
@@ -405,7 +405,7 @@ void MainWindow::refreshSceneryBrowsers(void)
     {
         if(props.editor_modified_cnf_tiles.at(i))
         {
-            /* TODO: generate GfxData for tile #i */
+            gvSceneryCnfTiles.setDataAt(i, props.map2imgCnfTile(map_index, i));
             props.editor_modified_cnf_tiles.clearBit(i);
         }
     }

@@ -274,42 +274,42 @@ void MainWindow::sceneryChanged(int i)
 
 void MainWindow::incSector()
 {
-    bgSave();
+    editorImgSave();
     props.sectorInc(sector);
     refreshEditor();
 }
 
 void MainWindow::decSector()
 {
-    bgSave();
+    editorImgSave();
     props.sectorDec(sector);
     refreshEditor();
 }
 
 void MainWindow::setSector(int s)
 {
-    bgSave();
+    editorImgSave();
     sector = s;
     refreshEditor();
 }
 
 void MainWindow::setSector(QString s)
 {
-    bgSave();
+    editorImgSave();
     sector = s.toInt();
     refreshEditor();
 }
 
 void MainWindow::saveModifications()
 {
-    bgSave();
+    editorImgSave();
     refreshEditor();
 }
 
 void MainWindow::refreshEditor()
 {
     initScrBgColors();
-    bgLoad();
+    editorImgLoad();
     refreshSceneryBrowsers();
     ui->checkDelete->setChecked(false);
     enableDeletBtn(false);
