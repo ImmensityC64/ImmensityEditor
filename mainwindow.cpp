@@ -94,7 +94,10 @@ MainWindow::MainWindow(QWidget *parent) :
     scrHisB = new GfxHistory(scrDatas.at((int)ScrPart::BackgroundC));
     scrHisF = new GfxHistory(scrDatas.at((int)ScrPart::FloorFgC));
 
-    backgroundModified = false;
+    editor_img_c_modified = false;
+    editor_img_b_modified = false;
+    editor_img_f_modified = false;
+    editor_img_s_modified = false;
 
     initScrRects();
     initScrBgs();

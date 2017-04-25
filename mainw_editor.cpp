@@ -245,10 +245,9 @@ bool MainWindow::dndTest(QPoint p)
 void MainWindow::dndSave(QPoint p)
 {
     int y = p.y();
-    if      ( y < -40 ) scrHisC->save(scrDatas.at((int)ScrPart::CeilingFgC));
-    else if ( y <  40 ) scrHisB->save(scrDatas.at((int)ScrPart::BackgroundC));
-    else                scrHisF->save(scrDatas.at((int)ScrPart::FloorFgC));
-    backgroundModified = true;
+    if      ( y < -40 ) { editor_img_c_modified=true; scrHisC->save(scrDatas.at((int)ScrPart::CeilingFgC));  }
+    else if ( y <  40 ) { editor_img_b_modified=true; scrHisB->save(scrDatas.at((int)ScrPart::BackgroundC)); }
+    else                { editor_img_f_modified=true; scrHisF->save(scrDatas.at((int)ScrPart::FloorFgC));    }
 }
 
 /****    B A C K G R O U N D
@@ -312,29 +311,73 @@ void MainWindow::bgLoad(void)
         props.editor_block_2_idxs[b]=props.maps.at(map_index)->block_2_idxs.at(blockL+b);
         props.editor_block_3_idxs[b]=props.maps.at(map_index)->block_3_idxs.at(blockL+b);
     }
-    backgroundModified = false;
+    editor_img_c_modified = false;
+    editor_img_b_modified = false;
+    editor_img_f_modified = false;
+    editor_img_s_modified = false;
 }
 
 void MainWindow::bgSave(void)
 {
-    if(backgroundModified)
+    bool save_scenery=false;
+    int blockL = props.sector2blockL(sector);
+
+    if(editor_img_c_modified)
     {
-        /* Save modifications made on temporary scenery */
-        *(props.sceneries.at(props.maps.at(map_index)->scenery_index)) = props.editor_scenery;
+        /* Mark tiles which need to be refreshed in browsers */
+        for(int b=0; b<=2; b++)
+        {
+            props.editor_modified_cnf_tiles.setBit( props.editor_block_c_idxs.at(b) , true);
+            props.editor_modified_cnf_tiles.setBit( props.maps.at(map_index)->block_c_idxs.at(blockL+b) , true);
+        }
+        save_scenery=true;
+        editor_img_c_modified=false;
+    }
+
+    if(editor_img_f_modified)
+    {
+        /* Mark tiles which need to be refreshed in browsers */
+        for(int b=0; b<=2; b++)
+        {
+            props.editor_modified_cnf_tiles.setBit( props.editor_block_f_idxs.at(b) , true);
+            props.editor_modified_cnf_tiles.setBit( props.maps.at(map_index)->block_f_idxs.at(blockL+b) , true);
+        }
+        save_scenery=true;
+        editor_img_f_modified=false;
+    }
+
+    if(editor_img_b_modified)
+    {
+        /* Mark tiles which need to be refreshed in browsers */
+        for(int b=0; b<=2; b++)
+        {
+            props.editor_modified_bg_tiles.setBit( props.editor_block_0_idxs.at(b) , true);
+            props.editor_modified_bg_tiles.setBit( props.editor_block_1_idxs.at(b) , true);
+            props.editor_modified_bg_tiles.setBit( props.editor_block_2_idxs.at(b) , true);
+            props.editor_modified_bg_tiles.setBit( props.editor_block_3_idxs.at(b) , true);
+            props.editor_modified_bg_tiles.setBit( props.maps.at(map_index)->block_0_idxs.at(blockL+b) , true);
+            props.editor_modified_bg_tiles.setBit( props.maps.at(map_index)->block_1_idxs.at(blockL+b) , true);
+            props.editor_modified_bg_tiles.setBit( props.maps.at(map_index)->block_2_idxs.at(blockL+b) , true);
+            props.editor_modified_bg_tiles.setBit( props.maps.at(map_index)->block_3_idxs.at(blockL+b) , true);
+        }
+        save_scenery=true;
+        editor_img_b_modified=false;
+    }
+
+    if(editor_img_s_modified)
+    {
+        /* Save sprites */
         props.maps.at(map_index)->ceiling_idxs[sector] = props.editor_ceiling_idx;
         props.maps.at(map_index)->wall_idxs[sector]    = props.editor_wall_idx;
         props.maps.at(map_index)->floor_idxs[sector]   = props.editor_floor_idx;
-        int blockL = props.sector2blockL(sector);
-        for(int b=0; b<=2; b++)
-        {
-            props.maps.at(map_index)->block_c_idxs[blockL+b] = props.editor_block_c_idxs.at(b);
-            props.maps.at(map_index)->block_f_idxs[blockL+b] = props.editor_block_f_idxs.at(b);
-            props.maps.at(map_index)->block_0_idxs[blockL+b] = props.editor_block_0_idxs.at(b);
-            props.maps.at(map_index)->block_1_idxs[blockL+b] = props.editor_block_1_idxs.at(b);
-            props.maps.at(map_index)->block_2_idxs[blockL+b] = props.editor_block_2_idxs.at(b);
-            props.maps.at(map_index)->block_3_idxs[blockL+b] = props.editor_block_3_idxs.at(b);
-        }
-        backgroundModified = false;
+        save_scenery=true;
+        editor_img_s_modified=false;
+    }
+
+    if(save_scenery)
+    {
+        /* Save modifications made on temporary scenery */
+        *(props.sceneries.at(props.maps.at(map_index)->scenery_index)) = props.editor_scenery;
     }
 }
 
