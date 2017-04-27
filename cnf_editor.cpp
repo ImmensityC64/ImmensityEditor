@@ -1,15 +1,15 @@
 
 #include "editor.h"
 
-CnFSketchEditor::CnFSketchEditor(shared_ptr<GfxData> init, int index, QWidget *parent) :
+CnfSketchEditor::CnfSketchEditor(shared_ptr<GfxData> init, int index, QWidget *parent) :
     Editor(init, index, parent),
-    wui(new Ui::CnFSketchEditorWidget)
+    wui(new Ui::CnfSketchEditorWidget)
 {
     spec = new QWidget(this);
     wui->setupUi(spec);
     addSpecWidget();
 
-    setWindowTitle("CnF Tile Sketch Editor");
+    setWindowTitle("CnF Sketch Editor");
 
     /* Colors */
 
@@ -32,7 +32,7 @@ CnFSketchEditor::CnFSketchEditor(shared_ptr<GfxData> init, int index, QWidget *p
 
     ui->checkFineGrid->setChecked(true);
 }
-CnFSketchEditor::~CnFSketchEditor()
+CnfSketchEditor::~CnfSketchEditor()
 {
     delete wui;
     delete spec;
@@ -43,41 +43,62 @@ CnFSketchEditor::~CnFSketchEditor()
 
 /* Receiving selection from color dialog windows */
 
-void CnFSketchEditor::receiveColor(quint8 i)
+void CnfSketchEditor::receiveColor(quint8 i)
 {
     data->setColor((int)GfxData::ColorIndex::Color, i);
     his->save(data);
     img->refresh();
 }
-void CnFSketchEditor::receiveECM0(quint8 i)
+void CnfSketchEditor::receiveECM0(quint8 i)
 {
     data->setColor((int)GfxData::ColorIndex::ECM0, i);
     his->save(data);
     img->refresh();
 }
-void CnFSketchEditor::receiveECM1(quint8 i)
+void CnfSketchEditor::receiveECM1(quint8 i)
 {
     data->setColor((int)GfxData::ColorIndex::ECM1, i);
     his->save(data);
     img->refresh();
 }
-void CnFSketchEditor::receiveECM2(quint8 i)
+void CnfSketchEditor::receiveECM2(quint8 i)
 {
     data->setColor((int)GfxData::ColorIndex::ECM2, i);
     his->save(data);
     img->refresh();
 }
-void CnFSketchEditor::receiveECM3(quint8 i)
+void CnfSketchEditor::receiveECM3(quint8 i)
 {
     data->setColor((int)GfxData::ColorIndex::ECM3, i);
     his->save(data);
     img->refresh();
 }
-void CnFSketchEditor::refreshColorButtons(void)
+void CnfSketchEditor::refreshColorButtons(void)
 {
     wui->dispColor->buttonColor(data->color((int)GfxData::ColorIndex::Color));
     wui->dispECM0->buttonColor(data->color((int)GfxData::ColorIndex::ECM0));
     wui->dispECM1->buttonColor(data->color((int)GfxData::ColorIndex::ECM1));
     wui->dispECM2->buttonColor(data->color((int)GfxData::ColorIndex::ECM2));
     wui->dispECM3->buttonColor(data->color((int)GfxData::ColorIndex::ECM3));
+}
+
+/****    T I L E   E D I T O R
+ ******************************************************************************/
+
+CnfTileEditor::CnfTileEditor(shared_ptr<GfxData> init, int index, QWidget *parent) :
+    CnfSketchEditor(init, index, parent)
+{
+    setWindowTitle("Cnf Tile Editor");
+}
+
+CnfTileEditor::~CnfTileEditor() {}
+
+void CnfTileEditor::apply()
+{
+
+}
+
+void CnfTileEditor::revert()
+{
+
 }

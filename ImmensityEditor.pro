@@ -29,13 +29,10 @@ SOURCES += main.cpp\
     gfx_view.cpp \
     editor.cpp \
     gfx_vector.cpp \
-    sketch_editor.cpp \
-    cnfsketch_editor.cpp \
     menu.cpp \
     serialize.cpp \
     scenery.cpp \
     map.cpp \
-    mainw_editor.cpp \
     map_settings.cpp \
     grid.cpp \
     theme_editor.cpp \
@@ -43,7 +40,10 @@ SOURCES += main.cpp\
     props_map2img.cpp \
     props_img2map.cpp \
     char_set_w.cpp \
-    props.cpp
+    props.cpp \
+    cnf_editor.cpp \
+    bg_editor.cpp \
+    main_editor.cpp
 
 HEADERS  += general.h \
     theme_editor.h \
@@ -69,12 +69,12 @@ FORMS    += mainwindow.ui \
     color_dialog.ui \
     editor.ui \
     sprite_editor.ui \
-    sketch_editor.ui \
-    cnfsketch_editor.ui \
     map_settings.ui \
     new_dialog.ui \
     theme_editor.ui \
     scenery_editor.ui \
-    char_set_w.ui
+    char_set_w.ui \
+    bg_editor.ui \
+    cnf_editor.ui
 
 OTHER_FILES +=

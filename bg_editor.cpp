@@ -1,15 +1,15 @@
 
 #include "editor.h"
 
-SketchEditor::SketchEditor(shared_ptr<GfxData> init, int index, QWidget *parent) :
+BgSketchEditor::BgSketchEditor(shared_ptr<GfxData> init, int index, QWidget *parent) :
     Editor(init, index, parent),
-    wui(new Ui::SketchEditorWidget)
+    wui(new Ui::BgSketchEditorWidget)
 {
     spec = new QWidget(this);
     wui->setupUi(spec);
     addSpecWidget();
 
-    setWindowTitle("Tile Sketch Editor");
+    setWindowTitle("Bg Sketch Editor");
 
     /* Colors */
 
@@ -31,7 +31,7 @@ SketchEditor::SketchEditor(shared_ptr<GfxData> init, int index, QWidget *parent)
 
     ui->checkFineGrid->setChecked(true);
 }
-SketchEditor::~SketchEditor()
+BgSketchEditor::~BgSketchEditor()
 {
     delete wui;
     delete spec;
@@ -42,34 +42,55 @@ SketchEditor::~SketchEditor()
 
 /* Receiving selection from color dialog windows */
 
-void SketchEditor::receiveColor(quint8 i)
+void BgSketchEditor::receiveColor(quint8 i)
 {
     data->setColor((int)GfxData::ColorIndex::Color, i);
     his->save(data);
     img->refresh();
 }
-void SketchEditor::receiveAlpha(quint8 i)
+void BgSketchEditor::receiveAlpha(quint8 i)
 {
     data->setColor((int)GfxData::ColorIndex::Backg, i);
     his->save(data);
     img->refresh();
 }
-void SketchEditor::receiveComm0(quint8 i)
+void BgSketchEditor::receiveComm0(quint8 i)
 {
     data->setColor((int)GfxData::ColorIndex::Comm0, i);
     his->save(data);
     img->refresh();
 }
-void SketchEditor::receiveComm1(quint8 i)
+void BgSketchEditor::receiveComm1(quint8 i)
 {
     data->setColor((int)GfxData::ColorIndex::Comm1, i);
     his->save(data);
     img->refresh();
 }
-void SketchEditor::refreshColorButtons(void)
+void BgSketchEditor::refreshColorButtons(void)
 {
     wui->dispColor->buttonColor(data->color((int)GfxData::ColorIndex::Color));
     wui->dispAlpha->buttonColor(data->color((int)GfxData::ColorIndex::Backg));
     wui->dispComm0->buttonColor(data->color((int)GfxData::ColorIndex::Comm0));
     wui->dispComm1->buttonColor(data->color((int)GfxData::ColorIndex::Comm1));
+}
+
+/****    T I L E   E D I T O R
+ ******************************************************************************/
+
+BgTileEditor::BgTileEditor(shared_ptr<GfxData> init, int index, QWidget *parent) :
+    BgSketchEditor(init, index, parent)
+{
+    setWindowTitle("Bg Tile Editor");
+}
+
+BgTileEditor::~BgTileEditor() {}
+
+void BgTileEditor::apply()
+{
+
+}
+
+void BgTileEditor::revert()
+{
+
 }

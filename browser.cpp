@@ -240,12 +240,32 @@ void Browser::openEditor(int index)
         }
         case GfxData::Type::Sketch:
         {
-            e = (Editor *)new SketchEditor(gv->dataAt(index), index);
+            if(GfxVector::Scope::Sketches == gv->scope())
+            {
+                e = (Editor *)new BgSketchEditor(gv->dataAt(index), index);
+                connect(e, SIGNAL(changesApplied(int)), this, SLOT(refreshTile(int)));
+            }
+            else
+            {
+                e = (Editor *)new BgTileEditor(gv->dataAt(index), index);
+                /* TODO Scenery tiles follow different method on apply - changesApplied(int,shared_ptr<GfxData>) */
+                cout << "TODO bg tile editor apply" << endl;
+            }
             break;
         }
         case GfxData::Type::CnfSketch:
         {
-            e = (Editor *)new CnFSketchEditor(gv->dataAt(index), index);
+            if(GfxVector::Scope::Sketches == gv->scope())
+            {
+                e = (Editor *)new CnfSketchEditor(gv->dataAt(index), index);
+                connect(e, SIGNAL(changesApplied(int)), this, SLOT(refreshTile(int)));
+            }
+            else
+            {
+                e = (Editor *)new CnfTileEditor(gv->dataAt(index), index);
+                /* TODO Scenery tiles follow different method on apply - changesApplied(int,shared_ptr<GfxData>) */
+                cout << "TODO cnf tile editor apply" << endl;
+            }
             break;
         }
         default:
@@ -254,7 +274,6 @@ void Browser::openEditor(int index)
         e->setAttribute(Qt::WA_DeleteOnClose, true);
         e->show();
         connect(e, SIGNAL(destroyed(int)), gv, SLOT(closeEditorAt(int)));
-        connect(e, SIGNAL(changesApplied(int)), this, SLOT(refreshTile(int)));
         gv->setEditorAt(index, e);
     }
 }

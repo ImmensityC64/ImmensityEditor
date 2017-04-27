@@ -72,6 +72,8 @@ private slots:
     void saveModifications();
     void refreshEditor();
 
+    void editorMousePressEvent(QPoint p, int /* unused */);
+
 public slots:
     void selectMap(int index);
     void mapSettingsChanged();

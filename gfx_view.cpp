@@ -61,9 +61,9 @@ void GfxEditorView::wheelEvent(QWheelEvent *event)
 
 void GfxEditorView::dragEnterEvent(QDragEnterEvent *event)
 {
-    if (event->mimeData()->hasFormat(mimeTypeSketch))
+    if (event->mimeData()->hasFormat(mimeTypeGfxData))
     {
-        QByteArray ba(event->mimeData()->data(mimeTypeSketch));
+        QByteArray ba(event->mimeData()->data(mimeTypeGfxData));
         emit gfxEditorViewEnterEvent(ba, QPoint(
              (int)mapToScene(event->pos()).x(),
              (int)mapToScene(event->pos()).y() ));
@@ -73,9 +73,9 @@ void GfxEditorView::dragEnterEvent(QDragEnterEvent *event)
 
 void GfxEditorView::dragMoveEvent(QDragMoveEvent *event)
 {
-    if (event->mimeData()->hasFormat(mimeTypeSketch))
+    if (event->mimeData()->hasFormat(mimeTypeGfxData))
     {
-        QByteArray ba(event->mimeData()->data(mimeTypeSketch));
+        QByteArray ba(event->mimeData()->data(mimeTypeGfxData));
         emit gfxEditorViewDrawEvent(ba, QPoint(
              (int)mapToScene(event->pos()).x(),
              (int)mapToScene(event->pos()).y() ));
@@ -90,9 +90,9 @@ void GfxEditorView::dragLeaveEvent(QDragLeaveEvent * /* unused */)
 
 void GfxEditorView::dropEvent(QDropEvent *event)
 {
-    if (event->mimeData()->hasFormat(mimeTypeSketch))
+    if (event->mimeData()->hasFormat(mimeTypeGfxData))
     {
-        QByteArray ba(event->mimeData()->data(mimeTypeSketch));
+        QByteArray ba(event->mimeData()->data(mimeTypeGfxData));
         emit gfxEditorViewDropEvent(ba, QPoint(
              (int)mapToScene(event->pos()).x(),
              (int)mapToScene(event->pos()).y() ));

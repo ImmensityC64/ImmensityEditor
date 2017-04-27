@@ -123,6 +123,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->view, SIGNAL(gfxEditorViewDrawEvent (QByteArray&,QPoint)), this, SLOT(dndDraw (QByteArray&,QPoint)));
     connect(ui->view, SIGNAL(gfxEditorViewDropEvent (QByteArray&,QPoint)), this, SLOT(dndDrop (QByteArray&,QPoint)));
     connect(ui->view, SIGNAL(gfxEditorViewLeaveEvent()), this, SLOT(dndLeave()));
+    connect(ui->view, SIGNAL(gfxEditorViewPressEvent(QPoint,int)), this, SLOT(editorMousePressEvent(QPoint,int)));
 
     /***   G R I D
      ******************************************************************************/

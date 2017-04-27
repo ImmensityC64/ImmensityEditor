@@ -250,9 +250,6 @@ public:
 
 }; /* class Icon */
 
-const QString mimeTypeSprite="immSprite";
-const QString mimeTypeWall="immWall";
-const QString mimeTypeSketch="immSketch";
-const QString mimeTypeCnFSketch="immCnFSketch";
+const QString mimeTypeGfxData="immGfxData";
 
 #endif // GENERAL_H

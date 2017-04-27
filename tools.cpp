@@ -140,7 +140,7 @@ void GfxEditorToolSelect::gfxEditorToolMoveEvent(QPoint p)
             QDrag *drag = new QDrag(this);
             QMimeData *mimeData = new QMimeData;
 
-            mimeData->setData(mimeTypeSketch,img->exportDataFromSelection(start));
+            mimeData->setData(mimeTypeGfxData,img->exportDataFromSelection(start));
             drag->setMimeData(mimeData);
             /* TODO: Tell 'img' to generate pixmap from selection */
             //drag->setPixmap(iconPixmap);

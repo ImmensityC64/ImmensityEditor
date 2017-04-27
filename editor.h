@@ -3,8 +3,8 @@
 
 #include "ui_editor.h"
 #include "ui_sprite_editor.h"
-#include "ui_sketch_editor.h"
-#include "ui_cnfsketch_editor.h"
+#include "ui_bg_sketch_editor.h"
+#include "ui_cnf_sketch_editor.h"
 #include "color_dialog.h"
 #include "gfx.h"
 #include "tools.h"
@@ -66,6 +66,7 @@ public slots:
 signals:
     void destroyed(int index);
     void changesApplied(int i);
+    void changesApplied(int i, shared_ptr<GfxData> data);
 };
 
 class SpriteEditor : public Editor
@@ -87,15 +88,15 @@ public slots:
     void changeImgDisplayMode(int i);
 };
 
-class SketchEditor : public Editor
+class BgSketchEditor : public Editor
 {
     Q_OBJECT
 protected:
-    Ui::SketchEditorWidget *wui;
+    Ui::BgSketchEditorWidget *wui;
 
 public:
-    explicit SketchEditor(shared_ptr<GfxData> init, int index, QWidget *parent = 0);
-    virtual ~SketchEditor();
+    explicit BgSketchEditor(shared_ptr<GfxData> init, int index, QWidget *parent = 0);
+    virtual ~BgSketchEditor();
 
 public slots:
     void receiveColor(quint8 i);
@@ -105,15 +106,26 @@ public slots:
     void refreshColorButtons(void);
 };
 
-class CnFSketchEditor : public Editor
+class BgTileEditor : public BgSketchEditor
+{
+    Q_OBJECT
+public:
+    explicit BgTileEditor(shared_ptr<GfxData> init, int index, QWidget *parent = 0);
+    virtual ~BgTileEditor();
+public slots:
+    void apply(void);
+    void revert(void);
+};
+
+class CnfSketchEditor : public Editor
 {
     Q_OBJECT
 protected:
-    Ui::CnFSketchEditorWidget *wui;
+    Ui::CnfSketchEditorWidget *wui;
 
 public:
-    explicit CnFSketchEditor(shared_ptr<GfxData> init, int index, QWidget *parent = 0);
-    virtual ~CnFSketchEditor();
+    explicit CnfSketchEditor(shared_ptr<GfxData> init, int index, QWidget *parent = 0);
+    virtual ~CnfSketchEditor();
 
 public slots:
     void receiveColor(quint8 i);
@@ -122,6 +134,17 @@ public slots:
     void receiveECM2(quint8 i);
     void receiveECM3(quint8 i);
     void refreshColorButtons(void);
+};
+
+class CnfTileEditor : public CnfSketchEditor
+{
+    Q_OBJECT
+public:
+    explicit CnfTileEditor(shared_ptr<GfxData> init, int index, QWidget *parent = 0);
+    virtual ~CnfTileEditor();
+public slots:
+    void apply(void);
+    void revert(void);
 };
 
 #endif // EDITOR_H

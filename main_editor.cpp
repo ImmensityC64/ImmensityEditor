@@ -250,6 +250,12 @@ void MainWindow::dndSave(QPoint p)
     else                { editor_img_f_modified=true; scrHisF->save(scrDatas.at((int)ScrPart::FloorFgC));    }
 }
 
+void MainWindow::editorMousePressEvent(QPoint p, int /* unused */)
+{
+    /* TODO open editor */
+    cout << "TODO open editor" << endl;
+}
+
 /****    E D I T O R   I M G
  ******************************************************************************/
 
