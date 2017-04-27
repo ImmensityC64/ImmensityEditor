@@ -529,6 +529,8 @@ public:
     bool img2mapCeiling(   int sector, shared_ptr<GfxData> img);
     bool img2mapBackground(int sector, shared_ptr<GfxData> img);
     bool img2mapFloor(     int sector, shared_ptr<GfxData> img);
+    bool img2cnfTile(quint8 index, shared_ptr<GfxData> img);
+    bool img2bgTile( quint8 index, shared_ptr<GfxData> img);
 private:
     bool img2mapCnf(int sector, shared_ptr<GfxData> img, QVector<quint8> *block_idxs);
 

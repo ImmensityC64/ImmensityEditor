@@ -429,8 +429,8 @@ void Scenery::freeCnfTile(quint8 ind)
 
             CnfTile tile = cnf_tile_vector.at(ind).tile;
             for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
-                for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
-                    freeCnfChar(tile.char_idxs.at(row).at(col));
+            for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
+                freeCnfChar(tile.char_idxs.at(row).at(col));
         }
     }
 
