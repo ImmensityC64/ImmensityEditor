@@ -318,3 +318,46 @@ void MainWindow::refreshEditor()
     ui->sector->setText(s);
     ui->sectorSlider->setSliderPosition(sector);
 }
+
+void MainWindow::openSectorCEditor()
+{
+    if(nullptr == sectorCEditor)
+    {
+        sectorCEditor = new CnfTileEditor(props.map2imgCeiling(map_index, sector));
+        sectorCEditor->setAttribute(Qt::WA_DeleteOnClose, true);
+        sectorCEditor->show();
+        connect(sectorCEditor, SIGNAL(destroyed()), this, SLOT(closeSectorCEditor()));
+    }
+    /* ... or activate the already existing one */
+    else sectorCEditor->activateWindow();
+}
+
+void MainWindow::openSectorBEditor()
+{
+    if(nullptr == sectorBEditor)
+    {
+        sectorBEditor = new BgTileEditor(props.map2imgBackground(map_index, sector));
+        sectorBEditor->setAttribute(Qt::WA_DeleteOnClose, true);
+        sectorBEditor->show();
+        connect(sectorBEditor, SIGNAL(destroyed()), this, SLOT(closeSectorBEditor()));
+    }
+    /* ... or activate the already existing one */
+    else sectorBEditor->activateWindow();
+}
+
+void MainWindow::openSectorFEditor()
+{
+    if(nullptr == sectorFEditor)
+    {
+        sectorFEditor = new CnfTileEditor(props.map2imgFloor(map_index, sector));
+        sectorFEditor->setAttribute(Qt::WA_DeleteOnClose, true);
+        sectorFEditor->show();
+        connect(sectorFEditor, SIGNAL(destroyed()), this, SLOT(closeSectorFEditor()));
+    }
+    /* ... or activate the already existing one */
+    else sectorFEditor->activateWindow();
+}
+
+void MainWindow::closeSectorCEditor() { sectorCEditor = nullptr; }
+void MainWindow::closeSectorBEditor() { sectorBEditor = nullptr; }
+void MainWindow::closeSectorFEditor() { sectorFEditor = nullptr; }

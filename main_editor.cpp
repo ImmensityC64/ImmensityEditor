@@ -252,8 +252,12 @@ void MainWindow::dndSave(QPoint p)
 
 void MainWindow::editorMousePressEvent(QPoint p, int /* unused */)
 {
-    /* TODO open editor */
-    cout << "TODO open editor" << endl;
+    int y = p.y();
+    if      ( y < -48 ) { openSectorCEditor(); }
+    else if ( y < -32 ) { cout << "TODO open ceiling sprite editor" << endl; /* TODO */ }
+    else if ( y <  32 ) { openSectorBEditor(); }
+    else if ( y <  48 ) { cout << "TODO open floor sprite editor" << endl; /* TODO */ }
+    else                { openSectorFEditor(); }
 }
 
 /****    E D I T O R   I M G

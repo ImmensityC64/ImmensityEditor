@@ -110,7 +110,7 @@ class BgTileEditor : public BgSketchEditor
 {
     Q_OBJECT
 public:
-    explicit BgTileEditor(shared_ptr<GfxData> init, int index, QWidget *parent = 0);
+    explicit BgTileEditor(shared_ptr<GfxData> init, int index = 0, QWidget *parent = 0);
     virtual ~BgTileEditor();
 public slots:
     void apply(void);
@@ -140,7 +140,7 @@ class CnfTileEditor : public CnfSketchEditor
 {
     Q_OBJECT
 public:
-    explicit CnfTileEditor(shared_ptr<GfxData> init, int index, QWidget *parent = 0);
+    explicit CnfTileEditor(shared_ptr<GfxData> init, int index = 0, QWidget *parent = 0);
     virtual ~CnfTileEditor();
 public slots:
     void apply(void);

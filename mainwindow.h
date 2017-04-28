@@ -60,6 +60,14 @@ private slots:
     void closeSceneryEditor();
     void closeThemeEditor();
 
+    void openSectorCEditor(); /* edit ceiling tiles */
+    void openSectorBEditor(); /* edit background tiles */
+    void openSectorFEditor(); /* edit floor tiles */
+
+    void closeSectorCEditor();
+    void closeSectorBEditor();
+    void closeSectorFEditor();
+
     void createNew();
     void enableDeletBtn(bool b);
     void deleteMap();
@@ -127,8 +135,6 @@ private:
     GfxVector gvSceneryBgTiles;
     GfxVector gvSceneryCnfTiles;
 
-    CharSetW *charSetWindow;
-
     Props props;
     int map_index;
     int sector;
@@ -174,8 +180,14 @@ private:
     void dndSave(QPoint p);
 
     /* Other Editors */
+    CnfTileEditor* sectorCEditor; /* edit ceiling tiles */
+    BgTileEditor*  sectorBEditor; /* edit background tiles */
+    CnfTileEditor* sectorFEditor; /* edit floor tiles */
+
     SceneryEditor* sceneryEditor;
     ThemeEditor* themeEditor;
+
+    CharSetW *charSetWindow;
 };
 
 #endif // MAINWINDOW_H
