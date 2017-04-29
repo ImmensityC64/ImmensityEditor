@@ -96,6 +96,11 @@ public slots:
     void dndDrop (QByteArray &src, QPoint p);
     void dndLeave(void);
 
+    void openProject(void);
+    void saveProject(void);
+    void saveAsProject(void);
+    void loadProject(void);
+
 private:
     Ui::MainWindow *ui;
 
@@ -120,11 +125,11 @@ private:
     void loadMapVector(QDataStream &in);
     void saveMapVector(QDataStream &out);
 
-    bool openBrowser(GfxVector *gv);
-
-    void resetGfxData(void);
     void loadGfxData(void);
     void saveGfxData(void);
+    void resetGfxData(void);
+
+    bool openBrowser(GfxVector *gv);
 
     GfxVector gvSketchesCeilings;
     GfxVector gvSketchesFloors;

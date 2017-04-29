@@ -44,6 +44,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     /***   M E N U
      ******************************************************************************/
+    connect(ui->actionFileOpen,   SIGNAL(triggered()), this, SLOT(openProject())  );
+    connect(ui->actionFileSave,   SIGNAL(triggered()), this, SLOT(saveProject())  );
+    connect(ui->actionFileSaveAs, SIGNAL(triggered()), this, SLOT(saveAsProject()));
+    connect(ui->actionFileRevert, SIGNAL(triggered()), this, SLOT(loadProject())  );
+
     connect(ui->actionEditSceneries,    SIGNAL(triggered()), this, SLOT(openEditSceneries())    );
     connect(ui->actionEditThemes,       SIGNAL(triggered()), this, SLOT(openEditThemes())       );
 

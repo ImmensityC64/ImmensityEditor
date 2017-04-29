@@ -3,6 +3,32 @@
 
 #define ENABLE_SAVE 1
 
+void MainWindow::openProject(void)
+{
+    /* TODO open file browser */
+    loadGfxData();
+    refreshEditor();
+}
+
+void MainWindow::saveProject(void)
+{
+    /* TODO check modifications have not been applied yet */
+    saveGfxData();
+}
+
+void MainWindow::saveAsProject(void)
+{
+    /* TODO check modifications have not been applied yet */
+    /* TODO open file browser */
+    saveGfxData();
+}
+
+void MainWindow::loadProject(void)
+{
+    /* TODO are you sure? */
+    loadGfxData();
+}
+
 void MainWindow::loadGfxData(void)
 {
     if(projFile->open(QIODevice::ReadOnly))
