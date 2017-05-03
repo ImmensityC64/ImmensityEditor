@@ -388,6 +388,19 @@ void MainWindow::editorImgSave(void)
     {
         /* Save modifications made on temporary scenery */
         *(props.sceneries.at(props.maps.at(map_index)->scenery_index)) = props.editor_scenery;
+        props.maps.at(map_index)->ceiling_idxs[sector] = props.editor_ceiling_idx;
+        props.maps.at(map_index)->wall_idxs[sector]    = props.editor_wall_idx;
+        props.maps.at(map_index)->floor_idxs[sector]   = props.editor_floor_idx;
+        int blockL = props.sector2blockL(sector);
+        for(int b=0; b<=2; b++)
+        {
+            props.maps.at(map_index)->block_c_idxs[blockL+b] = props.editor_block_c_idxs.at(b);
+            props.maps.at(map_index)->block_f_idxs[blockL+b] = props.editor_block_f_idxs.at(b);
+            props.maps.at(map_index)->block_0_idxs[blockL+b] = props.editor_block_0_idxs.at(b);
+            props.maps.at(map_index)->block_1_idxs[blockL+b] = props.editor_block_1_idxs.at(b);
+            props.maps.at(map_index)->block_2_idxs[blockL+b] = props.editor_block_2_idxs.at(b);
+            props.maps.at(map_index)->block_3_idxs[blockL+b] = props.editor_block_3_idxs.at(b);
+        }
     }
 }
 
