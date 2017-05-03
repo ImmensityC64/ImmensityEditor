@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionFileSave,   SIGNAL(triggered()), this, SLOT(saveProject())  );
     connect(ui->actionFileSaveAs, SIGNAL(triggered()), this, SLOT(saveAsProject()));
     connect(ui->actionFileRevert, SIGNAL(triggered()), this, SLOT(loadProject())  );
+    connect(ui->actionFileExit,   SIGNAL(triggered()), this, SLOT(close())        );
 
     connect(ui->actionEditSceneries,    SIGNAL(triggered()), this, SLOT(openEditSceneries())    );
     connect(ui->actionEditThemes,       SIGNAL(triggered()), this, SLOT(openEditThemes())       );
@@ -194,10 +195,34 @@ MainWindow::~MainWindow()
     if(themeEditor) themeEditor->close();
     if(sceneryEditor) sceneryEditor->close();
 
-    saveGfxData();
-
     delete projFile;
     delete ui;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QMessageBox msgBox;
+    msgBox.setText("Exiting Immensity Editor");
+    msgBox.setInformativeText("Do you want to save your changes?");
+    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Save);
+    int ret = msgBox.exec();
+
+    switch (ret) {
+      case QMessageBox::Save:
+          saveGfxData();
+          event->accept();
+          break;
+      case QMessageBox::Discard:
+          event->accept();
+          break;
+      case QMessageBox::Cancel:
+          event->ignore();
+          break;
+      default:
+          // should never be reached
+          break;
+    }
 }
 
 void MainWindow::initGv(GfxVector &gv,

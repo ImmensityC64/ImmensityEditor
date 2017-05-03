@@ -103,6 +103,7 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
+    void closeEvent(QCloseEvent *event);
 
     /* Project */
     QString projPath;
