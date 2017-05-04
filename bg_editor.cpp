@@ -27,7 +27,7 @@ BgSketchEditor::BgSketchEditor(shared_ptr<GfxData> init, int index, QWidget *par
     ui->toolbox->addTool(new GfxEditorToolClrDraw(img, this));
     ui->toolbox->addTool(new GfxEditorToolClrRect(img, this));
     ui->toolbox->addTool(new GfxEditorToolSelect(img, this));
-    ui->toolbox->changeTool(0);
+    ui->toolbox->changeTool(4);
 
     ui->checkFineGrid->setChecked(true);
 }
@@ -81,6 +81,7 @@ BgTileEditor::BgTileEditor(shared_ptr<GfxData> init, int index, QWidget *parent)
     BgSketchEditor(init, index, parent)
 {
     setWindowTitle("Bg Tile Editor");
+    ui->toolbox->changeTool(0);
 }
 
 BgTileEditor::~BgTileEditor() {}

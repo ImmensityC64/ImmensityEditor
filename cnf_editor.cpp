@@ -28,7 +28,7 @@ CnfSketchEditor::CnfSketchEditor(shared_ptr<GfxData> init, int index, QWidget *p
     ui->toolbox->addTool(new GfxEditorToolClrDraw(img, this));
     ui->toolbox->addTool(new GfxEditorToolClrRect(img, this));
     ui->toolbox->addTool(new GfxEditorToolSelect(img, this));
-    ui->toolbox->changeTool(0);
+    ui->toolbox->changeTool(4);
 
     ui->checkFineGrid->setChecked(true);
 }
@@ -89,6 +89,7 @@ CnfTileEditor::CnfTileEditor(shared_ptr<GfxData> init, int index, QWidget *paren
     CnfSketchEditor(init, index, parent)
 {
     setWindowTitle("Cnf Tile Editor");
+    ui->toolbox->changeTool(0);
 }
 
 CnfTileEditor::~CnfTileEditor() {}
