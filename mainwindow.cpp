@@ -353,7 +353,7 @@ void MainWindow::openSectorCEditor()
 {
     if(nullptr == sectorCEditor)
     {
-        sectorCEditor = new CnfTileEditor(props.map2imgCeiling(map_index, sector));
+        sectorCEditor = new CnfTileEditor(scrDatas.at((int)ScrPart::CeilingFgC));
         sectorCEditor->setAttribute(Qt::WA_DeleteOnClose, true);
         sectorCEditor->show();
         connect(sectorCEditor, SIGNAL(destroyed()), this, SLOT(closeSectorCEditor()));
@@ -366,7 +366,7 @@ void MainWindow::openSectorBEditor()
 {
     if(nullptr == sectorBEditor)
     {
-        sectorBEditor = new BgTileEditor(props.map2imgBackground(map_index, sector));
+        sectorBEditor = new BgTileEditor(scrDatas.at((int)ScrPart::BackgroundC));
         sectorBEditor->setAttribute(Qt::WA_DeleteOnClose, true);
         sectorBEditor->show();
         connect(sectorBEditor, SIGNAL(destroyed()), this, SLOT(closeSectorBEditor()));
@@ -379,7 +379,7 @@ void MainWindow::openSectorFEditor()
 {
     if(nullptr == sectorFEditor)
     {
-        sectorFEditor = new CnfTileEditor(props.map2imgFloor(map_index, sector));
+        sectorFEditor = new CnfTileEditor(scrDatas.at((int)ScrPart::FloorFgC));
         sectorFEditor->setAttribute(Qt::WA_DeleteOnClose, true);
         sectorFEditor->show();
         connect(sectorFEditor, SIGNAL(destroyed()), this, SLOT(closeSectorFEditor()));

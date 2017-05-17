@@ -85,6 +85,12 @@ QDataStream& operator <<(QDataStream& out, Map const &src)
     out << src.block_2_idxs;
     out << src.block_3_idxs;
 
+    out << src.scenery_index;
+    out << src.theme_index;
+    out << src.human_index;
+    out << src.cyber_index;
+    out << src.music_index;
+
     out << src.human_comm0_index;
     out << src.human_comm1_index;
     out << src.cyber_comm0_index;
