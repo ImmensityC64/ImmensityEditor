@@ -171,7 +171,6 @@ bool Props::img2mapBackground(int sector, shared_ptr<GfxData> img)
      */
     Scenery *s = editor_scenery.copy();
 
-    int blockL = sector2blockL(sector);  /* index of left block of sector */
     QVector<quint64> new_chr_v;
 
     /* tiles being identified */
@@ -190,7 +189,7 @@ bool Props::img2mapBackground(int sector, shared_ptr<GfxData> img)
 
     /* Free up tiles of sector */
     /* Note that 'b' cannot overflow as we are in one sector */
-    for(int b=blockL; b<=blockL+2; b++)
+    for(int b=0; b<=2; b++)
     {
         /* Note that freeBgTile() frees up unused characters automatically! */
         s->freeBgTile( editor_block_0_idxs[b] );
