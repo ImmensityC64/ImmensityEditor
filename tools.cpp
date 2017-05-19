@@ -75,7 +75,7 @@ void GfxEditorToolClrDraw::gfxEditorToolPressEvent(QPoint p, int m)
 }
 void GfxEditorToolClrDraw::gfxEditorToolMoveEvent(QPoint p)
 {
-    img->clrDraw(p,mod);
+    img->hueDraw(p,mod);
     img->refresh();
 }
 void GfxEditorToolClrDraw::gfxEditorToolReleaseEvent(QPoint /* unused */)
@@ -103,7 +103,7 @@ void GfxEditorToolClrRect::gfxEditorToolPressEvent(QPoint p, int m)
 void GfxEditorToolClrRect::gfxEditorToolMoveEvent(QPoint p)
 {
     emit command(Command::LoadHistory);
-    img->clrRect(start,p,mod);
+    img->hueRect(start,p,mod);
     img->refresh();
 }
 void GfxEditorToolClrRect::gfxEditorToolReleaseEvent(QPoint /* unused */)

@@ -463,7 +463,7 @@ void GfxImage::clrDraw(QPoint i, int m)
     {
         tD->setClrVal(tD->bit2clr(i),get_clr_val(tD,m));
     }
-} /* GfxImage::bitDraw() */
+} /* GfxImage::clrDraw() */
 
 /* clrRect
  * 'i' should be given in image coordinates, GfxImage takes care of mapping it
@@ -492,6 +492,53 @@ void GfxImage::clrRect(QPoint i1, QPoint i2, int m)
                 tD->setClrVal(x,y,get_clr_val(tD,m));
     } /* if(tD) */
 } /* GfxImage::clrRect() */
+
+/* hueDraw
+ * 'i' should be given in image coordinates, GfxImage takes care of mapping it
+ *     to data coordinates
+ */
+void GfxImage::hueDraw(QPoint i, int m)
+{
+    shared_ptr<GfxData> tD = D.lock(); /* data */
+    if(tD) /* data exists */
+    {
+        if(M == Mode::Sketch)
+            tD->setClrVal(tD->bit2clr(i), (0xF8 & tD->clrVal(tD->bit2clr(i))) | (0xF7 & get_clr_val(tD,m)) );
+        else
+            tD->setClrVal(tD->bit2clr(i),get_clr_val(tD,m));
+    }
+} /* GfxImage::hueDraw() */
+
+/* hueRect
+ * 'i' should be given in image coordinates, GfxImage takes care of mapping it
+ *     to data coordinates
+ */
+void GfxImage::hueRect(QPoint i1, QPoint i2, int m)
+{
+    shared_ptr<GfxData> tD = D.lock(); /* data */
+    if(tD) /* data exists */
+    {
+        /*      A-----B      *\
+        |*      |     |      *|
+        \*      D-----C      */
+
+        /* Get and reorder data coordinates */
+        int x1 = tD->bit2clr(i1.x()); int y1 = tD->bit2clr(i1.y());
+        int x2 = tD->bit2clr(i2.x()); int y2 = tD->bit2clr(i2.y());
+        int Ax,Ay,Cx,Cy;
+        if     (x1<x2)   { Ax=x1; Cx=x2; }
+        else /* x2<x1 */ { Ax=x2; Cx=x1; }
+        if     (y1<y2)   { Ay=y1; Cy=y2; }
+        else /* y2<y1 */ { Ay=y2; Cy=y1; }
+
+        for(int y=Ay; y<=Cy; y++)
+            for(int x=Ax; x<=Cx; x++)
+                if(M == Mode::Sketch)
+                    tD->setClrVal(x,y, (0xF8 & tD->clrVal(x,y)) | (0xF7 & get_clr_val(tD,m)) );
+                else
+                    tD->setClrVal(x,y,get_clr_val(tD,m));
+    } /* if(tD) */
+} /* GfxImage::hueRect() */
 
  /*================================================================================*\
 ( *     S E L E C T I O N   T O O L S

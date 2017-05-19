@@ -76,6 +76,8 @@ public:
     void bitRect(QPoint i1, QPoint i2, int m);
     void clrDraw(QPoint i, int m);
     void clrRect(QPoint i1, QPoint i2, int m);
+    void hueDraw(QPoint i, int m);
+    void hueRect(QPoint i1, QPoint i2, int m);
     void selSrcDraw(QPoint i1, QPoint i2);
 
     bool isSelectionDragged(QPoint start);
