@@ -158,7 +158,11 @@ QDataStream& operator <<(QDataStream& out, Scenery &src)
         const CnfTile &tile = src.cnf_tile_vector.at(i).tile;
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
         for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
-            out << src.realCharIndex(tile.char_idxs.at(row).at(col));
+        {
+            quint8 chr_idx = src.realCharIndex(tile.char_idxs.at(row).at(col));
+            chr_idx |= tile.colors.at(row).at(col);
+            out << chr_idx;
+        }
         out << src.cnf_tile_vector.at(i).keep;
     }
 
@@ -233,7 +237,12 @@ QDataStream& operator >>(QDataStream& in, Scenery &dst)
         CnfTile &tile = tile_c.tile;
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
         for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
-                in >> tile.char_idxs[row][col];
+        {
+            quint8 chr_idx;
+            in >> chr_idx;
+            tile.char_idxs[row][col] = chr_idx & 0x3F;
+            tile.colors[row][col] = chr_idx & 0x70;
+        }
         in >> tile_c.keep;
         tile_c.usage = 0;
         tile_c.reserved = false;
