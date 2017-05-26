@@ -22,7 +22,6 @@ bool Props::img2mapCnf(int sector, shared_ptr<GfxData> img, QVector<quint8> *blo
      */
     Scenery *s = editor_scenery.copy();
 
-    int blockL = sector2blockL(sector);  /* index of left block of sector */
     QVector<CnfTile> tile_v(3);/* tiles being identified */
     QVector<quint64> new_chr_v;
 
@@ -39,7 +38,7 @@ bool Props::img2mapCnf(int sector, shared_ptr<GfxData> img, QVector<quint8> *blo
 
     /* Free up tiles of sector */
     /* Note that 'b' cannot overflow as we are in one sector */
-    for(int b=blockL; b<=blockL+2; b++)
+    for(int b=0; b<=2; b++)
     {
         /* Note that freeCnfTile() frees up unused characters automatically! */
         s->freeCnfTile( block_idxs->at(b) );

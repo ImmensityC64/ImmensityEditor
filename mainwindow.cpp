@@ -155,6 +155,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     themeEditor   = nullptr;
     sceneryEditor = nullptr;
+    sectorCEditor = nullptr;
+    sectorBEditor = nullptr;
+    sectorFEditor = nullptr;
 
     QValidator *validator = new QIntValidator(0, 84, this);
     ui->sector->setValidator(validator);
