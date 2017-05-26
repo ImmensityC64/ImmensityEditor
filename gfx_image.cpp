@@ -382,6 +382,8 @@ void GfxImage::bitDraw(QPoint i, int m)
     if(tD) /* data exists */
     {
         tD->setBitVal(img2dat(i), (quint8)m);
+        /* Do not change color in ECM mode */
+        if(M != Mode::CnfSketch) tD->setClrVal(tD->bit2clr(i),get_clr_val(tD,m));
     }
 } /* GfxImage::bitDraw() */
 
@@ -418,8 +420,8 @@ void GfxImage::bitRect(QPoint i1, QPoint i2, int m)
             else /* y2<y1 */ { Ay=y2; Cy=y1; }
 
             for(int y=Ay; y<=Cy; y++)
-                for(int x=Ax; x<=Cx; x++)
-                    tD->setBitVal(xE2C(x,y),y,(quint8)m);
+            for(int x=Ax; x<=Cx; x++)
+                tD->setBitVal(xE2C(x,y),y,(quint8)m);
 
         } /* Ceiling */
         else if(M == Mode::Floor)
@@ -433,8 +435,8 @@ void GfxImage::bitRect(QPoint i1, QPoint i2, int m)
             else /* y2<y1 */ { Ay=y2; Cy=y1; }
 
             for(int y=Ay; y<=Cy; y++)
-                for(int x=Ax; x<=Cx; x++)
-                    tD->setBitVal(xE2F(x,y),y,(quint8)m);
+            for(int x=Ax; x<=Cx; x++)
+                tD->setBitVal(xE2F(x,y),y,(quint8)m);
 
         } /* Floor */
         else /* ordinary rectangle */
@@ -445,8 +447,19 @@ void GfxImage::bitRect(QPoint i1, QPoint i2, int m)
             else /* y2<y1 */ { Ay=y2; Cy=y1; }
 
             for(int y=Ay; y<=Cy; y++)
+            for(int x=Ax; x<=Cx; x++)
+                tD->setBitVal(x,y,(quint8)m);
+
+            /* Do not change color in ECM mode */
+            if(M != Mode::CnfSketch)
+            {
+                Ax=tD->bit2clr(Ax); Ay=tD->bit2clr(Ay);
+                Cx=tD->bit2clr(Cx); Cy=tD->bit2clr(Cy);
+
+                for(int y=Ay; y<=Cy; y++)
                 for(int x=Ax; x<=Cx; x++)
-                    tD->setBitVal(x,y,(quint8)m);
+                    tD->setClrVal(x,y,get_clr_val(tD,m));
+            }
 
         } /* ordinary rectangle */
     } /* if(tD) */
@@ -461,7 +474,11 @@ void GfxImage::clrDraw(QPoint i, int m)
     shared_ptr<GfxData> tD = D.lock(); /* data */
     if(tD) /* data exists */
     {
-        tD->setClrVal(tD->bit2clr(i),get_clr_val(tD,m));
+        if(M == Mode::Sketch)
+            /* Change color value but keep HiRes/MC mode of characters in MC mode */
+            tD->setClrVal(tD->bit2clr(i), (0xF8 & tD->clrVal(tD->bit2clr(i))) | (0xF7 & get_clr_val(tD,m)) );
+        else
+            tD->setClrVal(tD->bit2clr(i),get_clr_val(tD,m));
     }
 } /* GfxImage::clrDraw() */
 
@@ -488,57 +505,14 @@ void GfxImage::clrRect(QPoint i1, QPoint i2, int m)
         else /* y2<y1 */ { Ay=y2; Cy=y1; }
 
         for(int y=Ay; y<=Cy; y++)
-            for(int x=Ax; x<=Cx; x++)
+        for(int x=Ax; x<=Cx; x++)
+            if(M == Mode::Sketch)
+                /* Change color value but keep HiRes/MC mode of characters in MC mode */
+                tD->setClrVal(x,y, (0xF8 & tD->clrVal(x,y)) | (0xF7 & get_clr_val(tD,m)) );
+            else
                 tD->setClrVal(x,y,get_clr_val(tD,m));
     } /* if(tD) */
 } /* GfxImage::clrRect() */
-
-/* hueDraw
- * 'i' should be given in image coordinates, GfxImage takes care of mapping it
- *     to data coordinates
- */
-void GfxImage::hueDraw(QPoint i, int m)
-{
-    shared_ptr<GfxData> tD = D.lock(); /* data */
-    if(tD) /* data exists */
-    {
-        if(M == Mode::Sketch)
-            tD->setClrVal(tD->bit2clr(i), (0xF8 & tD->clrVal(tD->bit2clr(i))) | (0xF7 & get_clr_val(tD,m)) );
-        else
-            tD->setClrVal(tD->bit2clr(i),get_clr_val(tD,m));
-    }
-} /* GfxImage::hueDraw() */
-
-/* hueRect
- * 'i' should be given in image coordinates, GfxImage takes care of mapping it
- *     to data coordinates
- */
-void GfxImage::hueRect(QPoint i1, QPoint i2, int m)
-{
-    shared_ptr<GfxData> tD = D.lock(); /* data */
-    if(tD) /* data exists */
-    {
-        /*      A-----B      *\
-        |*      |     |      *|
-        \*      D-----C      */
-
-        /* Get and reorder data coordinates */
-        int x1 = tD->bit2clr(i1.x()); int y1 = tD->bit2clr(i1.y());
-        int x2 = tD->bit2clr(i2.x()); int y2 = tD->bit2clr(i2.y());
-        int Ax,Ay,Cx,Cy;
-        if     (x1<x2)   { Ax=x1; Cx=x2; }
-        else /* x2<x1 */ { Ax=x2; Cx=x1; }
-        if     (y1<y2)   { Ay=y1; Cy=y2; }
-        else /* y2<y1 */ { Ay=y2; Cy=y1; }
-
-        for(int y=Ay; y<=Cy; y++)
-            for(int x=Ax; x<=Cx; x++)
-                if(M == Mode::Sketch)
-                    tD->setClrVal(x,y, (0xF8 & tD->clrVal(x,y)) | (0xF7 & get_clr_val(tD,m)) );
-                else
-                    tD->setClrVal(x,y,get_clr_val(tD,m));
-    } /* if(tD) */
-} /* GfxImage::hueRect() */
 
  /*================================================================================*\
 ( *     S E L E C T I O N   T O O L S

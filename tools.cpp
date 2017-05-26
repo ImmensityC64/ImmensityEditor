@@ -20,7 +20,6 @@ void GfxEditorToolBitDraw::gfxEditorToolPressEvent(QPoint p, int m)
 void GfxEditorToolBitDraw::gfxEditorToolMoveEvent(QPoint p)
 {
     img->bitDraw(p,mod);
-    img->clrDraw(p,mod);
     img->refresh();
 }
 void GfxEditorToolBitDraw::gfxEditorToolReleaseEvent(QPoint /* unused */)
@@ -49,7 +48,6 @@ void GfxEditorToolBitRect::gfxEditorToolMoveEvent(QPoint p)
 {
     emit command(Command::LoadHistory);
     img->bitRect(start,p,mod);
-    img->clrRect(start,p,mod);
     img->refresh();
 }
 void GfxEditorToolBitRect::gfxEditorToolReleaseEvent(QPoint /* unused */)
@@ -75,7 +73,7 @@ void GfxEditorToolClrDraw::gfxEditorToolPressEvent(QPoint p, int m)
 }
 void GfxEditorToolClrDraw::gfxEditorToolMoveEvent(QPoint p)
 {
-    img->hueDraw(p,mod);
+    img->clrDraw(p,mod);
     img->refresh();
 }
 void GfxEditorToolClrDraw::gfxEditorToolReleaseEvent(QPoint /* unused */)
@@ -103,7 +101,7 @@ void GfxEditorToolClrRect::gfxEditorToolPressEvent(QPoint p, int m)
 void GfxEditorToolClrRect::gfxEditorToolMoveEvent(QPoint p)
 {
     emit command(Command::LoadHistory);
-    img->hueRect(start,p,mod);
+    img->clrRect(start,p,mod);
     img->refresh();
 }
 void GfxEditorToolClrRect::gfxEditorToolReleaseEvent(QPoint /* unused */)
