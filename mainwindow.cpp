@@ -198,6 +198,10 @@ MainWindow::~MainWindow()
     if(themeEditor) themeEditor->close();
     if(sceneryEditor) sceneryEditor->close();
 
+    if(sectorCEditor) sectorCEditor->close();
+    if(sectorBEditor) sectorBEditor->close();
+    if(sectorFEditor) sectorFEditor->close();
+
     delete projFile;
     delete ui;
 }
