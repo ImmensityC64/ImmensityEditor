@@ -85,7 +85,18 @@ bool Props::img2mapCnf(int sector, shared_ptr<GfxData> img, QVector<quint8> *blo
         {
             /* It is a new character, let's create it! */
             quint64 chr = new_chr_v.takeFirst();
-            qint16 chr_ind = s->createChar(chr);
+
+            /* new_chr_v may contain the same character several times.
+             * Verify wether the current character has already been created
+             * in this very loop.
+             */
+            qint16 chr_ind = s->findChar(chr); /* index of character */
+
+            if(chr_ind < 0)
+            {
+                /* Character must be created */
+                chr_ind = s->createChar(chr);
+            }
 
             if(0 <= chr_ind)
             {
@@ -240,7 +251,18 @@ bool Props::img2mapBackground(int sector, shared_ptr<GfxData> img)
         {
             /* It is a new character, let's create it! */
             quint64 chr = new_chr_v.takeFirst();
-            qint16 chr_ind = s->createChar(chr);
+
+            /* new_chr_v may contain the same character several times.
+             * Verify wether the current character has already been created
+             * in this very loop.
+             */
+            qint16 chr_ind = s->findChar(chr); /* index of character */
+
+            if(chr_ind < 0)
+            {
+                /* Character must be created */
+                chr_ind = s->createChar(chr);
+            }
 
             if(0 <= chr_ind)
             {
@@ -382,7 +404,18 @@ bool Props::img2cnfTile(quint8 index, shared_ptr<GfxData> img)
         {
             /* It is a new character, let's create it! */
             quint64 chr = new_chr_v.takeFirst();
-            qint16 chr_ind = s->createChar(chr);
+
+            /* new_chr_v may contain the same character several times.
+             * Verify wether the current character has already been created
+             * in this very loop.
+             */
+            qint16 chr_ind = s->findChar(chr); /* index of character */
+
+            if(chr_ind < 0)
+            {
+                /* Character must be created */
+                chr_ind = s->createChar(chr);
+            }
 
             if(0 <= chr_ind)
             {
@@ -480,7 +513,18 @@ bool Props::img2bgTile(quint8 index, shared_ptr<GfxData> img)
         {
             /* It is a new character, let's create it! */
             quint64 chr = new_chr_v.takeFirst();
-            qint16 chr_ind = s->createChar(chr);
+
+            /* new_chr_v may contain the same character several times.
+             * Verify wether the current character has already been created
+             * in this very loop.
+             */
+            qint16 chr_ind = s->findChar(chr); /* index of character */
+
+            if(chr_ind < 0)
+            {
+                /* Character must be created */
+                chr_ind = s->createChar(chr);
+            }
 
             if(0 <= chr_ind)
             {
