@@ -381,9 +381,18 @@ void GfxImage::bitDraw(QPoint i, int m)
     shared_ptr<GfxData> tD = D.lock(); /* data */
     if(tD) /* data exists */
     {
+        if(M == Mode::CnfSketch)
+        {
+            /* Invert mouse buttons in ECM mode */
+            m ^= 1;
+        }
+        else
+        {
+            /* Change color but in ECM mode */
+            tD->setClrVal(tD->bit2clr(i),get_clr_val(tD,m));
+        }
+
         tD->setBitVal(img2dat(i), (quint8)m);
-        /* Do not change color in ECM mode */
-        if(M != Mode::CnfSketch) tD->setClrVal(tD->bit2clr(i),get_clr_val(tD,m));
     }
 } /* GfxImage::bitDraw() */
 
@@ -446,13 +455,19 @@ void GfxImage::bitRect(QPoint i1, QPoint i2, int m)
             if     (y1<y2)   { Ay=y1; Cy=y2; }
             else /* y2<y1 */ { Ay=y2; Cy=y1; }
 
+            if(M == Mode::CnfSketch)
+            {
+                /* Invert mouse buttons in ECM mode */
+                m ^= 1;
+            }
+
             for(int y=Ay; y<=Cy; y++)
             for(int x=Ax; x<=Cx; x++)
                 tD->setBitVal(x,y,(quint8)m);
 
-            /* Do not change color in ECM mode */
             if(M != Mode::CnfSketch)
             {
+                /* Change color but in ECM mode */
                 Ax=tD->bit2clr(Ax); Ay=tD->bit2clr(Ay);
                 Cx=tD->bit2clr(Cx); Cy=tD->bit2clr(Cy);
 
