@@ -67,6 +67,22 @@ public slots:
   void gfxEditorToolReleaseEvent(QPoint /* unused */) override;
 };
 
+/*================================================================================*\
+( *     I N V E R T - R E C T
+\*================================================================================*/
+
+class GfxEditorToolInvRect : public GfxEditorTool
+{
+ Q_OBJECT
+public:
+ explicit GfxEditorToolInvRect(GfxImage *img, QObject *editor);
+ virtual ~GfxEditorToolInvRect();
+public slots:
+ void gfxEditorToolPressEvent(QPoint p, int) override;
+ void gfxEditorToolMoveEvent(QPoint p) override;
+ void gfxEditorToolReleaseEvent(QPoint /* unused */) override;
+};
+
  /*================================================================================*\
 ( *     S E L E C T
  \*================================================================================*/

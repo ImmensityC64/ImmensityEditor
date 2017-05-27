@@ -529,6 +529,77 @@ void GfxImage::clrRect(QPoint i1, QPoint i2, int m)
     } /* if(tD) */
 } /* GfxImage::clrRect() */
 
+/* invRect
+ * 'i' should be given in image coordinates, GfxImage takes care of mapping it
+ *     to data coordinates
+ */
+void GfxImage::invRect(QPoint i1, QPoint i2)
+{
+    shared_ptr<GfxData> tD = D.lock(); /* data */
+    if(tD) /* data exists */
+    {
+        /*      A-----B      *\
+        |*      |     |      *|
+        \*      D-----C      */
+
+        /* Get and reorder data coordinates */
+        QPoint d1 = img2dat(i1);
+        QPoint d2 = img2dat(i2);
+        int x1 = d1.x(); int y1 = d1.y();
+        int x2 = d2.x(); int y2 = d2.y();
+        int Ax,Ay,Cx,Cy;
+
+        if(M == Mode::Ceiling)
+        {
+            x1 = xC2E(x1,y1);
+            x2 = xC2E(x2,y2);
+
+            if     (x1<x2)   { Ax=x1; Cx=x2; }
+            else /* x2<x1 */ { Ax=x2; Cx=x1; }
+            if     (y1<y2)   { Ay=y1; Cy=y2; }
+            else /* y2<y1 */ { Ay=y2; Cy=y1; }
+
+            for(int y=Ay; y<=Cy; y++)
+            for(int x=Ax; x<=Cx; x++)
+            {
+                QPoint p(xE2C(x,y),y);
+                tD->setBitVal(p,~(tD->bitVal(p)));
+            }
+        } /* Ceiling */
+        else if(M == Mode::Floor)
+        {
+            x1 = xF2E(x1,y1);
+            x2 = xF2E(x2,y2);
+
+            if     (x1<x2)   { Ax=x1; Cx=x2; }
+            else /* x2<x1 */ { Ax=x2; Cx=x1; }
+            if     (y1<y2)   { Ay=y1; Cy=y2; }
+            else /* y2<y1 */ { Ay=y2; Cy=y1; }
+
+            for(int y=Ay; y<=Cy; y++)
+            for(int x=Ax; x<=Cx; x++)
+            {
+                QPoint p(xE2F(x,y),y);
+                tD->setBitVal(p,~(tD->bitVal(p)));
+            }
+        } /* Floor */
+        else /* ordinary rectangle */
+        {
+            if     (x1<x2)   { Ax=x1; Cx=x2; }
+            else /* x2<x1 */ { Ax=x2; Cx=x1; }
+            if     (y1<y2)   { Ay=y1; Cy=y2; }
+            else /* y2<y1 */ { Ay=y2; Cy=y1; }
+
+            for(int y=Ay; y<=Cy; y++)
+            for(int x=Ax; x<=Cx; x++)
+            {
+                QPoint p(x,y);
+                tD->setBitVal(p,~(tD->bitVal(p)));
+            }
+        } /* ordinary rectangle */
+    } /* if(tD) */
+} /* GfxImage::bitRect() */
+
  /*================================================================================*\
 ( *     S E L E C T I O N   T O O L S
  \*================================================================================*/

@@ -228,6 +228,7 @@ int C64::mix_colors(int a, int b)
 #include "images/paint.xpm"
 #include "images/paint_rect.xpm"
 #include "images/select.xpm"
+#include "images/invert_rect.xpm"
 #include "images/empty.xpm"
 
 Icon& Icon::ins()
@@ -247,5 +248,6 @@ Icon::Icon()
     xpm[Paint]      = icon_paint_xpm;
     xpm[PaintRect]  = icon_paint_rect_xpm;
     xpm[Select]     = icon_select_xpm;
+    xpm[InvertRect] = icon_invert_rect_xpm;
 }
 

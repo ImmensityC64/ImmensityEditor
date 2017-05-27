@@ -26,8 +26,9 @@ BgSketchEditor::BgSketchEditor(shared_ptr<GfxData> init, int index, QWidget *par
     ui->toolbox->addTool(new GfxEditorToolBitRect(img, this));
     ui->toolbox->addTool(new GfxEditorToolClrDraw(img, this));
     ui->toolbox->addTool(new GfxEditorToolClrRect(img, this));
+    ui->toolbox->addTool(new GfxEditorToolInvRect(img, this));
     ui->toolbox->addTool(new GfxEditorToolSelect(img, this));
-    ui->toolbox->changeTool(4);
+    ui->toolbox->changeTool(5);
 
     ui->checkFineGrid->setChecked(true);
 }

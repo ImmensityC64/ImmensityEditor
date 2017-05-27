@@ -236,6 +236,7 @@ public:
         Paint,
         PaintRect,
         Select,
+        InvertRect,
         Size
     } Enum;
 

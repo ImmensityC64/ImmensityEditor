@@ -24,6 +24,7 @@ SpriteEditor::SpriteEditor(shared_ptr<GfxData> init, int index, QWidget *parent)
 
     ui->toolbox->addTool(new GfxEditorToolBitDraw(img, this));
     ui->toolbox->addTool(new GfxEditorToolBitRect(img, this));
+    ui->toolbox->addTool(new GfxEditorToolInvRect(img, this));
     ui->toolbox->changeTool(0);
 
     /* Buttons */

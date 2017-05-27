@@ -81,30 +81,57 @@ void GfxEditorToolClrDraw::gfxEditorToolReleaseEvent(QPoint /* unused */)
     emit command(Command::SaveHistory);
 }
 
- /*================================================================================*\
+/*================================================================================*\
 ( *    P A I N T - R E C T
- \*================================================================================*/
+\*================================================================================*/
 
 GfxEditorToolClrRect::GfxEditorToolClrRect(GfxImage *img, QObject *editor) :
-   GfxEditorTool(img, editor)
+  GfxEditorTool(img, editor)
 {
-    I = Icon::PaintRect;
+   I = Icon::PaintRect;
 }
 GfxEditorToolClrRect::~GfxEditorToolClrRect(){}
 
 void GfxEditorToolClrRect::gfxEditorToolPressEvent(QPoint p, int m)
 {
-    mod = m;
-    start = p;
-    gfxEditorToolMoveEvent(p);
+   mod = m;
+   start = p;
+   gfxEditorToolMoveEvent(p);
 }
 void GfxEditorToolClrRect::gfxEditorToolMoveEvent(QPoint p)
 {
-    emit command(Command::LoadHistory);
-    img->clrRect(start,p,mod);
-    img->refresh();
+   emit command(Command::LoadHistory);
+   img->clrRect(start,p,mod);
+   img->refresh();
 }
 void GfxEditorToolClrRect::gfxEditorToolReleaseEvent(QPoint /* unused */)
+{
+   emit command(Command::SaveHistory);
+}
+
+ /*================================================================================*\
+( *    I N V E R T - R E C T
+ \*================================================================================*/
+
+GfxEditorToolInvRect::GfxEditorToolInvRect(GfxImage *img, QObject *editor) :
+   GfxEditorTool(img, editor)
+{
+    I = Icon::InvertRect;
+}
+GfxEditorToolInvRect::~GfxEditorToolInvRect(){}
+
+void GfxEditorToolInvRect::gfxEditorToolPressEvent(QPoint p, int /* unused */)
+{
+    start = p;
+    gfxEditorToolMoveEvent(p);
+}
+void GfxEditorToolInvRect::gfxEditorToolMoveEvent(QPoint p)
+{
+    emit command(Command::LoadHistory);
+    img->invRect(start,p);
+    img->refresh();
+}
+void GfxEditorToolInvRect::gfxEditorToolReleaseEvent(QPoint /* unused */)
 {
     emit command(Command::SaveHistory);
 }
