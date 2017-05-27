@@ -96,12 +96,12 @@ bool Props::img2mapCnf(int sector, shared_ptr<GfxData> img, QVector<quint8> *blo
             {
                 /* Character must be created */
                 chr_ind = s->createChar(chr);
+                s->reserveChar(chr_ind);
             }
 
             if(0 <= chr_ind)
             {
                 tile_v[b].char_idxs[row][col] = chr_ind;
-                s->reserveChar(chr_ind);
             }
             else
             {
@@ -116,6 +116,16 @@ bool Props::img2mapCnf(int sector, shared_ptr<GfxData> img, QVector<quint8> *blo
     } /* foreach b & row & col */
 
     /* Identify existing tiles */
+    /* Some tiles may had been used only in this very sector, and now they
+     * are unused because they have just been freed up at the beginning of
+     * this function. However, they may going to be used again here. Let's
+     * reserve them to prevent the next loop to override them during the
+     * creation of new tiles. Note, that the database will be flawless
+     * without this reservation, as the next loop would recreate these
+     * overridden tiles anyway. Therefore this reservation may seem
+     * superfluous. Note, that tiles, whose usage is equal to one, would
+     * jump up and down in the browser window without this reservation!
+     */
     for(int b=0; b<=2; b++)
     {
         qint16 tile_ind = s->findCnfTile(tile_v[b]);
@@ -133,12 +143,21 @@ bool Props::img2mapCnf(int sector, shared_ptr<GfxData> img, QVector<quint8> *blo
         if(0 <= identified_tiles_v[b])
             continue;
 
-        qint16 tile_ind = s->createCnfTile(tile_v[b]);
+        /* Verify wether the current tile has already been created
+         * in this very loop.
+         */
+        qint16 tile_ind = s->findCnfTile(tile_v[b]);
+
+        if(tile_ind < 0)
+        {
+            /* Tile must be created */
+            tile_ind = s->createCnfTile(tile_v[b]);
+            s->reserveCnfTile(tile_ind);
+        }
 
         if(0 <= tile_ind)
         {
             identified_tiles_v[b] = tile_ind;
-            s->reserveCnfTile(tile_ind);
         }
         else
         {
@@ -262,12 +281,12 @@ bool Props::img2mapBackground(int sector, shared_ptr<GfxData> img)
             {
                 /* Character must be created */
                 chr_ind = s->createChar(chr);
+                s->reserveChar(chr_ind);
             }
 
             if(0 <= chr_ind)
             {
                 tile_v[b][t].char_idxs[row][col] = chr_ind;
-                s->reserveChar(chr_ind);
             }
             else
             {
@@ -282,6 +301,16 @@ bool Props::img2mapBackground(int sector, shared_ptr<GfxData> img)
     } /* foreach b & t & row & col */
 
     /* Identify existing tiles */
+    /* Some tiles may had been used only in this very sector, and now they
+     * are unused because they have just been freed up at the beginning of
+     * this function. However, they may going to be used again here. Let's
+     * reserve them to prevent the next loop to override them during the
+     * creation of new tiles. Note, that the database will be flawless
+     * without this reservation, as the next loop would recreate these
+     * overridden tiles anyway. Therefore this reservation may seem
+     * superfluous. Note, that tiles, whose usage is equal to one, would
+     * jump up and down in the browser window without this reservation!
+     */
     for(int b=0; b<=2; b++)
     for(int t=0; t<=3; t++)
     {
@@ -301,12 +330,21 @@ bool Props::img2mapBackground(int sector, shared_ptr<GfxData> img)
         if(0 <= identified_tiles_v[b][t])
             continue;
 
-        qint16 tile_ind = s->createBgTile(tile_v[b][t]);
+        /* Verify wether the current tile has already been created
+         * in this very loop.
+         */
+        qint16 tile_ind = s->findBgTile(tile_v[b][t]);
+
+        if(tile_ind < 0)
+        {
+            /* Tile must be created */
+            tile_ind = s->createBgTile(tile_v[b][t]);
+            s->reserveBgTile(tile_ind);
+        }
 
         if(0 <= tile_ind)
         {
             identified_tiles_v[b][t] = tile_ind;
-            s->reserveBgTile(tile_ind);
         }
         else
         {
@@ -415,12 +453,12 @@ bool Props::img2cnfTile(quint8 index, shared_ptr<GfxData> img)
             {
                 /* Character must be created */
                 chr_ind = s->createChar(chr);
+                s->reserveChar(chr_ind);
             }
 
             if(0 <= chr_ind)
             {
                 tile.char_idxs[row][col] = chr_ind;
-                s->reserveChar(chr_ind);
             }
             else
             {
@@ -524,12 +562,12 @@ bool Props::img2bgTile(quint8 index, shared_ptr<GfxData> img)
             {
                 /* Character must be created */
                 chr_ind = s->createChar(chr);
+                s->reserveChar(chr_ind);
             }
 
             if(0 <= chr_ind)
             {
                 tile.char_idxs[row][col] = chr_ind;
-                s->reserveChar(chr_ind);
             }
             else
             {
