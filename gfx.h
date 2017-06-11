@@ -67,7 +67,6 @@ public:
     void setData(shared_ptr<GfxData> tD);
 
     void refresh(void);
-    void refreshIfImageNotEquals(void);
 
     QPoint img2dat(QPoint i);
     QPoint dat2img(QPoint d);

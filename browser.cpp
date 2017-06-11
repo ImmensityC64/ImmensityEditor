@@ -106,7 +106,7 @@ void Browser::refresh(void)
                     {
                         /* We have just found the corresponding tile. Let's refresh it! */
                         found = true;
-                        ((BrowserGfxTile *)tile)->img->refreshIfImageNotEquals();
+                        ((BrowserGfxTile *)tile)->img->refresh();
                         l++;
                     }
                     else
@@ -166,7 +166,7 @@ void Browser::refresh(void)
         {
             QLayoutItem *li = layout->itemAt(v);
             tile = (BrowserTile *)li->widget();
-            ((BrowserGfxTile *)tile)->img->refreshIfImageNotEquals();
+            ((BrowserGfxTile *)tile)->img->refresh();
         } /* for */
     }
 
@@ -194,7 +194,7 @@ void Browser::refreshTile(int index)
         {
             if(tile->type() == BrowserTile::Type::Gfx)
                 /* We have just found the corresponding tile. Let's refresh it! */
-                ((BrowserGfxTile *)tile)->img->refreshIfImageNotEquals();
+                ((BrowserGfxTile *)tile)->img->refresh();
             break;
         }
     }

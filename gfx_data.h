@@ -30,7 +30,9 @@ class GfxImage;
 ( *     G F X   D A T A
  \*================================================================================*/
 
-class GfxData : public enable_shared_from_this<GfxData> {
+class GfxData : public QObject, public enable_shared_from_this<GfxData>
+{
+    Q_OBJECT
 
 public:
     enum class Type {
@@ -90,38 +92,11 @@ private:
     quint8 colors[(int)ColorIndex::Size];
     QVector<QBitArray*> *bitmap;
     QVector<QVector<quint8>*> *clrmap;
-    quint32 crc; /* CRC32 hash of 'bitmap' and 'clrmap'.
-                  * If 'crc' values or two GfxData are different, then
-                  * the two GfxData are surely different.
-                  * It can be used to decide fast if data maps of
-                  * a graphical object is different from another one.
-                  * It is useful for example when new sprites are
-                  * imported to a scenery.
-                  * It is (re)calculated when data is read from file and
-                  * if data is changed and saved in an editor.
-                  * Note that it does NOT consider 'colors'!
-                  */
-    quint32 cnt; /* Modification counter.
-                  * If 'cnt' values of two GfxData are identical, then
-                  * the two GfxData are surely identical.
-                  * It can be used to decide fast if GfxImage is not
-                  * required to be refreshed in a BrowserGfxTile.
-                  * It is (re)calculated when data is read from file and
-                  * if data is changed and saved in an editor.
-                  * Note that it includes changes of 'colors'!
-                  */
-    static quint32 static_cnt;
 
 public:
     Type    type(void);
     Type setType(Type tT);
     PixelMode colorMode(void);
-    quint32 dataDiffersCrc(void);
-    quint32 imageEqualsCnt(void);
-    bool dataDiffers(shared_ptr<GfxData> src);
-    bool dataDiffers(quint32 tCrc);
-    bool imageEquals(shared_ptr<GfxData> src);
-    bool imageEquals(quint32 tCnt);
 
     int clrSize(int s); /* convert to colormap size */
     int bitW(void); /* bitmap width  */
@@ -182,9 +157,9 @@ public:
 private:
     PixelMode get_mode(void);
     bool get_mc(int x, int y);
-    static quint32 crc_tbl[256];
-    void calcCrc(void);
-    inline quint32 calc_crc_next_byte(quint32 crc, quint32 byte);
+
+signals:
+    void newVersionLoaded(void);
 };
 
 /* serialize GfxData pointed by the given shared_ptr and send out to the stream */
