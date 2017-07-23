@@ -3,6 +3,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
+    props(Props::ins()),
     scrBgs((int)ScrBg::Size),
     scrRects((int)ScrPart::Size),
     scrImgs((int)ScrPart::Size),

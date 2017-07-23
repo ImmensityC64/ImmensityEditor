@@ -17,7 +17,7 @@ class SceneryEditor : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit SceneryEditor(Props &props, QWidget *parent = 0);
+    explicit SceneryEditor(QWidget *parent = 0);
     ~SceneryEditor();
 
 private:

@@ -6,7 +6,7 @@ Browser::Browser(GfxVector *gv, QWidget *parent) :
 {
     no_of_elements = 0;
     this->gv = gv;
-    connect(gv, SIGNAL(changed()), this, SLOT(refresh()));
+    connect(gv, SIGNAL(vectorChanged()), this, SLOT(refresh()));
 
     QString title_str = GfxVector::Scope::Sketches == gv->scope() ? gv->title()+" Sketches" : gv->title()+" Scenery";
     setWindowTitle(title_str);

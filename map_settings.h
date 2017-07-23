@@ -16,8 +16,7 @@ class MapSettings : public QDialog
     Q_OBJECT
 
 public:
-    explicit MapSettings(Props &props,
-                         int map_index,
+    explicit MapSettings(int map_index,
                          QWidget *parent = 0);
     ~MapSettings();
 

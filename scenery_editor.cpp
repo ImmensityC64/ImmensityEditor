@@ -1,9 +1,9 @@
 #include "scenery_editor.h"
 
-SceneryEditor::SceneryEditor(Props &props, QWidget *parent) :
+SceneryEditor::SceneryEditor(QWidget *parent) :
     QMainWindow(parent),
     tmp_scenery(),
-    props(props),
+    props(Props::ins()),
     scenery_index(0),
     ui(new Ui::SceneryEditor)
 {

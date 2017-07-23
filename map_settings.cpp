@@ -4,16 +4,15 @@
 
 void MainWindow::settingsClicked()
 {
-    MapSettings dialog(props, map_index, this);
+    MapSettings dialog(map_index, this);
     connect(&dialog, SIGNAL(mapSettingsChanged()), this, SLOT(mapSettingsChanged()));
     dialog.exec();
 }
 
-MapSettings::MapSettings(Props &props,
-                         int map_index,
+MapSettings::MapSettings(int map_index,
                          QWidget *parent) :
     QDialog(parent),
-    props(props),
+    props(Props::ins()),
     map_index(map_index),
     ui(new Ui::MapSettings)
 {

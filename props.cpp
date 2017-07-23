@@ -1,6 +1,12 @@
 
 #include "map_general.h"
 
+Props& Props::ins()
+{
+    static Props instance;
+    return instance;
+}
+
 void Props::useSceneryInMap(int scenery_index, int map_index)
 {
     Scenery *s = sceneries.at(scenery_index);
