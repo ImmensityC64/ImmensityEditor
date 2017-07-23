@@ -121,7 +121,6 @@ public:
     void init(Type tType = Type::Nothing, int tWidth = 0, int tHeight = 0);
     void resize(int tW, int tH); /* width, height */
     void load(shared_ptr<GfxData> src);
-    void loadNewVersion(shared_ptr<GfxData> src);
 
     explicit GfxData();
     explicit GfxData(Type tType);
@@ -159,7 +158,7 @@ private:
     bool get_mc(int x, int y);
 
 signals:
-    void newVersionLoaded(void);
+    void dataChanged(void);
 };
 
 /* serialize GfxData pointed by the given shared_ptr and send out to the stream */

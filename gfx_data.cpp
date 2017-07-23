@@ -220,14 +220,7 @@ void GfxData::load(shared_ptr<GfxData> src)
     clrmap->resize(clrH());
     for(int i=0; i<clrH(); ++i)
         clrmap->data()[i] = new QVector<quint8>( *( src->clrmap->at(i) ) );
-
 } /* GfxData::load */
-
-void GfxData::loadNewVersion(shared_ptr<GfxData> src)
-{
-    load(src);
-    emit newVersionLoaded();
-}
 
 void GfxData::paste(shared_ptr<GfxData> src, QPoint p)
 {

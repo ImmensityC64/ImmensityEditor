@@ -698,7 +698,6 @@ void GfxImage::importDataToImage(QByteArray &src, QPoint p)
         Cx=Ax+src.at(s-4)-1;
         Cy=Ay+src.at(s-3)-1;
         tD->validateSelection(Ax,Ay,Cx,Cy);
-        refresh();
         emit selectTgt(Ax,Ay,Cx+1-Ax,Cy+1-Ay);
     }
 }

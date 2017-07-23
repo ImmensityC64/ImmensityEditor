@@ -160,7 +160,7 @@ public slots:
     void closeEditorAt(int index);
 
 signals:
-    void changed(void);
+    void vectorChanged(void);
 };
 
  /*================================================================================*\

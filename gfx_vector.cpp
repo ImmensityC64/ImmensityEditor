@@ -65,13 +65,13 @@ shared_ptr<GfxData> GfxVector::setDataAt(int index, shared_ptr<GfxData> tData)
         e.data = tData;
         pVector.append(e);
         ret = tData;
-        emit changed();
+        emit vectorChanged();
     }
     else if(0 <= index && pVector.size() > index)
     {
         pVector.data()[index].data = tData;
         ret = tData;
-        emit changed();
+        emit vectorChanged();
     }
     return ret;
 }

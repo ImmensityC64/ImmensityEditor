@@ -122,9 +122,11 @@ void Editor::apply(void)
     shared_ptr<GfxData> d = src.lock();
     if(d)
     {
-        d->loadNewVersion(data);
+        d->load(data);
+        d->dataChanged();
         emit changesApplied(I);
     }
+    /* TODO else{ store deleted data again } */
 }
 /* Revert changes, reload 'src' into 'data'. */
 void Editor::revert(void)
@@ -136,6 +138,7 @@ void Editor::revert(void)
         save();
         img->refresh();
     }
+    /* TODO notificiation pop-up, source does not exist */
 }
 
 /****    T O O L   C O M M A N D
@@ -163,18 +166,21 @@ void Editor::dndEnter(QByteArray &src, QPoint p)
     if(showSelTgt) { selTgt->show(); }
     load();
     img->importDataToImage(src,p);
+    img->refresh();
 }
 
 void Editor::dndDraw(QByteArray &src, QPoint p)
 {
     load();
     img->importDataToImage(src,p);
+    img->refresh();
 }
 
 void Editor::dndDrop(QByteArray &src, QPoint p)
 {
     load();
     img->importDataToImage(src,p);
+    img->refresh();
     save();
     selTgt->hide();
 }
