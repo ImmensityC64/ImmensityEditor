@@ -205,6 +205,7 @@ void Browser::addGfxTile(int index)
     BrowserGfxTile *tile = new BrowserGfxTile(index, gv->ori(), gv->dataAt(index), gv->mode());
     layout->addWidget((QWidget *) tile);
     connect(tile, SIGNAL(pressed(int)), this, SLOT(openEditor(int)));
+    connect(gv->dataAt(index).get(), SIGNAL(dataChanged()), tile->img, SLOT(refresh()));
 }
 
 void Browser::addNewTile(int index)
@@ -241,31 +242,17 @@ void Browser::openEditor(int index)
         case GfxData::Type::Sketch:
         {
             if(GfxVector::Scope::Sketches == gv->scope())
-            {
                 e = (Editor *)new BgSketchEditor(gv->dataAt(index), index);
-                connect(e, SIGNAL(changesApplied(int)), this, SLOT(refreshTile(int)));
-            }
             else
-            {
                 e = (Editor *)new BgTileEditor(gv->dataAt(index), index);
-                /* TODO Scenery tiles follow different method on apply - changesApplied(int,shared_ptr<GfxData>) */
-                cout << "TODO bg tile editor apply" << endl;
-            }
             break;
         }
         case GfxData::Type::CnfSketch:
         {
             if(GfxVector::Scope::Sketches == gv->scope())
-            {
                 e = (Editor *)new CnfSketchEditor(gv->dataAt(index), index);
-                connect(e, SIGNAL(changesApplied(int)), this, SLOT(refreshTile(int)));
-            }
             else
-            {
                 e = (Editor *)new CnfTileEditor(gv->dataAt(index), index);
-                /* TODO Scenery tiles follow different method on apply - changesApplied(int,shared_ptr<GfxData>) */
-                cout << "TODO cnf tile editor apply" << endl;
-            }
             break;
         }
         default:

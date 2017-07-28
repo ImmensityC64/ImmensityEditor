@@ -65,8 +65,6 @@ public slots:
 
 signals:
     void destroyed(int index);
-    void changesApplied(int i);
-    void changesApplied(int i, shared_ptr<GfxData> data);
 };
 
 class SpriteEditor : public Editor

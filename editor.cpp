@@ -124,7 +124,6 @@ void Editor::apply(void)
     {
         d->load(data);
         d->dataChanged();
-        emit changesApplied(I);
     }
     /* TODO else{ store deleted data again } */
 }
