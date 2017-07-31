@@ -3,6 +3,7 @@
 
 Editor::Editor(shared_ptr<GfxData> init, int index, QWidget *parent) :
     QMainWindow(parent),
+    props(Props::ins()),
     data(new GfxData(init)), /* GfxData 'data' is a copy of 'init' */
     ui(new Ui::Editor)
 {

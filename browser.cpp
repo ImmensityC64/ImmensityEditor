@@ -219,6 +219,7 @@ void Browser::addNewTile(int index)
 void Browser::createGfx(int index)
 {
     shared_ptr<GfxData> data(new GfxData(gv->type()));
+    /* 'index' is 'GfxData::Id::Append' in case of sketch browser */
     gv->setDataAt(index, data); /* it automatically orders a refresh */
 }
 

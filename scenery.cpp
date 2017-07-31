@@ -160,7 +160,7 @@ void Scenery::freeBgChar(quint8 ind)
     if(!usage)
     {
         /* Report error, this function should have not been called if element is unused! */
-        cerr << __func__ << "(" << ind << ") was called, but element is unused!" << endl;
+        fprintf( stderr, "%s(%d) was called, but element is unused!\n", __func__, ind);
     }
     else
     {
@@ -210,7 +210,7 @@ void Scenery::freeCnfChar(quint8 ind)
     if(!cnf_usage)
     {
         /* Report error, this function should have not been called if element is unused! */
-        cerr << __func__ << "(" << ind << ") was called, but element is unused!" << endl;
+        fprintf( stderr, "%s(%d) was called, but element is unused!\n", __func__, ind);
     }
     else
     {
@@ -308,7 +308,7 @@ void Scenery::freeBgTile(quint8 ind)
     if(!usage)
     {
         /* Report error, this function should have not been called if element is unused! */
-        cerr << __func__ << "(" << ind << ") was called, but element is unused!" << endl;
+        fprintf( stderr, "%s(%d) was called, but element is unused!\n", __func__, ind);
     }
     else
     {
@@ -406,7 +406,7 @@ void Scenery::freeCnfTile(quint8 ind)
     if(!usage)
     {
         /* Report error, this function should have not been called if element is unused! */
-        cerr << __func__ << "(" << ind << ") was called, but element is unused!" << endl;
+        fprintf( stderr, "%s(%d) was called, but element is unused!\n", __func__, ind);
     }
     else
     {

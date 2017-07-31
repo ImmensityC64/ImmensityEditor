@@ -57,23 +57,19 @@ shared_ptr<GfxData> GfxVector::dataAt(int index)
 }
 shared_ptr<GfxData> GfxVector::setDataAt(int index, shared_ptr<GfxData> tData)
 {
-    shared_ptr<GfxData> ret;
     if((int)GfxData::Id::Append == index)
     {
         Element e;
         initElement(e);
         e.data = tData;
         pVector.append(e);
-        ret = tData;
         emit vectorChanged();
     }
     else if(0 <= index && pVector.size() > index)
     {
-        pVector.data()[index].data = tData;
-        ret = tData;
-        emit vectorChanged();
+        pVector.at(index).data->load(tData);
     }
-    return ret;
+    return tData;
 }
 
 Editor *GfxVector::editorAt(int index)

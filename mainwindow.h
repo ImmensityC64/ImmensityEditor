@@ -87,6 +87,7 @@ public slots:
     void mapSettingsChanged();
     void sceneryChanged(int);
     void themeChanged(int);
+    void tileChanged();
 
     void wallVisible(int);
     void playerVisible(int);
