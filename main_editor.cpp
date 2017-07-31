@@ -421,6 +421,7 @@ void MainWindow::refreshSceneryBrowsers(void)
         {
             gvSceneryBgTiles.setDataAt(i, props.map2imgBgTile(map_index, i));
             props.editor_modified_bg_tiles.clearBit(i);
+            if(gvSceneryBgTiles.browser()) gvSceneryBgTiles.browser()->refreshTile(i);
         }
     }
 
@@ -430,6 +431,7 @@ void MainWindow::refreshSceneryBrowsers(void)
         {
             gvSceneryCnfTiles.setDataAt(i, props.map2imgCnfTile(map_index, i));
             props.editor_modified_cnf_tiles.clearBit(i);
+            if(gvSceneryCnfTiles.browser()) gvSceneryCnfTiles.browser()->refreshTile(i);
         }
     }
 
