@@ -27,6 +27,7 @@ protected:
     Ui::Editor *ui;
     QWidget *spec;  /* Editor specific widget */
     void addSpecWidget(void);
+    Props &props;
 
     int I; /* index of GfxData in GfxVector */
 
@@ -55,8 +56,8 @@ public slots:
     void save(void);
     void undo(void);
     void redo(void);
-    void apply(void);
-    void revert(void);
+    virtual void apply(void);
+    virtual void revert(void);
     void command(Command cmd);
     void dndEnter(QByteArray &src, QPoint p);
     void dndDraw (QByteArray &src, QPoint p);
@@ -65,8 +66,6 @@ public slots:
 
 signals:
     void destroyed(int index);
-    void changesApplied(int i);
-    void changesApplied(int i, shared_ptr<GfxData> data);
 };
 
 class SpriteEditor : public Editor

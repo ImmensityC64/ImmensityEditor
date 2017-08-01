@@ -1,10 +1,10 @@
 #include "theme_editor.h"
 
-ThemeEditor::ThemeEditor(Props &props, QWidget *parent) :
+ThemeEditor::ThemeEditor(QWidget *parent) :
     QMainWindow(parent),
     tmp_theme(),
     scrBgs((int)Theme::Enum::Size),
-    props(props),
+    props(Props::ins()),
     theme_index(0),
     received_color(0),
     ui(new Ui::ThemeEditor)

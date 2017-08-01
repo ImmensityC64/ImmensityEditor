@@ -390,7 +390,7 @@ bool Props::img2cnfTile(quint8 index, shared_ptr<GfxData> img)
 
     QVector<quint64> new_chr_v;
 
-    CnfTile tile = s->cnf_tile_vector.at(index).tile;
+    CnfTile &tile = s->cnf_tile_vector[index].tile;
 
     /* Use another tile to track which characters have been identified.
      * 0 = not identified (default value in constructor)
@@ -499,7 +499,7 @@ bool Props::img2bgTile(quint8 index, shared_ptr<GfxData> img)
 
     QVector<quint64> new_chr_v;
 
-    BgTile tile = s->bg_tile_vector.at(index).tile;
+    BgTile &tile = s->bg_tile_vector[index].tile;
 
     /* Use another tile to track which characters have been identified.
      * 0 = not identified (default value in constructor)

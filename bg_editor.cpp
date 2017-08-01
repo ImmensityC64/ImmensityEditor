@@ -89,7 +89,23 @@ BgTileEditor::~BgTileEditor() {}
 
 void BgTileEditor::apply()
 {
-
+    if(props.img2bgTile(I,data))
+    {
+        shared_ptr<GfxData> d = src.lock();
+        if(d)
+        {
+            d->load(data);
+            d->dataChanged();
+        }
+        /* No 'else'. It is a scenery tile. Its data must exist! */
+    }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.setText("There are not enough resources to modify tile!");
+        msgBox.exec();
+        return;
+    }
 }
 
 void BgTileEditor::revert()

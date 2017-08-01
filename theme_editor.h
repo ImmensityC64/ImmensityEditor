@@ -38,7 +38,7 @@ class ThemeEditor : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit ThemeEditor(Props &props, QWidget *parent = 0);
+    explicit ThemeEditor(QWidget *parent = 0);
     ~ThemeEditor();
 
     const QVector<QString> bgAreas = {

@@ -97,7 +97,23 @@ CnfTileEditor::~CnfTileEditor() {}
 
 void CnfTileEditor::apply()
 {
-
+    if(props.img2cnfTile(I,data))
+    {
+        shared_ptr<GfxData> d = src.lock();
+        if(d)
+        {
+            d->load(data);
+            d->dataChanged();
+        }
+        /* No 'else'. It is a scenery tile. Its data must exist! */
+    }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.setText("There are not enough resources to modify tile!");
+        msgBox.exec();
+        return;
+    }
 }
 
 void CnfTileEditor::revert()

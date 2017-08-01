@@ -447,7 +447,10 @@ public:
     QBitArray editor_modified_bg_tiles;
     QBitArray editor_modified_cnf_tiles;
 
-    explicit Props() :
+    static Props& ins();
+
+private:
+    Props() :
         editor_ceiling_idx(0),
         editor_wall_idx(0),
         editor_floor_idx(0),
@@ -460,8 +463,11 @@ public:
         editor_modified_bg_tiles(SCENERY_BG_TILE_NUM, true),
         editor_modified_cnf_tiles(SCENERY_CNF_TILE_NUM, true)
     {}
+    Props(Props const&);          // Don't implement
+    void operator=(Props const&); // Don't implement
     ~Props(){}
 
+public:
     QVector<Scenery*> sceneries;
     QVector<Theme*>   themes;
     QVector<Human*>   humans;

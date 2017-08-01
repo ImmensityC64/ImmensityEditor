@@ -3,6 +3,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
+    props(Props::ins()),
     scrBgs((int)ScrBg::Size),
     scrRects((int)ScrPart::Size),
     scrImgs((int)ScrPart::Size),
@@ -33,11 +34,13 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         shared_ptr<GfxData> data(new GfxData(gvSceneryBgTiles.type(), 8*SCENERY_BG_TILE_COLS, 8*SCENERY_BG_TILE_ROWS));
         gvSceneryBgTiles.setDataAt((int)GfxData::Id::Append, data);
+        connect(data.get(), SIGNAL(dataChanged()), this, SLOT(tileChanged()));
     }
     for(int v=0; v<SCENERY_CNF_TILE_NUM; v++)
     {
         shared_ptr<GfxData> data(new GfxData(gvSceneryCnfTiles.type(), 8*SCENERY_CNF_TILE_COLS, 8*SCENERY_CNF_TILE_ROWS));
         gvSceneryCnfTiles.setDataAt((int)GfxData::Id::Append, data);
+        connect(data.get(), SIGNAL(dataChanged()), this, SLOT(tileChanged()));
     }
 
     charSetWindow = nullptr;
@@ -308,6 +311,13 @@ void MainWindow::sceneryChanged(int i)
 {
     if(props.maps.at(map_index)->scenery_index == i)
         refreshEditor();
+}
+
+void MainWindow::tileChanged()
+{
+    editor_img_s_modified = true;
+    editorImgSave();
+    refreshEditor();
 }
 
 void MainWindow::incSector()

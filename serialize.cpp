@@ -65,8 +65,6 @@ QDataStream& operator >>(QDataStream& in, shared_ptr<GfxData> dst)
         dst->clrmap->data()[i] = array;
     }
 
-    dst->calcCrc();
-
     return in;
 }
 

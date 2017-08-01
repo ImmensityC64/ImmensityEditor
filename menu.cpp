@@ -134,7 +134,7 @@ void MainWindow::openEditSceneries()
 {
     if(nullptr == sceneryEditor)
     {
-        sceneryEditor = new SceneryEditor(props, 0);
+        sceneryEditor = new SceneryEditor(0);
         sceneryEditor->setAttribute(Qt::WA_DeleteOnClose, true);
         sceneryEditor->show();
         connect(sceneryEditor, SIGNAL(destroyed()),
@@ -152,7 +152,7 @@ void MainWindow::openEditThemes()
 {
     if(nullptr == themeEditor)
     {
-        themeEditor = new ThemeEditor(props, 0);
+        themeEditor = new ThemeEditor(0);
         themeEditor->setAttribute(Qt::WA_DeleteOnClose, true);
         themeEditor->show();
         connect(themeEditor, SIGNAL(destroyed()),

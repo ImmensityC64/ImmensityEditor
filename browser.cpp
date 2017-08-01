@@ -6,7 +6,7 @@ Browser::Browser(GfxVector *gv, QWidget *parent) :
 {
     no_of_elements = 0;
     this->gv = gv;
-    connect(gv, SIGNAL(changed()), this, SLOT(refresh()));
+    connect(gv, SIGNAL(vectorChanged()), this, SLOT(refresh()));
 
     QString title_str = GfxVector::Scope::Sketches == gv->scope() ? gv->title()+" Sketches" : gv->title()+" Scenery";
     setWindowTitle(title_str);
@@ -106,7 +106,7 @@ void Browser::refresh(void)
                     {
                         /* We have just found the corresponding tile. Let's refresh it! */
                         found = true;
-                        ((BrowserGfxTile *)tile)->img->refreshIfImageNotEquals();
+                        ((BrowserGfxTile *)tile)->img->refresh();
                         l++;
                     }
                     else
@@ -166,7 +166,7 @@ void Browser::refresh(void)
         {
             QLayoutItem *li = layout->itemAt(v);
             tile = (BrowserTile *)li->widget();
-            ((BrowserGfxTile *)tile)->img->refreshIfImageNotEquals();
+            ((BrowserGfxTile *)tile)->img->refresh();
         } /* for */
     }
 
@@ -194,7 +194,7 @@ void Browser::refreshTile(int index)
         {
             if(tile->type() == BrowserTile::Type::Gfx)
                 /* We have just found the corresponding tile. Let's refresh it! */
-                ((BrowserGfxTile *)tile)->img->refreshIfImageNotEquals();
+                ((BrowserGfxTile *)tile)->img->refresh();
             break;
         }
     }
@@ -205,6 +205,7 @@ void Browser::addGfxTile(int index)
     BrowserGfxTile *tile = new BrowserGfxTile(index, gv->ori(), gv->dataAt(index), gv->mode());
     layout->addWidget((QWidget *) tile);
     connect(tile, SIGNAL(pressed(int)), this, SLOT(openEditor(int)));
+    connect(gv->dataAt(index).get(), SIGNAL(dataChanged()), tile->img, SLOT(refresh()));
 }
 
 void Browser::addNewTile(int index)
@@ -218,6 +219,7 @@ void Browser::addNewTile(int index)
 void Browser::createGfx(int index)
 {
     shared_ptr<GfxData> data(new GfxData(gv->type()));
+    /* 'index' is 'GfxData::Id::Append' in case of sketch browser */
     gv->setDataAt(index, data); /* it automatically orders a refresh */
 }
 
@@ -241,31 +243,17 @@ void Browser::openEditor(int index)
         case GfxData::Type::Sketch:
         {
             if(GfxVector::Scope::Sketches == gv->scope())
-            {
                 e = (Editor *)new BgSketchEditor(gv->dataAt(index), index);
-                connect(e, SIGNAL(changesApplied(int)), this, SLOT(refreshTile(int)));
-            }
             else
-            {
                 e = (Editor *)new BgTileEditor(gv->dataAt(index), index);
-                /* TODO Scenery tiles follow different method on apply - changesApplied(int,shared_ptr<GfxData>) */
-                cout << "TODO bg tile editor apply" << endl;
-            }
             break;
         }
         case GfxData::Type::CnfSketch:
         {
             if(GfxVector::Scope::Sketches == gv->scope())
-            {
                 e = (Editor *)new CnfSketchEditor(gv->dataAt(index), index);
-                connect(e, SIGNAL(changesApplied(int)), this, SLOT(refreshTile(int)));
-            }
             else
-            {
                 e = (Editor *)new CnfTileEditor(gv->dataAt(index), index);
-                /* TODO Scenery tiles follow different method on apply - changesApplied(int,shared_ptr<GfxData>) */
-                cout << "TODO cnf tile editor apply" << endl;
-            }
             break;
         }
         default:

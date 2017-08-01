@@ -243,16 +243,13 @@ void GfxImage::refresh(void)
         } /* HiRes, Nothing, default */
         } /* switch(mode) */
 
-        cnt = tD->imageEqualsCnt();
-
     } /* if(tD) */
     else /* data does not exist */
     {
         /* Set IndexScene and IndexNoData colors using checked pattern. */
         for(int y=0; y<iH; y++)
-            for(int x=0; x<iW; x++)
-                setPixel(x,y, (int)C64::IndexScene + ((x^y)&1) );
-        cnt = 0;
+        for(int x=0; x<iW; x++)
+            setPixel(x,y, (int)C64::IndexScene + ((x^y)&1) );
     }
 
     /* Notify GfxRectItemImage and GfxRectItemBackground
@@ -261,13 +258,6 @@ void GfxImage::refresh(void)
     emit refreshHappened();
 
 } /* GfxImage::refresh() */
-
-void GfxImage::refreshIfImageNotEquals(void)
-{
-    shared_ptr<GfxData> tD = D.lock(); /* data */
-    if(tD && tD->imageEquals(cnt)) return;
-    refresh();
-}
 
 
  /*================================================================================*\
@@ -708,7 +698,6 @@ void GfxImage::importDataToImage(QByteArray &src, QPoint p)
         Cx=Ax+src.at(s-4)-1;
         Cy=Ay+src.at(s-3)-1;
         tD->validateSelection(Ax,Ay,Cx,Cy);
-        refresh();
         emit selectTgt(Ax,Ay,Cx+1-Ax,Cy+1-Ay);
     }
 }

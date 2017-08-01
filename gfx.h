@@ -66,9 +66,6 @@ public:
     bool setMask(bool tSM);
     void setData(shared_ptr<GfxData> tD);
 
-    void refresh(void);
-    void refreshIfImageNotEquals(void);
-
     QPoint img2dat(QPoint i);
     QPoint dat2img(QPoint d);
 
@@ -96,6 +93,9 @@ private:
     const int offset_L[21] = { 0, 0, 0, 0, 0, 2, 2, 5, 5, 7, 7, 9, 9,12,12,14,14,16,16,16,16};
     const int offset_C[21] = { 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4};
     const int offset_R[21] = {16,16,16,16,16,14,14,11,11, 9, 9, 7, 7, 4, 4, 2, 2, 0, 0, 0, 0};
+
+public slots:
+    void refresh(void);
 
 signals:
     void refreshHappened(void);
@@ -161,7 +161,7 @@ public slots:
     void closeEditorAt(int index);
 
 signals:
-    void changed(void);
+    void vectorChanged(void);
 };
 
  /*================================================================================*\

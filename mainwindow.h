@@ -87,6 +87,7 @@ public slots:
     void mapSettingsChanged();
     void sceneryChanged(int);
     void themeChanged(int);
+    void tileChanged();
 
     void wallVisible(int);
     void playerVisible(int);
@@ -141,7 +142,7 @@ private:
     GfxVector gvSceneryBgTiles;
     GfxVector gvSceneryCnfTiles;
 
-    Props props;
+    Props &props;
     int map_index;
     int sector;
     bool editor_img_c_modified; /* ceiling */
