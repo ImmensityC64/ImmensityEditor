@@ -639,6 +639,41 @@ bool GfxImage::isSelectionDragged(QPoint start)
     return false;
 }
 
+QByteArray GfxImage::exportData(QPoint start)
+{
+    int x = start.x();
+    int y = start.y();
+
+    QPoint sA(0,0);
+    QPoint sC(0,0);
+
+    QByteArray ba;
+    /* Create an empty GfxData with 0x0 size */
+    shared_ptr<GfxData> d(new GfxData());
+
+    shared_ptr<GfxData> tD = D.lock(); /* data */
+    if(tD) /* data exists */
+    {
+        d->load(tD);
+        sC.setX(tD->bitW());
+        sC.setY(tD->bitH());
+    }
+
+    /* Serialize data of the selected area.
+     * If we could not load anything,
+     * then the empty GfxData will be serialized with 0x0 size.
+     */
+    QDataStream ds(&ba, QIODevice::WriteOnly);
+    ds << d;
+
+    ba.append(d->bitW()); // size()-4
+    ba.append(d->bitH()); // size()-3
+    ba.append(x-sA.x());  // size()-2
+    ba.append(y-sA.y());  // size()-1
+
+    return ba;
+}
+
 QByteArray GfxImage::exportDataFromSelection(QPoint start)
 {
     int x = start.x();

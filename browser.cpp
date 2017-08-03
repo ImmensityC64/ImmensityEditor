@@ -204,7 +204,7 @@ void Browser::addGfxTile(int index)
 {
     BrowserGfxTile *tile = new BrowserGfxTile(index, gv->ori(), gv->dataAt(index), gv->mode());
     layout->addWidget((QWidget *) tile);
-    connect(tile, SIGNAL(pressed(int)), this, SLOT(openEditor(int)));
+    connect(tile, SIGNAL(clicked(int)), this, SLOT(openEditor(int)));
     connect(gv->dataAt(index).get(), SIGNAL(dataChanged()), tile->img, SLOT(refresh()));
 }
 
@@ -212,7 +212,7 @@ void Browser::addNewTile(int index)
 {
     BrowserNewTile *tile = new BrowserNewTile(index, gv->ori());
     layout->addWidget((QWidget *) tile);
-    connect(tile, SIGNAL(pressed(int)), this, SLOT(createGfx(int)));
+    connect(tile, SIGNAL(clicked(int)), this, SLOT(createGfx(int)));
 }
 
 /* It is called when a BrowserNewTile is clicked. */
@@ -296,7 +296,7 @@ BrowserGfxTile::BrowserGfxTile(int index,
                                shared_ptr<GfxData> src,
                                GfxImage::Mode mode,
                                QWidget *parent) :
-    BrowserTile(index, ori, parent)
+    BrowserTile(index, ori, parent), mouse_start(0,0), mouse_mode(0)
 {
     T = Type::Gfx;
 
@@ -339,14 +339,59 @@ BrowserGfxTile::BrowserGfxTile(int index,
 
     connect(img, SIGNAL(refreshHappened()), rect, SLOT(refresh()));
     connect(img, SIGNAL(refreshHappened()), bg,   SLOT(refresh()));
+    connect(view, SIGNAL(gfxEditorViewPressEvent(QPoint,int)), this, SLOT(browserMousePressEvent(QPoint,int)));
+    connect(view, SIGNAL(gfxEditorViewMoveEvent(QPoint)),      this, SLOT(browserMouseMoveEvent(QPoint)));
+    connect(view, SIGNAL(gfxEditorViewReleaseEvent(QPoint)),   this, SLOT(browserMouseReleaseEvent(QPoint)));
 
     img->refresh();
 }
 BrowserGfxTile::~BrowserGfxTile() {}
 
-void BrowserGfxTile::mousePressEvent(QMouseEvent *event)
+void BrowserGfxTile::browserMousePressEvent(QPoint p, int m)
 {
-    emit pressed(I);
+    mouse_start = p;
+    mouse_mode = m&1; /* Do not care about Ctrl key */
+
+    if (!mouse_mode) /* Right click */
+    {
+        QMessageBox msgBox;
+        msgBox.setText("TODO:\nA menu will pop-up here");
+        msgBox.exec();
+        return;
+    }
+
+    browserMouseMoveEvent(p);
+}
+
+void BrowserGfxTile::browserMouseMoveEvent(QPoint p)
+{
+    if (mouse_mode) /* Left click */
+    {
+        if ( (p-mouse_start).manhattanLength() >=
+             QApplication::startDragDistance() )
+        {
+            /* dragged */
+
+            QDrag *drag = new QDrag(this);
+            QMimeData *mimeData = new QMimeData;
+
+            mimeData->setData(mimeTypeGfxData,img->exportData(mouse_start));
+            drag->setMimeData(mimeData);
+            /* TODO: Tell 'img' to generate pixmap from selection */
+            //drag->setPixmap(iconPixmap);
+            drag->exec(); /* We always copy, do not care the result. */
+        }
+    }
+}
+
+void BrowserGfxTile::browserMouseReleaseEvent(QPoint p)
+{
+    if ( (p-mouse_start).manhattanLength() <
+         QApplication::startDragDistance() )
+    {
+        /* not dragged */
+        emit clicked(I);
+    }
 }
 
  /*================================================================================*\
@@ -367,5 +412,5 @@ BrowserNewTile::~BrowserNewTile() {}
 
 void BrowserNewTile::mousePressEvent(QMouseEvent *event)
 {
-    emit pressed(I);
+    emit clicked(I);
 }
