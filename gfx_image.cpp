@@ -737,6 +737,30 @@ void GfxImage::importDataToImage(QByteArray &src, QPoint p)
     }
 }
 
+void GfxImage::importDataToImageNoCursorPos(QByteArray &src, QPoint p)
+{
+    shared_ptr<GfxData> tD = D.lock(); /* data */
+    if(tD) /* data exists */
+    {
+        shared_ptr<GfxData> d(new GfxData());
+        QDataStream ds(src);
+        ds >> d;
+
+        /* paste source into the image */
+        int Ax,Ay,Cx,Cy;
+        Ax=p.x();
+        Ay=p.y();
+        tD->validateSelectionStart(Ax,Ay);
+        tD->paste(d,Ax,Ay);
+
+        /* display target selection */
+        Cx=Ax+d->bitW()-1;
+        Cy=Ay+d->bitH()-1;
+        tD->validateSelection(Ax,Ay,Cx,Cy);
+        emit selectTgt(Ax,Ay,Cx+1-Ax,Cy+1-Ay);
+    }
+}
+
  /*================================================================================*\
 ( *     H E L P E R S
  \*================================================================================*/

@@ -55,18 +55,18 @@ void MainWindow::initScrRects()
     scrRects[(int)ScrPart::CeilingFgL] ->setOffset(QPoint(-216,  -72));
     scrRects[(int)ScrPart::CeilingFgC] ->setOffset(QPoint( -72,  -72));
     scrRects[(int)ScrPart::CeilingFgR] ->setOffset(QPoint(  72,  -72));
-    scrRects[(int)ScrPart::CeilingL]   ->setOffset(QPoint(-170,  -51));
-    scrRects[(int)ScrPart::CeilingC]   ->setOffset(QPoint( -32,  -51));
-    scrRects[(int)ScrPart::CeilingR]   ->setOffset(QPoint( 102,  -51));
+    scrRects[(int)ScrPart::CeilingL]   ->setOffset(QPoint(-168,  -51));
+    scrRects[(int)ScrPart::CeilingC]   ->setOffset(QPoint( -24,  -51));
+    scrRects[(int)ScrPart::CeilingR]   ->setOffset(QPoint( 120,  -51));
     scrRects[(int)ScrPart::BackgroundL]->setOffset(QPoint(-180,  -32));
     scrRects[(int)ScrPart::BackgroundC]->setOffset(QPoint( -60,  -32));
     scrRects[(int)ScrPart::BackgroundR]->setOffset(QPoint(  60,  -32));
-    scrRects[(int)ScrPart::WallL]      ->setOffset(QPoint(-170,  -53));
-    scrRects[(int)ScrPart::WallC]      ->setOffset(QPoint( -26,  -53));
-    scrRects[(int)ScrPart::WallR]      ->setOffset(QPoint( 118,  -53));
-    scrRects[(int)ScrPart::FloorL]     ->setOffset(QPoint(-170,   30));
-    scrRects[(int)ScrPart::FloorC]     ->setOffset(QPoint( -32,   30));
-    scrRects[(int)ScrPart::FloorR]     ->setOffset(QPoint( 102,   30));
+    scrRects[(int)ScrPart::WallL]      ->setOffset(QPoint(-168,  -53));
+    scrRects[(int)ScrPart::WallC]      ->setOffset(QPoint( -24,  -53));
+    scrRects[(int)ScrPart::WallR]      ->setOffset(QPoint( 120,  -53));
+    scrRects[(int)ScrPart::FloorL]     ->setOffset(QPoint(-168,   30));
+    scrRects[(int)ScrPart::FloorC]     ->setOffset(QPoint( -24,   30));
+    scrRects[(int)ScrPart::FloorR]     ->setOffset(QPoint( 120,   30));
     scrRects[(int)ScrPart::FloorFgL]   ->setOffset(QPoint(-216,   48));
     scrRects[(int)ScrPart::FloorFgC]   ->setOffset(QPoint( -72,   48));
     scrRects[(int)ScrPart::FloorFgR]   ->setOffset(QPoint(  72,   48));
@@ -196,8 +196,8 @@ void MainWindow::dndDrop(QByteArray &src, QPoint p)
 {
     dndLoad();
     dndImport(src,p);
-    if(dndTest(p))
-        dndSave(p);
+    if(dndTest(src,p))
+        dndSave(src,p);
     else
         dndLoad();
     dndRefresh();
@@ -216,6 +216,9 @@ void MainWindow::dndLoad()
     scrHisC->load(scrDatas.at((int)ScrPart::CeilingFgC));
     scrHisB->load(scrDatas.at((int)ScrPart::BackgroundC));
     scrHisF->load(scrDatas.at((int)ScrPart::FloorFgC));
+    scrHisCSpr->load(scrDatas.at((int)ScrPart::CeilingC));
+    scrHisWSpr->load(scrDatas.at((int)ScrPart::WallC));
+    scrHisFSpr->load(scrDatas.at((int)ScrPart::FloorC));
 }
 
 void MainWindow::dndRefresh()
@@ -223,40 +226,105 @@ void MainWindow::dndRefresh()
     scrImgs.at((int)ScrPart::CeilingFgC)->refresh();
     scrImgs.at((int)ScrPart::BackgroundC)->refresh();
     scrImgs.at((int)ScrPart::FloorFgC)->refresh();
+    scrImgs.at((int)ScrPart::CeilingC)->refresh();
+    scrImgs.at((int)ScrPart::WallC)->refresh();
+    scrImgs.at((int)ScrPart::FloorC)->refresh();
 }
 
 void MainWindow::dndImport(QByteArray &src, QPoint p)
 {
     int x = p.x();
     int y = p.y();
-    if      ( y < -40 ) scrImgs.at((int)ScrPart::CeilingFgC)-> importDataToImage(src, QPoint(x+72,y+72));
-    else if ( y <  40 ) scrImgs.at((int)ScrPart::BackgroundC)->importDataToImage(src, QPoint(x+60,y+32));
-    else                scrImgs.at((int)ScrPart::FloorFgC)->   importDataToImage(src, QPoint(x+72,y-48));
+    if ((quint8)GfxData::Type::Sprite == src.at(0))
+    {
+        if (wallState)
+        {
+            scrImgs.at((int)ScrPart::WallC)->importDataToImageNoCursorPos(src, QPoint(0,0));
+        }
+        else
+        {
+            if ( y < 0 ) scrImgs.at((int)ScrPart::CeilingC)->importDataToImageNoCursorPos(src, QPoint(0,0));
+            else         scrImgs.at((int)ScrPart::FloorC)->  importDataToImageNoCursorPos(src, QPoint(0,0));
+        }
+    }
+    else
+    {
+        if      ( y < -40 ) scrImgs.at((int)ScrPart::CeilingFgC)-> importDataToImage(src, QPoint(x+72,y+72));
+        else if ( y <  40 ) scrImgs.at((int)ScrPart::BackgroundC)->importDataToImage(src, QPoint(x+60,y+32));
+        else                scrImgs.at((int)ScrPart::FloorFgC)->   importDataToImage(src, QPoint(x+72,y-48));
+    }
 }
 
-bool MainWindow::dndTest(QPoint p)
+bool MainWindow::dndTest(QByteArray &src, QPoint p)
 {
     int y = p.y();
-    if      ( y < -40 ) return props.img2mapCeiling(   sector, scrDatas.at((int)ScrPart::CeilingFgC));
-    else if ( y <  40 ) return props.img2mapBackground(sector, scrDatas.at((int)ScrPart::BackgroundC));
-    else                return props.img2mapFloor(     sector, scrDatas.at((int)ScrPart::FloorFgC));
+    if ((quint8)GfxData::Type::Sprite == src.at(0))
+    {
+        if (wallState)
+        {
+            return true; // TODO: real check
+        }
+        else
+        {
+            return true; // TODO: real check
+        }
+    }
+    else
+    {
+        if      ( y < -40 ) return props.img2mapCeiling(   sector, scrDatas.at((int)ScrPart::CeilingFgC));
+        else if ( y <  40 ) return props.img2mapBackground(sector, scrDatas.at((int)ScrPart::BackgroundC));
+        else                return props.img2mapFloor(     sector, scrDatas.at((int)ScrPart::FloorFgC));
+    }
 }
 
-void MainWindow::dndSave(QPoint p)
+void MainWindow::dndSave(QByteArray &src, QPoint p)
 {
     int y = p.y();
-    if      ( y < -40 ) { editor_img_c_modified=true; scrHisC->save(scrDatas.at((int)ScrPart::CeilingFgC));  }
-    else if ( y <  40 ) { editor_img_b_modified=true; scrHisB->save(scrDatas.at((int)ScrPart::BackgroundC)); }
-    else                { editor_img_f_modified=true; scrHisF->save(scrDatas.at((int)ScrPart::FloorFgC));    }
+    if ((quint8)GfxData::Type::Sprite == src.at(0))
+    {
+        editor_img_s_modified=true;
+        if (wallState)
+        {
+            scrHisWSpr->save(scrDatas.at((int)ScrPart::WallC));
+        }
+        else
+        {
+            if ( y < 0 ) scrHisCSpr->save(scrDatas.at((int)ScrPart::CeilingC));
+            else         scrHisFSpr->save(scrDatas.at((int)ScrPart::FloorC));
+        }
+    }
+    else
+    {
+        if      ( y < -40 ) { editor_img_c_modified=true; scrHisC->save(scrDatas.at((int)ScrPart::CeilingFgC));  }
+        else if ( y <  40 ) { editor_img_b_modified=true; scrHisB->save(scrDatas.at((int)ScrPart::BackgroundC)); }
+        else                { editor_img_f_modified=true; scrHisF->save(scrDatas.at((int)ScrPart::FloorFgC));    }
+    }
 }
 
 void MainWindow::editorMousePressEvent(QPoint p, int /* unused */)
 {
+    int x = p.x();
     int y = p.y();
-    if      ( y < -48 ) { openSectorCEditor(); }
-    else if ( y < -32 ) { cout << "TODO open ceiling sprite editor" << endl; /* TODO */ }
+    if (wallState && -24 < x && x < 24)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("TODO:\nOpen wall editor");
+        msgBox.exec();
+    }
+    else if ( y < -48 ) { openSectorCEditor(); }
+    else if ( y < -32 )
+    {
+        QMessageBox msgBox;
+        msgBox.setText("TODO:\nOpen ceiling sprite editor");
+        msgBox.exec();
+    }
     else if ( y <  32 ) { openSectorBEditor(); }
-    else if ( y <  48 ) { cout << "TODO open floor sprite editor" << endl; /* TODO */ }
+    else if ( y <  48 )
+    {
+        QMessageBox msgBox;
+        msgBox.setText("TODO:\nOpen floor sprite editor");
+        msgBox.exec();
+    }
     else                { openSectorFEditor(); }
 }
 
@@ -305,6 +373,9 @@ void MainWindow::editorImgLoad(void)
     scrHisC->save(scrDatas.at((int)ScrPart::CeilingFgC));
     scrHisB->save(scrDatas.at((int)ScrPart::BackgroundC));
     scrHisF->save(scrDatas.at((int)ScrPart::FloorFgC));
+    scrHisCSpr->save(scrDatas.at((int)ScrPart::CeilingC));
+    scrHisWSpr->save(scrDatas.at((int)ScrPart::WallC));
+    scrHisFSpr->save(scrDatas.at((int)ScrPart::FloorC));
 
     /* Temporary scenery will store modifications until they are saved */
     props.editor_scenery = *(props.sceneries.at(props.maps.at(map_index)->scenery_index));
@@ -325,6 +396,7 @@ void MainWindow::editorImgLoad(void)
     editor_img_b_modified = false;
     editor_img_f_modified = false;
     editor_img_s_modified = false;
+    editor_img_t_modified = false;
 }
 
 void MainWindow::editorImgSave(void)
@@ -382,6 +454,12 @@ void MainWindow::editorImgSave(void)
         props.maps.at(map_index)->floor_idxs[sector]   = props.editor_floor_idx;
         save_scenery=true;
         editor_img_s_modified=false;
+    }
+
+    if(editor_img_t_modified)
+    {
+        save_scenery=true;
+        editor_img_t_modified=false;
     }
 
     if(save_scenery)

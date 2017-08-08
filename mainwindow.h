@@ -149,6 +149,7 @@ private:
     bool editor_img_b_modified; /* background */
     bool editor_img_f_modified; /* floor */
     bool editor_img_s_modified; /* sprites */
+    bool editor_img_t_modified; /* tile */
 
     /* Map Editor */
     QVector<QGraphicsRectItem *> scrBgs;
@@ -158,6 +159,9 @@ private:
     GfxHistory * scrHisC;
     GfxHistory * scrHisB;
     GfxHistory * scrHisF;
+    GfxHistory * scrHisCSpr;
+    GfxHistory * scrHisWSpr;
+    GfxHistory * scrHisFSpr;
     GfxRectItemSelection *selTgt; /* Selection target */
 
     void initScrPart(ScrPart part, GfxData::Type type, int width, int height, GfxImage::Mode mode);
@@ -183,8 +187,8 @@ private:
     void dndLoad();
     void dndRefresh();
     void dndImport(QByteArray &src, QPoint p);
-    bool dndTest(QPoint p);
-    void dndSave(QPoint p);
+    bool dndTest(QByteArray &src, QPoint p);
+    void dndSave(QByteArray &src, QPoint p);
 
     /* Other Editors */
     CnfTileEditor* sectorCEditor; /* edit ceiling tiles */

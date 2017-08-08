@@ -102,11 +102,15 @@ MainWindow::MainWindow(QWidget *parent) :
     scrHisC = new GfxHistory(scrDatas.at((int)ScrPart::CeilingFgC));
     scrHisB = new GfxHistory(scrDatas.at((int)ScrPart::BackgroundC));
     scrHisF = new GfxHistory(scrDatas.at((int)ScrPart::FloorFgC));
+    scrHisCSpr = new GfxHistory(scrDatas.at((int)ScrPart::CeilingC));
+    scrHisWSpr = new GfxHistory(scrDatas.at((int)ScrPart::WallC));
+    scrHisFSpr = new GfxHistory(scrDatas.at((int)ScrPart::FloorC));
 
     editor_img_c_modified = false;
     editor_img_b_modified = false;
     editor_img_f_modified = false;
     editor_img_s_modified = false;
+    editor_img_t_modified = false;
 
     initScrRects();
     initScrBgs();
@@ -315,7 +319,7 @@ void MainWindow::sceneryChanged(int i)
 
 void MainWindow::tileChanged()
 {
-    editor_img_s_modified = true;
+    editor_img_t_modified = true;
     editorImgSave();
     refreshEditor();
 }
