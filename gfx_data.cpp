@@ -222,6 +222,17 @@ void GfxData::load(shared_ptr<GfxData> src)
         clrmap->data()[i] = new QVector<quint8>( *( src->clrmap->at(i) ) );
 } /* GfxData::load */
 
+void GfxData::pasteWithColor(shared_ptr<GfxData> src, QPoint p)
+{
+    pasteWithColor(src,p.x(),p.y());
+}
+
+void GfxData::pasteWithColor(shared_ptr<GfxData> src, int px, int py)
+{
+    colors[(int)ColorIndex::Color] = src->colors[(int)ColorIndex::Color];
+    paste(src, px, py);
+}
+
 void GfxData::paste(shared_ptr<GfxData> src, QPoint p)
 {
     paste(src,p.x(),p.y());

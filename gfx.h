@@ -80,7 +80,7 @@ public:
     QByteArray exportData(QPoint start);
     QByteArray exportDataFromSelection(QPoint start);
     void importDataToImage(QByteArray &src, QPoint p);
-    void importDataToImageNoCursorPos(QByteArray &src, QPoint p);
+    void importSpriteDataToImage(QByteArray &src, QPoint p);
 
 private:
     QPoint selSrcA, selSrcC;

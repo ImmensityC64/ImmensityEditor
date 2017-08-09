@@ -737,7 +737,7 @@ void GfxImage::importDataToImage(QByteArray &src, QPoint p)
     }
 }
 
-void GfxImage::importDataToImageNoCursorPos(QByteArray &src, QPoint p)
+void GfxImage::importSpriteDataToImage(QByteArray &src, QPoint p)
 {
     shared_ptr<GfxData> tD = D.lock(); /* data */
     if(tD) /* data exists */
@@ -751,7 +751,7 @@ void GfxImage::importDataToImageNoCursorPos(QByteArray &src, QPoint p)
         Ax=p.x();
         Ay=p.y();
         tD->validateSelectionStart(Ax,Ay);
-        tD->paste(d,Ax,Ay);
+        tD->pasteWithColor(d,Ax,Ay);
 
         /* display target selection */
         Cx=Ax+d->bitW()-1;

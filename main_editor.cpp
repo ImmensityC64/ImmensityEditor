@@ -42,9 +42,9 @@ void MainWindow::initScrRects()
     scrRects[(int)ScrPart::BackgroundL]->setRect(-180,  -32, 120,  64);
     scrRects[(int)ScrPart::BackgroundC]->setRect( -60,  -32, 120,  64);
     scrRects[(int)ScrPart::BackgroundR]->setRect(  60,  -32, 120,  64);
-    scrRects[(int)ScrPart::WallL]      ->setRect(-170,  -53,  52, 105);
-    scrRects[(int)ScrPart::WallC]      ->setRect( -26,  -53,  52, 105);
-    scrRects[(int)ScrPart::WallR]      ->setRect( 118,  -53,  52, 105);
+    scrRects[(int)ScrPart::WallL]      ->setRect(-170,  -53,  48, 105);
+    scrRects[(int)ScrPart::WallC]      ->setRect( -26,  -53,  48, 105);
+    scrRects[(int)ScrPart::WallR]      ->setRect( 118,  -53,  48, 105);
     scrRects[(int)ScrPart::FloorL]     ->setRect(-170,   30,  64,  21);
     scrRects[(int)ScrPart::FloorC]     ->setRect( -32,   30,  64,  21);
     scrRects[(int)ScrPart::FloorR]     ->setRect( 102,   30,  64,  21);
@@ -239,12 +239,21 @@ void MainWindow::dndImport(QByteArray &src, QPoint p)
     {
         if (wallState)
         {
-            scrImgs.at((int)ScrPart::WallC)->importDataToImageNoCursorPos(src, QPoint(0,0));
+            int wx = 0;
+            int wy;
+
+            if      ( y < -32 ) { wy =  0; }
+            else if ( y < -11 ) { wy = 21; }
+            else if ( y <  10 ) { wy = 42; }
+            else if ( y <  31 ) { wy = 63; }
+            else                { wy = 84; }
+
+            scrImgs.at((int)ScrPart::WallC)->importSpriteDataToImage(src, QPoint(wx,wy));
         }
         else
         {
-            if ( y < 0 ) scrImgs.at((int)ScrPart::CeilingC)->importDataToImageNoCursorPos(src, QPoint(0,0));
-            else         scrImgs.at((int)ScrPart::FloorC)->  importDataToImageNoCursorPos(src, QPoint(0,0));
+            if ( y < 0 ) scrImgs.at((int)ScrPart::CeilingC)->importSpriteDataToImage(src, QPoint(0,0));
+            else         scrImgs.at((int)ScrPart::FloorC)->  importSpriteDataToImage(src, QPoint(0,0));
         }
     }
     else
