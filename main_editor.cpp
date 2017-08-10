@@ -42,9 +42,9 @@ void MainWindow::initScrRects()
     scrRects[(int)ScrPart::BackgroundL]->setRect(-180,  -32, 120,  64);
     scrRects[(int)ScrPart::BackgroundC]->setRect( -60,  -32, 120,  64);
     scrRects[(int)ScrPart::BackgroundR]->setRect(  60,  -32, 120,  64);
-    scrRects[(int)ScrPart::WallL]      ->setRect(-170,  -53,  48, 105);
-    scrRects[(int)ScrPart::WallC]      ->setRect( -26,  -53,  48, 105);
-    scrRects[(int)ScrPart::WallR]      ->setRect( 118,  -53,  48, 105);
+    scrRects[(int)ScrPart::WallL]      ->setRect(-170,  -53,  52, 105);
+    scrRects[(int)ScrPart::WallC]      ->setRect( -26,  -53,  52, 105);
+    scrRects[(int)ScrPart::WallR]      ->setRect( 118,  -53,  52, 105);
     scrRects[(int)ScrPart::FloorL]     ->setRect(-170,   30,  64,  21);
     scrRects[(int)ScrPart::FloorC]     ->setRect( -32,   30,  64,  21);
     scrRects[(int)ScrPart::FloorR]     ->setRect( 102,   30,  64,  21);
@@ -62,7 +62,7 @@ void MainWindow::initScrRects()
     scrRects[(int)ScrPart::BackgroundC]->setOffset(QPoint( -60,  -32));
     scrRects[(int)ScrPart::BackgroundR]->setOffset(QPoint(  60,  -32));
     scrRects[(int)ScrPart::WallL]      ->setOffset(QPoint(-168,  -53));
-    scrRects[(int)ScrPart::WallC]      ->setOffset(QPoint( -24,  -53));
+    scrRects[(int)ScrPart::WallC]      ->setOffset(QPoint( -26,  -53));
     scrRects[(int)ScrPart::WallR]      ->setOffset(QPoint( 120,  -53));
     scrRects[(int)ScrPart::FloorL]     ->setOffset(QPoint(-168,   30));
     scrRects[(int)ScrPart::FloorC]     ->setOffset(QPoint( -24,   30));
@@ -127,24 +127,27 @@ void MainWindow::initScrBgColors()
 /****    G R I D S
  ******************************************************************************/
 
-void MainWindow::wallVisible    (int state) { wallState     = state; }
+void MainWindow::wallVisible    (int state) { wallState     = state; vrfyWallVisibility(); }
+void MainWindow::wallGridVisible(int state) { wallGridState = state; vrfyWallVisibility(); }
 void MainWindow::playerVisible  (int state) { playerState   = state; }
+
+void MainWindow::vrfyWallVisibility()
+{
+    if (wallState)
+    {
+        wallGrp->show();
+        if (wallGridState) wallGridGrp->show();
+        else               wallGridGrp->hide();
+    }
+    else
+    {
+        wallGrp->hide();
+        wallGridGrp->hide();
+    }
+}
 
 void MainWindow::createGrids()
 {
-//    grid->createMainRect(-152, -72, 80, 24);
-//    grid->createMainRect(  72, -72, 80, 24);
-//    grid->createMainRect(-152,  48, 80, 24);
-//    grid->createMainRect(  72,  48, 80, 24);
-
-//    grid->createMainRect(-152, -48, 86, 16);
-//    grid->createMainRect(  66, -48, 86, 16);
-//    grid->createMainRect(-152,  32, 86, 16);
-//    grid->createMainRect(  66,  32, 86, 16);
-
-//    grid->createMainRect(-152, -32, 92, 64);
-//    grid->createMainRect(  60, -32, 92, 64);
-
     grid->createSeries(Grid::Type::Fine, 8, 8, -72, -72, 72, -48);
     grid->createSeries(Grid::Type::Fine, 8, 8, -60, -32, 60,  32);
     grid->createSeries(Grid::Type::Fine, 8, 8, -72,  48, 72,  72);
@@ -153,24 +156,27 @@ void MainWindow::createGrids()
     grid->createSeries(Grid::Type::Main, 40, 16, -60, -32, 60,  32);
     grid->createSeries(Grid::Type::Main, 48, 24, -72,  48, 72,  72);
 
-//    grid->createSeries(Grid::Type::Main, 48, 24, -216, -72, 216, -48);
-//    grid->createSeries(Grid::Type::Main, 40, 16, -180, -32, 180,  32);
-//    grid->createSeries(Grid::Type::Main, 48, 24, -216,  48, 216,  72);
-
     grid->createMainLine( -24, -48,  -20, -32);
     grid->createMainLine(  24, -48,   20, -32);
     grid->createMainLine( -24,  48,  -20,  32);
     grid->createMainLine(  24,  48,   20,  32);
 
-//    grid->createMainLine(-120, -48, -100, -32);
-//    grid->createMainLine( 120, -48,  100, -32);
-//    grid->createMainLine(-120,  48, -100,  32);
-//    grid->createMainLine( 120,  48,  100,  32);
+    createWallLine( -24, -53,   24, -53);
+    createWallLine( -24,  52,   24,  52);
+    createWallLine( -24, -53,  -24,  52);
+    createWallLine(  24, -53,   24,  52);
+}
 
-//    grid->createMainLine(-168, -48, -140, -32);
-//    grid->createMainLine( 168, -48,  140, -32);
-//    grid->createMainLine(-168,  48, -140,  32);
-//    grid->createMainLine( 168,  48,  140,  32);
+void MainWindow::createWallLine(int x0, int y0, int x1, int y1)
+{
+    QGraphicsLineItem *line;
+    QPen pen = QPen(QColor::fromRgba( Cfg::ins().val(Cfg::EditorWallGridColor) ));
+    pen.setWidth(0);
+    pen.setStyle( (Qt::PenStyle)Qt::SolidLine );
+    line = new QGraphicsLineItem(x0,y0,x1,y1);
+    line->setPen(pen);
+    wallItems.push_back(line);
+    wallGridGrp->addToGroup(wallItems.back());
 }
 
 /****    D R A G  &  D R O P
@@ -254,6 +260,13 @@ void MainWindow::dndImport(QByteArray &src, QPoint p)
         {
             if ( y < 0 ) scrImgs.at((int)ScrPart::CeilingC)->importSpriteDataToImage(src, QPoint(0,0));
             else         scrImgs.at((int)ScrPart::FloorC)->  importSpriteDataToImage(src, QPoint(0,0));
+        }
+    }
+    else if ((quint8)GfxData::Type::Wall == src.at(0))
+    {
+        if (wallState)
+        {
+            scrImgs.at((int)ScrPart::WallC)->importSpriteDataToImage(src, QPoint(0,0));
         }
     }
     else

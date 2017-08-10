@@ -141,19 +141,27 @@ MainWindow::MainWindow(QWidget *parent) :
     /***   G R I D
      ******************************************************************************/
     grid = new Grid(ui->view);
-    createGrids();
-    grid->fineVisible(ui->checkFineGrid->checkState());
-    grid->mainVisible(ui->checkMainGrid->checkState());
-
-    wallState   = ui->checkWall->checkState();
-    playerState = ui->checkPlayer->checkState();
-    wallGrp     = ui->view->scene->createItemGroup(wallItems);
-    playerGrp   = ui->view->scene->createItemGroup(wallItems);
+    wallState     = ui->checkWall->checkState();
+    wallGridState = ui->checkMainGrid->checkState();
+    playerState   = ui->checkPlayer->checkState();
+    wallGrp       = ui->view->scene->createItemGroup(wallItems);
+    wallGridGrp   = ui->view->scene->createItemGroup(wallItems);
+    playerGrp     = ui->view->scene->createItemGroup(wallItems);
+    wallGrp->addToGroup(scrRects[(int)ScrPart::WallL]);
+    wallGrp->addToGroup(scrRects[(int)ScrPart::WallC]);
+    wallGrp->addToGroup(scrRects[(int)ScrPart::WallR]);
     playerGrp  ->setZValue(13);
     wallGrp    ->setZValue(14);
+    wallGridGrp->setZValue(15);
+    createGrids();
+
+    grid->fineVisible(ui->checkFineGrid->checkState());
+    grid->mainVisible(ui->checkMainGrid->checkState());
+    vrfyWallVisibility();
 
     connect(ui->checkFineGrid, SIGNAL(stateChanged(int)), grid, SLOT(fineVisible(int)));
     connect(ui->checkMainGrid, SIGNAL(stateChanged(int)), grid, SLOT(mainVisible(int)));
+    connect(ui->checkMainGrid, SIGNAL(stateChanged(int)), this, SLOT(wallGridVisible(int)));
     connect(ui->checkWall,     SIGNAL(stateChanged(int)), this, SLOT(wallVisible(int)));
     connect(ui->checkPlayer,   SIGNAL(stateChanged(int)), this, SLOT(playerVisible(int)));
 

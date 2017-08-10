@@ -97,6 +97,7 @@ public:
         ViewNoDataColor,
         EditorFineGridColor,
         EditorMainGridColor,
+        EditorWallGridColor,
         EditorMainGridOutland,
         EditorSelSrcPenColor,
         EditorSelSrcBrushColor,

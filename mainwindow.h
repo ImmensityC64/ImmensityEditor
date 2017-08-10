@@ -90,6 +90,7 @@ public slots:
     void tileChanged();
 
     void wallVisible(int);
+    void wallGridVisible(int);
     void playerVisible(int);
 
     void dndEnter(QByteArray &src, QPoint p);
@@ -177,11 +178,15 @@ private:
     /* Grids */
     Grid *grid;
     int wallState;
+    int wallGridState;
     int playerState;
     QList<QGraphicsItem *> wallItems;
     QGraphicsItemGroup *wallGrp;
+    QGraphicsItemGroup *wallGridGrp;
     QGraphicsItemGroup *playerGrp;
     void createGrids();
+    void createWallLine(int x0, int y0, int x1, int y1);
+    void vrfyWallVisibility();
 
     /* Helpers */
     void dndLoad();

@@ -26,6 +26,7 @@ Cfg::Cfg() :
     cfg[ViewNoDataColor]        = 0xFFA8A890; /* #AARRGGBB */
     cfg[EditorFineGridColor]    = 0xFF6080C0; /* #AARRGGBB */
     cfg[EditorMainGridColor]    = 0xFFA0C0FF; /* #AARRGGBB */
+    cfg[EditorWallGridColor]    = 0xFFB0D0FF; /* #AARRGGBB */
     cfg[EditorMainGridOutland]  = 0x80C04040; /* #AARRGGBB */
     cfg[EditorSelSrcPenColor]   = 0x80C0C000; /* #AARRGGBB */
     cfg[EditorSelSrcBrushColor] = 0x20C0C000; /* #AARRGGBB */
