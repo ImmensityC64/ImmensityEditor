@@ -470,10 +470,18 @@ void MainWindow::editorImgSave(void)
 
     if(editor_img_s_modified)
     {
-        /* Save sprites */
-        props.maps.at(map_index)->ceiling_idxs[sector] = props.editor_ceiling_idx;
-        props.maps.at(map_index)->wall_idxs[sector]    = props.editor_wall_idx;
-        props.maps.at(map_index)->floor_idxs[sector]   = props.editor_floor_idx;
+        props.editor_modified_sprites.setBit( props.editor_ceiling_idx , true);
+        props.editor_modified_sprites.setBit( props.editor_floor_idx   , true);
+        props.editor_modified_walls.setBit  ( props.editor_wall_idx    , true);
+        for(int s=0; s<SCENERY_WALL_ROWS; s++)
+            props.editor_modified_sprites.setBit( /* TODO: sprite index */ s , true);
+
+        props.editor_modified_sprites.setBit( props.maps.at(map_index)->ceiling_idxs[sector] , true);
+        props.editor_modified_sprites.setBit( props.maps.at(map_index)->floor_idxs[sector]   , true);
+        props.editor_modified_walls.setBit  ( props.maps.at(map_index)->wall_idxs[sector]    , true);
+        for(int s=0; s<SCENERY_WALL_ROWS; s++)
+            props.editor_modified_sprites.setBit( /* TODO: sprite index */ s , true);
+
         save_scenery=true;
         editor_img_s_modified=false;
     }
@@ -532,6 +540,26 @@ void MainWindow::refreshSceneryBrowsers(void)
             gvSceneryCnfTiles.setDataAt(i, props.map2imgCnfTile(map_index, i));
             props.editor_modified_cnf_tiles.clearBit(i);
             if(gvSceneryCnfTiles.browser()) gvSceneryCnfTiles.browser()->refreshTile(i);
+        }
+    }
+
+    for(int i=0; i<SCENERY_SPRITE_NUM; i++)
+    {
+        if(props.editor_modified_sprites.at(i))
+        {
+            gvScenerySprites.setDataAt(i, props.map2imgSprite(map_index, i));
+            props.editor_modified_sprites.clearBit(i);
+            if(gvScenerySprites.browser()) gvScenerySprites.browser()->refreshTile(i);
+        }
+    }
+
+    for(int i=0; i<SCENERY_WALL_NUM; i++)
+    {
+        if(props.editor_modified_walls.at(i))
+        {
+            gvSceneryWalls.setDataAt(i, props.map2imgWall(map_index, i));
+            props.editor_modified_walls.clearBit(i);
+            if(gvSceneryWalls.browser()) gvSceneryWalls.browser()->refreshTile(i);
         }
     }
 

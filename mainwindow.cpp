@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     initGv(gvSceneryBgTiles,   QString("Tile"),     GfxVector::Scope::Scenery,  Qt::Horizontal, GfxImage::Mode::Sketch,    GfxData::Type::Sketch   );
     initGv(gvSceneryCnfTiles,  QString("CnF Tile"), GfxVector::Scope::Scenery,  Qt::Horizontal, GfxImage::Mode::CnfSketch, GfxData::Type::CnfSketch);
+    initGv(gvScenerySprites,   QString("Sprite"),   GfxVector::Scope::Scenery,  Qt::Horizontal, GfxImage::Mode::Expanded,  GfxData::Type::Sprite   );
+    initGv(gvSceneryWalls,     QString("Wall"),     GfxVector::Scope::Scenery,  Qt::Vertical,   GfxImage::Mode::Wall,      GfxData::Type::Wall     );
 
     /* Initialize gfx vectors of scenery */
     for(int v=0; v<SCENERY_BG_TILE_NUM; v++)
@@ -40,6 +42,18 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         shared_ptr<GfxData> data(new GfxData(gvSceneryCnfTiles.type(), 8*SCENERY_CNF_TILE_COLS, 8*SCENERY_CNF_TILE_ROWS));
         gvSceneryCnfTiles.setDataAt((int)GfxData::Id::Append, data);
+        connect(data.get(), SIGNAL(dataChanged()), this, SLOT(tileChanged()));
+    }
+    for(int v=0; v<SCENERY_SPRITE_NUM; v++)
+    {
+        shared_ptr<GfxData> data(new GfxData(gvScenerySprites.type()));
+        gvScenerySprites.setDataAt((int)GfxData::Id::Append, data);
+        connect(data.get(), SIGNAL(dataChanged()), this, SLOT(tileChanged()));
+    }
+    for(int v=0; v<SCENERY_WALL_NUM; v++)
+    {
+        shared_ptr<GfxData> data(new GfxData(gvSceneryWalls.type()));
+        gvSceneryWalls.setDataAt((int)GfxData::Id::Append, data);
         connect(data.get(), SIGNAL(dataChanged()), this, SLOT(tileChanged()));
     }
 
@@ -67,6 +81,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSceneryCharSet,  SIGNAL(triggered()), this, SLOT(openSceneryCharSet())    );
     connect(ui->actionSceneryBgTiles,  SIGNAL(triggered()), this, SLOT(openSceneryBgTiles())    );
     connect(ui->actionSceneryCnfTiles, SIGNAL(triggered()), this, SLOT(openSceneryCnfTiles())   );
+    connect(ui->actionScenerySprites,  SIGNAL(triggered()), this, SLOT(openScenerySprites())    );
+    connect(ui->actionSceneryWalls,    SIGNAL(triggered()), this, SLOT(openSceneryWalls())      );
 
     connect(ui->actionMapSettings,     SIGNAL(triggered()), this, SLOT(settingsClicked())       );
 
@@ -209,6 +225,8 @@ MainWindow::~MainWindow()
     if(charSetWindow) charSetWindow->close();
     gvSceneryBgTiles.close();
     gvSceneryCnfTiles.close();
+    gvScenerySprites.close();
+    gvSceneryWalls.close();
 
     if(themeEditor) themeEditor->close();
     if(sceneryEditor) sceneryEditor->close();

@@ -446,6 +446,8 @@ public:
     QVector<quint8> editor_block_3_idxs;
     QBitArray editor_modified_bg_tiles;
     QBitArray editor_modified_cnf_tiles;
+    QBitArray editor_modified_sprites;
+    QBitArray editor_modified_walls;
 
     static Props& ins();
 
@@ -461,7 +463,9 @@ private:
         editor_block_2_idxs(3,0),
         editor_block_3_idxs(3,0),
         editor_modified_bg_tiles(SCENERY_BG_TILE_NUM, true),
-        editor_modified_cnf_tiles(SCENERY_CNF_TILE_NUM, true)
+        editor_modified_cnf_tiles(SCENERY_CNF_TILE_NUM, true),
+        editor_modified_sprites(SCENERY_SPRITE_NUM, true),
+        editor_modified_walls(SCENERY_WALL_NUM, true)
     {}
     Props(Props const&);          // Don't implement
     void operator=(Props const&); // Don't implement
@@ -529,6 +533,8 @@ public:
     shared_ptr<GfxData> map2imgBackground(int map_index, int sector);
     shared_ptr<GfxData> map2imgBgTile(int map_index, int tile_index);
     shared_ptr<GfxData> map2imgCnfTile(int map_index, int tile_index);
+    shared_ptr<GfxData> map2imgSprite(int map_index, int tile_index);
+    shared_ptr<GfxData> map2imgWall(int map_index, int tile_index);
     shared_ptr<GfxData> map2imgCharSet(int map_index);
 
     /* generate map data from map editor's images */

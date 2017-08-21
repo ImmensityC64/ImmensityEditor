@@ -49,10 +49,14 @@ private slots:
     void openSceneryCharSet();
     void openSceneryBgTiles();
     void openSceneryCnfTiles();
+    void openScenerySprites();
+    void openSceneryWalls();
 
     void closeSceneryCharSet();
     void closeSceneryBgTiles();
     void closeSceneryCnfTiles();
+    void closeScenerySprites();
+    void closeSceneryWalls();
 
     void openEditSceneries();
     void openEditThemes();
@@ -142,6 +146,8 @@ private:
 
     GfxVector gvSceneryBgTiles;
     GfxVector gvSceneryCnfTiles;
+    GfxVector gvScenerySprites;
+    GfxVector gvSceneryWalls;
 
     Props &props;
     int map_index;
