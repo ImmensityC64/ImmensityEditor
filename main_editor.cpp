@@ -404,6 +404,9 @@ void MainWindow::editorImgLoad(void)
     props.editor_ceiling_idx = props.maps.at(map_index)->ceiling_idxs.at(sector);
     props.editor_wall_idx    = props.maps.at(map_index)->wall_idxs.at(sector);
     props.editor_floor_idx   = props.maps.at(map_index)->floor_idxs.at(sector);
+    props.editor_ceiling_clr = props.maps.at(map_index)->ceiling_clrs.at(sector);
+    props.editor_wall_clr    = props.maps.at(map_index)->wall_clrs.at(sector);
+    props.editor_floor_clr   = props.maps.at(map_index)->floor_clrs.at(sector);
     int blockL = props.sector2blockL(sector);
     for(int b=0; b<=2; b++)
     {
@@ -499,6 +502,9 @@ void MainWindow::editorImgSave(void)
         props.maps.at(map_index)->ceiling_idxs[sector] = props.editor_ceiling_idx;
         props.maps.at(map_index)->wall_idxs[sector]    = props.editor_wall_idx;
         props.maps.at(map_index)->floor_idxs[sector]   = props.editor_floor_idx;
+        props.maps.at(map_index)->ceiling_clrs[sector] = props.editor_ceiling_clr;
+        props.maps.at(map_index)->wall_clrs[sector]    = props.editor_wall_clr;
+        props.maps.at(map_index)->floor_clrs[sector]   = props.editor_floor_clr;
         int blockL = props.sector2blockL(sector);
         for(int b=0; b<=2; b++)
         {

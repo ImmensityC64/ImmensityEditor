@@ -400,6 +400,9 @@ public:
     QVector<quint8> ceiling_idxs;
     QVector<quint8> wall_idxs;
     QVector<quint8> floor_idxs;
+    QVector<quint8> ceiling_clrs;
+    QVector<quint8> wall_clrs;
+    QVector<quint8> floor_clrs;
 
     /* Tile Pointers */
     QVector<quint8> block_c_idxs;
@@ -438,6 +441,9 @@ public:
     quint8 editor_ceiling_idx;
     quint8 editor_wall_idx;
     quint8 editor_floor_idx;
+    quint8 editor_ceiling_clr;
+    quint8 editor_wall_clr;
+    quint8 editor_floor_clr;
     QVector<quint8> editor_block_c_idxs;
     QVector<quint8> editor_block_f_idxs;
     QVector<quint8> editor_block_0_idxs;
@@ -456,6 +462,9 @@ private:
         editor_ceiling_idx(0),
         editor_wall_idx(0),
         editor_floor_idx(0),
+        editor_ceiling_clr(0),
+        editor_wall_clr(0),
+        editor_floor_clr(0),
         editor_block_c_idxs(3,0),
         editor_block_f_idxs(3,0),
         editor_block_0_idxs(3,0),
@@ -528,13 +537,13 @@ public:
     }
 
     /* generate map editor's images from map data */
-    shared_ptr<GfxData> map2imgCeiling(int map_index, int sector);
-    shared_ptr<GfxData> map2imgFloor(int map_index, int sector);
+    shared_ptr<GfxData> map2imgCeiling(   int map_index, int sector);
+    shared_ptr<GfxData> map2imgFloor(     int map_index, int sector);
     shared_ptr<GfxData> map2imgBackground(int map_index, int sector);
-    shared_ptr<GfxData> map2imgBgTile(int map_index, int tile_index);
+    shared_ptr<GfxData> map2imgBgTile( int map_index, int tile_index);
     shared_ptr<GfxData> map2imgCnfTile(int map_index, int tile_index);
-    shared_ptr<GfxData> map2imgSprite(int map_index, int tile_index);
-    shared_ptr<GfxData> map2imgWall(int map_index, int tile_index);
+    shared_ptr<GfxData> map2imgSprite( int map_index, int sprite_index);
+    shared_ptr<GfxData> map2imgWall(   int map_index, int wall_index);
     shared_ptr<GfxData> map2imgCharSet(int map_index);
 
     /* generate map data from map editor's images */
@@ -543,6 +552,8 @@ public:
     bool img2mapFloor(     int sector, shared_ptr<GfxData> img);
     bool img2cnfTile(quint8 index, shared_ptr<GfxData> img);
     bool img2bgTile( quint8 index, shared_ptr<GfxData> img);
+    bool img2sprite(int sector, shared_ptr<GfxData> img);
+    bool img2wall(  int sector, shared_ptr<GfxData> img);
 private:
     bool img2mapCnf(int sector, shared_ptr<GfxData> img, QVector<quint8> *block_idxs);
 

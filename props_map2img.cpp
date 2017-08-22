@@ -132,13 +132,15 @@ shared_ptr<GfxData> Props::map2imgCnfTile(int map_index, int tile_index)
     return ret;
 }
 
-shared_ptr<GfxData> Props::map2imgSprite(int map_index, int tile_index)
+shared_ptr<GfxData> Props::map2imgSprite(int map_index, int sprite_index)
 {
     shared_ptr<GfxData> ret(new GfxData(GfxData::Type::Sprite));
+    int s = maps.at(map_index)->scenery_index;
+    sprite_container *sprite = &(sceneries.at(s)->sprite_vector.data()[sprite_index]);
     return ret;
 }
 
-shared_ptr<GfxData> Props::map2imgWall(int map_index, int tile_index)
+shared_ptr<GfxData> Props::map2imgWall(int map_index, int wall_index)
 {
     shared_ptr<GfxData> ret(new GfxData(GfxData::Type::Wall));
     return ret;

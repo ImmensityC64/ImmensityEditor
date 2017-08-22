@@ -594,3 +594,13 @@ IMG2MAP_BG_TILE_EXIT:
     delete s;
     return ret;
 }
+
+bool Props::img2sprite(int sector, shared_ptr<GfxData> img)
+{
+    return true;
+}
+
+bool Props::img2wall(  int sector, shared_ptr<GfxData> img)
+{
+    return true;
+}

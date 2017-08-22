@@ -76,6 +76,10 @@ QDataStream& operator <<(QDataStream& out, Map const &src)
     out << src.wall_idxs;
     out << src.floor_idxs;
 
+    out << src.ceiling_clrs;
+    out << src.wall_clrs;
+    out << src.floor_clrs;
+
     out << src.block_c_idxs;
     out << src.block_f_idxs;
     out << src.block_0_idxs;
@@ -104,6 +108,10 @@ QDataStream& operator >>(QDataStream& in, Map &dst)
     in >> dst.ceiling_idxs;
     in >> dst.wall_idxs;
     in >> dst.floor_idxs;
+
+    in >> dst.ceiling_clrs;
+    in >> dst.wall_clrs;
+    in >> dst.floor_clrs;
 
     in >> dst.block_c_idxs;
     in >> dst.block_f_idxs;
