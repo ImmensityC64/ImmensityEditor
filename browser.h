@@ -17,7 +17,7 @@ class Browser : public QMainWindow
 {
     Q_OBJECT
 
-protected:
+private:
     GfxVector *gv;
     QStatusBar *status_bar;
     QWidget *central;
@@ -58,15 +58,18 @@ public:
     int setIndex(int tI);
     Type    type(void);
 signals:
-    void pressed(int index);
+    void clicked(int index);
 };
 
 /* BrowserGfxTile displays a graphical object in read-only mode. */
 class BrowserGfxTile : public BrowserTile
 {
     Q_OBJECT
+
 private:
-    void mousePressEvent(QMouseEvent *event);
+    QPoint mouse_start;
+    int mouse_mode;
+
 public:
     GfxRectItemImage *rect;     /* Rect item for image */
     GfxImage *img;              /* Sprite image */
@@ -78,6 +81,11 @@ public:
                             GfxImage::Mode mode = GfxImage::Mode::Nothing,
                             QWidget *parent = 0);
     virtual ~BrowserGfxTile();
+
+public slots:
+    void browserMousePressEvent  (QPoint p, int m);
+    void browserMouseMoveEvent   (QPoint p);
+    void browserMouseReleaseEvent(QPoint p);
 };
 
 /* BrowserNewTile is functioning as a 'new' button to create and edit new graphical objects */

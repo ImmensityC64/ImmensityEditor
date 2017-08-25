@@ -49,10 +49,14 @@ private slots:
     void openSceneryCharSet();
     void openSceneryBgTiles();
     void openSceneryCnfTiles();
+    void openScenerySprites();
+    void openSceneryWalls();
 
     void closeSceneryCharSet();
     void closeSceneryBgTiles();
     void closeSceneryCnfTiles();
+    void closeScenerySprites();
+    void closeSceneryWalls();
 
     void openEditSceneries();
     void openEditThemes();
@@ -90,6 +94,7 @@ public slots:
     void tileChanged();
 
     void wallVisible(int);
+    void wallGridVisible(int);
     void playerVisible(int);
 
     void dndEnter(QByteArray &src, QPoint p);
@@ -141,6 +146,8 @@ private:
 
     GfxVector gvSceneryBgTiles;
     GfxVector gvSceneryCnfTiles;
+    GfxVector gvScenerySprites;
+    GfxVector gvSceneryWalls;
 
     Props &props;
     int map_index;
@@ -149,6 +156,7 @@ private:
     bool editor_img_b_modified; /* background */
     bool editor_img_f_modified; /* floor */
     bool editor_img_s_modified; /* sprites */
+    bool editor_img_t_modified; /* tile */
 
     /* Map Editor */
     QVector<QGraphicsRectItem *> scrBgs;
@@ -158,6 +166,9 @@ private:
     GfxHistory * scrHisC;
     GfxHistory * scrHisB;
     GfxHistory * scrHisF;
+    GfxHistory * scrHisCSpr;
+    GfxHistory * scrHisWSpr;
+    GfxHistory * scrHisFSpr;
     GfxRectItemSelection *selTgt; /* Selection target */
 
     void initScrPart(ScrPart part, GfxData::Type type, int width, int height, GfxImage::Mode mode);
@@ -173,18 +184,23 @@ private:
     /* Grids */
     Grid *grid;
     int wallState;
+    int wallGridState;
     int playerState;
     QList<QGraphicsItem *> wallItems;
     QGraphicsItemGroup *wallGrp;
+    QGraphicsItemGroup *wallGridGrp;
     QGraphicsItemGroup *playerGrp;
     void createGrids();
+    void createWallLine(Qt::PenStyle type, int x0, int y0, int x1, int y1);
+    void vrfyWallVisibility();
+    void vrfyPlayerVisibility();
 
     /* Helpers */
     void dndLoad();
     void dndRefresh();
     void dndImport(QByteArray &src, QPoint p);
-    bool dndTest(QPoint p);
-    void dndSave(QPoint p);
+    bool dndTest(QByteArray &src, QPoint p);
+    void dndSave(QByteArray &src, QPoint p);
 
     /* Other Editors */
     CnfTileEditor* sectorCEditor; /* edit ceiling tiles */

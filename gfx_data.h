@@ -132,6 +132,8 @@ public:
     shared_ptr<GfxData> copy(int ax, int ay, int cx, int cy);
     void paste(shared_ptr<GfxData> src, QPoint p);
     void paste(shared_ptr<GfxData> src, int px, int py);
+    void pasteWithColor(shared_ptr<GfxData> src, QPoint p);
+    void pasteWithColor(shared_ptr<GfxData> src, int px, int py);
     quint64 chr(int cx=0, int cy=0);
     virtual ~GfxData();
 

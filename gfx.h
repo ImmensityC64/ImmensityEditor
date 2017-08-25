@@ -77,8 +77,10 @@ public:
     void selSrcDraw(QPoint i1, QPoint i2);
 
     bool isSelectionDragged(QPoint start);
+    QByteArray exportData(QPoint start);
     QByteArray exportDataFromSelection(QPoint start);
     void importDataToImage(QByteArray &src, QPoint p);
+    void importSpriteDataToImage(QByteArray &src, QPoint p);
 
 private:
     QPoint selSrcA, selSrcC;
@@ -90,7 +92,7 @@ private:
     int hor_offset(int y);
     //                         0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
     //                                |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |
-    const int offset_L[21] = { 0, 0, 0, 0, 0, 2, 2, 5, 5, 7, 7, 9, 9,12,12,14,14,16,16,16,16};
+    const int offset_L[21] = { 0, 0, 0, 0, 0, 4, 4, 7, 7,11,11,13,13,18,18,20,20,24,24,24,24};
     const int offset_C[21] = { 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4};
     const int offset_R[21] = {16,16,16,16,16,14,14,11,11, 9, 9, 7, 7, 4, 4, 2, 2, 0, 0, 0, 0};
 
@@ -244,6 +246,16 @@ class GfxView : public QGraphicsView
 {
    Q_OBJECT
 
+private:
+    void mousePressEvent  (QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent   (QMouseEvent *event);
+
+signals:
+   void gfxEditorViewPressEvent  (QPoint p, int m);
+   void gfxEditorViewReleaseEvent(QPoint p);
+   void gfxEditorViewMoveEvent   (QPoint p);
+
 public:
    QGraphicsScene *scene;
    QGraphicsRectItem *background;
@@ -274,28 +286,22 @@ class GfxEditorView : public GfxView
 
 private:
    const double scaleFactor = 1.15;
-
-   void wheelEvent(QWheelEvent *event);
+   void wheelEvent    (QWheelEvent     *event);
    void dragEnterEvent(QDragEnterEvent *event);
    void dragMoveEvent (QDragMoveEvent  *event);
    void dragLeaveEvent(QDragLeaveEvent *);
    void dropEvent     (QDropEvent      *event);
-   void mousePressEvent  (QMouseEvent *event);
-   void mouseReleaseEvent(QMouseEvent *event);
-   void mouseMoveEvent   (QMouseEvent *event);
-public:
-   explicit GfxEditorView(QWidget *parent = 0);
-   virtual ~GfxEditorView();
 
 signals:
-   void gfxEditorViewPressEvent  (QPoint p, int m);
-   void gfxEditorViewReleaseEvent(QPoint p);
-   void gfxEditorViewMoveEvent   (QPoint p);
    void gfxEditorViewScaleEvent  (void);
    void gfxEditorViewEnterEvent(QByteArray &data, QPoint p);
    void gfxEditorViewDrawEvent (QByteArray &data, QPoint p);
-   void gfxEditorViewDropEvent (QByteArray &data, QPoint p);
    void gfxEditorViewLeaveEvent();
+   void gfxEditorViewDropEvent (QByteArray &data, QPoint p);
+
+public:
+   explicit GfxEditorView(QWidget *parent = 0);
+   virtual ~GfxEditorView();
 };
 
 #endif // GFX_H

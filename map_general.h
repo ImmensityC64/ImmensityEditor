@@ -122,21 +122,51 @@ public:
 class Sprite {
 public:
     QVector<QBitArray> sprite_bits;
-    explicit Sprite():sprite_bits((int)C64::SpriteHeight,QBitArray((int)C64::SpriteWidth)){}
+    explicit Sprite():
+        sprite_bits((int)C64::SpriteHeight,QBitArray((int)C64::SpriteWidth)){}
+    explicit Sprite(shared_ptr<GfxData> img, int wall_row = 0):
+        sprite_bits((int)C64::SpriteHeight,QBitArray((int)C64::SpriteWidth))
+    {
+        load_gfx_data(img, wall_row);
+    }
     virtual ~Sprite(){}
+    void load_gfx_data(shared_ptr<GfxData> img, int wall_row = 0)
+    {
+        int wr = wall_row*(int)C64::SpriteHeight;
+        for(int row=0; row<(int)C64::SpriteHeight; row++)
+        for(int col=0; col<(int)C64::SpriteWidth; col++)
+            sprite_bits[row].setBit(col, img->bitVal(col,wr+row));
+    }
+    bool is_equal_to_gfx_data(shared_ptr<GfxData> img, int wall_row = 0)
+    {
+        int wr = wall_row*(int)C64::SpriteHeight;
+        for(int row=0; row<(int)C64::SpriteHeight; row++)
+        for(int col=0; col<(int)C64::SpriteWidth; col++)
+            if(sprite_bits.at(row).at(col) != img->bitVal(col,wr+row))
+                return false;
+        return true;
+    }
+    shared_ptr<GfxData> gfx_data()
+    {
+        shared_ptr<GfxData> ret(new GfxData(GfxData::Type::Sprite));
+        for(int row=0; row<(int)C64::SpriteHeight; row++)
+        for(int col=0; col<(int)C64::SpriteWidth; col++)
+            ret->setBitVal(col, row, sprite_bits.at(row).at(col));
+        return ret;
+    }
     bool operator ==(Sprite &other) const
     {
         for(int row=0; row<(int)C64::SpriteHeight; row++)
-            for(int col=0; col<(int)C64::SpriteWidth; col++)
-                if(sprite_bits.at(row).at(col) != other.sprite_bits.at(row).at(col))
-                    return false;
+        for(int col=0; col<(int)C64::SpriteWidth; col++)
+            if(sprite_bits.at(row).at(col) != other.sprite_bits.at(row).at(col))
+                return false;
         return true;
     }
     Sprite& operator=(const Sprite& other)
     {
         for(int row=0; row<(int)C64::SpriteHeight; row++)
-            for(int col=0; col<(int)C64::SpriteWidth; col++)
-                sprite_bits[row].setBit(col, other.sprite_bits.at(row).at(col));
+        for(int col=0; col<(int)C64::SpriteWidth; col++)
+            sprite_bits[row].setBit(col, other.sprite_bits.at(row).at(col));
         return *this;
     }
 
@@ -400,6 +430,9 @@ public:
     QVector<quint8> ceiling_idxs;
     QVector<quint8> wall_idxs;
     QVector<quint8> floor_idxs;
+    QVector<quint8> ceiling_clrs;
+    QVector<quint8> wall_clrs;
+    QVector<quint8> floor_clrs;
 
     /* Tile Pointers */
     QVector<quint8> block_c_idxs;
@@ -438,6 +471,9 @@ public:
     quint8 editor_ceiling_idx;
     quint8 editor_wall_idx;
     quint8 editor_floor_idx;
+    quint8 editor_ceiling_clr;
+    quint8 editor_wall_clr;
+    quint8 editor_floor_clr;
     QVector<quint8> editor_block_c_idxs;
     QVector<quint8> editor_block_f_idxs;
     QVector<quint8> editor_block_0_idxs;
@@ -446,6 +482,8 @@ public:
     QVector<quint8> editor_block_3_idxs;
     QBitArray editor_modified_bg_tiles;
     QBitArray editor_modified_cnf_tiles;
+    QBitArray editor_modified_sprites;
+    QBitArray editor_modified_walls;
 
     static Props& ins();
 
@@ -454,6 +492,9 @@ private:
         editor_ceiling_idx(0),
         editor_wall_idx(0),
         editor_floor_idx(0),
+        editor_ceiling_clr(0),
+        editor_wall_clr(0),
+        editor_floor_clr(0),
         editor_block_c_idxs(3,0),
         editor_block_f_idxs(3,0),
         editor_block_0_idxs(3,0),
@@ -461,7 +502,9 @@ private:
         editor_block_2_idxs(3,0),
         editor_block_3_idxs(3,0),
         editor_modified_bg_tiles(SCENERY_BG_TILE_NUM, true),
-        editor_modified_cnf_tiles(SCENERY_CNF_TILE_NUM, true)
+        editor_modified_cnf_tiles(SCENERY_CNF_TILE_NUM, true),
+        editor_modified_sprites(SCENERY_SPRITE_NUM, true),
+        editor_modified_walls(SCENERY_WALL_NUM, true)
     {}
     Props(Props const&);          // Don't implement
     void operator=(Props const&); // Don't implement
@@ -524,21 +567,29 @@ public:
     }
 
     /* generate map editor's images from map data */
-    shared_ptr<GfxData> map2imgCeiling(int map_index, int sector);
-    shared_ptr<GfxData> map2imgFloor(int map_index, int sector);
+    shared_ptr<GfxData> map2imgCeiling   (int map_index, int sector);
+    shared_ptr<GfxData> map2imgFloor     (int map_index, int sector);
     shared_ptr<GfxData> map2imgBackground(int map_index, int sector);
-    shared_ptr<GfxData> map2imgBgTile(int map_index, int tile_index);
+    shared_ptr<GfxData> map2imgBgTile (int map_index, int tile_index);
     shared_ptr<GfxData> map2imgCnfTile(int map_index, int tile_index);
+    shared_ptr<GfxData> map2imgSprite (int map_index, int sprite_index);
+    shared_ptr<GfxData> map2imgWall   (int map_index, int wall_index);
     shared_ptr<GfxData> map2imgCharSet(int map_index);
 
     /* generate map data from map editor's images */
-    bool img2mapCeiling(   int sector, shared_ptr<GfxData> img);
+    bool img2mapCeiling   (int sector, shared_ptr<GfxData> img);
     bool img2mapBackground(int sector, shared_ptr<GfxData> img);
-    bool img2mapFloor(     int sector, shared_ptr<GfxData> img);
+    bool img2mapFloor     (int sector, shared_ptr<GfxData> img);
     bool img2cnfTile(quint8 index, shared_ptr<GfxData> img);
-    bool img2bgTile( quint8 index, shared_ptr<GfxData> img);
+    bool img2bgTile (quint8 index, shared_ptr<GfxData> img);
+    bool img2mapSpriteCeiling(shared_ptr<GfxData> img);
+    bool img2mapSpriteFloor  (shared_ptr<GfxData> img);
+    bool img2mapWall(shared_ptr<GfxData> img);
+    void img2sprite(quint8 index, shared_ptr<GfxData> img);
+    void img2wall  (quint8 index, shared_ptr<GfxData> img);
 private:
     bool img2mapCnf(int sector, shared_ptr<GfxData> img, QVector<quint8> *block_idxs);
+    bool img2mapSpriteCnf(shared_ptr<GfxData> img, quint8 &idx, quint8 &clr);
 
 }; /* Props */
 

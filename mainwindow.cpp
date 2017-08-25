@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     initGv(gvSceneryBgTiles,   QString("Tile"),     GfxVector::Scope::Scenery,  Qt::Horizontal, GfxImage::Mode::Sketch,    GfxData::Type::Sketch   );
     initGv(gvSceneryCnfTiles,  QString("CnF Tile"), GfxVector::Scope::Scenery,  Qt::Horizontal, GfxImage::Mode::CnfSketch, GfxData::Type::CnfSketch);
+    initGv(gvScenerySprites,   QString("Sprite"),   GfxVector::Scope::Scenery,  Qt::Horizontal, GfxImage::Mode::Expanded,  GfxData::Type::Sprite   );
+    initGv(gvSceneryWalls,     QString("Wall"),     GfxVector::Scope::Scenery,  Qt::Vertical,   GfxImage::Mode::Wall,      GfxData::Type::Wall     );
 
     /* Initialize gfx vectors of scenery */
     for(int v=0; v<SCENERY_BG_TILE_NUM; v++)
@@ -40,6 +42,18 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         shared_ptr<GfxData> data(new GfxData(gvSceneryCnfTiles.type(), 8*SCENERY_CNF_TILE_COLS, 8*SCENERY_CNF_TILE_ROWS));
         gvSceneryCnfTiles.setDataAt((int)GfxData::Id::Append, data);
+        connect(data.get(), SIGNAL(dataChanged()), this, SLOT(tileChanged()));
+    }
+    for(int v=0; v<SCENERY_SPRITE_NUM; v++)
+    {
+        shared_ptr<GfxData> data(new GfxData(gvScenerySprites.type()));
+        gvScenerySprites.setDataAt((int)GfxData::Id::Append, data);
+        connect(data.get(), SIGNAL(dataChanged()), this, SLOT(tileChanged()));
+    }
+    for(int v=0; v<SCENERY_WALL_NUM; v++)
+    {
+        shared_ptr<GfxData> data(new GfxData(gvSceneryWalls.type()));
+        gvSceneryWalls.setDataAt((int)GfxData::Id::Append, data);
         connect(data.get(), SIGNAL(dataChanged()), this, SLOT(tileChanged()));
     }
 
@@ -67,6 +81,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSceneryCharSet,  SIGNAL(triggered()), this, SLOT(openSceneryCharSet())    );
     connect(ui->actionSceneryBgTiles,  SIGNAL(triggered()), this, SLOT(openSceneryBgTiles())    );
     connect(ui->actionSceneryCnfTiles, SIGNAL(triggered()), this, SLOT(openSceneryCnfTiles())   );
+    connect(ui->actionScenerySprites,  SIGNAL(triggered()), this, SLOT(openScenerySprites())    );
+    connect(ui->actionSceneryWalls,    SIGNAL(triggered()), this, SLOT(openSceneryWalls())      );
 
     connect(ui->actionMapSettings,     SIGNAL(triggered()), this, SLOT(settingsClicked())       );
 
@@ -102,11 +118,15 @@ MainWindow::MainWindow(QWidget *parent) :
     scrHisC = new GfxHistory(scrDatas.at((int)ScrPart::CeilingFgC));
     scrHisB = new GfxHistory(scrDatas.at((int)ScrPart::BackgroundC));
     scrHisF = new GfxHistory(scrDatas.at((int)ScrPart::FloorFgC));
+    scrHisCSpr = new GfxHistory(scrDatas.at((int)ScrPart::CeilingC));
+    scrHisWSpr = new GfxHistory(scrDatas.at((int)ScrPart::WallC));
+    scrHisFSpr = new GfxHistory(scrDatas.at((int)ScrPart::FloorC));
 
     editor_img_c_modified = false;
     editor_img_b_modified = false;
     editor_img_f_modified = false;
     editor_img_s_modified = false;
+    editor_img_t_modified = false;
 
     initScrRects();
     initScrBgs();
@@ -121,8 +141,8 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->view->scene->addItem(scrBgs.at(i));
     }
 
-    scrBgs[(int)ScrBg::BorderL]->setZValue(9);
-    scrBgs[(int)ScrBg::BorderR]->setZValue(9);
+    scrBgs[(int)ScrBg::BorderL]->setZValue(20);
+    scrBgs[(int)ScrBg::BorderR]->setZValue(20);
 
     selTgt = new GfxRectItemSelection(GfxRectItemSelection::Type::Target);
     selTgt->setZValue(22);
@@ -137,19 +157,27 @@ MainWindow::MainWindow(QWidget *parent) :
     /***   G R I D
      ******************************************************************************/
     grid = new Grid(ui->view);
-    createGrids();
-    grid->fineVisible(ui->checkFineGrid->checkState());
-    grid->mainVisible(ui->checkMainGrid->checkState());
-
-    wallState   = ui->checkWall->checkState();
-    playerState = ui->checkPlayer->checkState();
-    wallGrp     = ui->view->scene->createItemGroup(wallItems);
-    playerGrp   = ui->view->scene->createItemGroup(wallItems);
+    playerState   = ui->checkPlayer->checkState();
+    wallGrp       = ui->view->scene->createItemGroup(wallItems);
+    wallGridGrp   = ui->view->scene->createItemGroup(wallItems);
+    playerGrp     = ui->view->scene->createItemGroup(wallItems);
+    wallGrp->addToGroup(scrRects[(int)ScrPart::WallL]);
+    wallGrp->addToGroup(scrRects[(int)ScrPart::WallC]);
+    wallGrp->addToGroup(scrRects[(int)ScrPart::WallR]);
     playerGrp  ->setZValue(13);
     wallGrp    ->setZValue(14);
+    wallGridGrp->setZValue(15);
+    createGrids();
+
+    grid->fineVisible(ui->checkFineGrid->checkState());
+    grid->mainVisible(ui->checkMainGrid->checkState());
+    wallGridVisible(ui->checkWallGrid->checkState());
+    wallVisible(ui->checkWall->checkState());
+    playerVisible(ui->checkPlayer->checkState());
 
     connect(ui->checkFineGrid, SIGNAL(stateChanged(int)), grid, SLOT(fineVisible(int)));
     connect(ui->checkMainGrid, SIGNAL(stateChanged(int)), grid, SLOT(mainVisible(int)));
+    connect(ui->checkWallGrid, SIGNAL(stateChanged(int)), this, SLOT(wallGridVisible(int)));
     connect(ui->checkWall,     SIGNAL(stateChanged(int)), this, SLOT(wallVisible(int)));
     connect(ui->checkPlayer,   SIGNAL(stateChanged(int)), this, SLOT(playerVisible(int)));
 
@@ -197,6 +225,8 @@ MainWindow::~MainWindow()
     if(charSetWindow) charSetWindow->close();
     gvSceneryBgTiles.close();
     gvSceneryCnfTiles.close();
+    gvScenerySprites.close();
+    gvSceneryWalls.close();
 
     if(themeEditor) themeEditor->close();
     if(sceneryEditor) sceneryEditor->close();
@@ -315,7 +345,7 @@ void MainWindow::sceneryChanged(int i)
 
 void MainWindow::tileChanged()
 {
-    editor_img_s_modified = true;
+    editor_img_t_modified = true;
     editorImgSave();
     refreshEditor();
 }

@@ -89,6 +89,14 @@ BgTileEditor::~BgTileEditor() {}
 
 void BgTileEditor::apply()
 {
+    if (props.editor_scenery.bg_tile_vector.at(I).usage == 0)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Unused tiles are not allowed to be modified!\nSorry!");
+        msgBox.exec();
+        return;
+    }
+
     if(props.img2bgTile(I,data))
     {
         shared_ptr<GfxData> d = src.lock();

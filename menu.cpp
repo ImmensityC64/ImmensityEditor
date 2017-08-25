@@ -110,25 +110,37 @@ void MainWindow::openSceneryCharSet()
 void MainWindow::openSceneryBgTiles()
 {
     if( openBrowser(&gvSceneryBgTiles) )
-    {
-        /* Establish signal connection if a new browser has just been created. */
-        connect(gvSceneryBgTiles.browser(), SIGNAL(destroyed()),
-                this, SLOT(closeSceneryBgTiles()));
-    }
+        connect(gvSceneryBgTiles.browser(), SIGNAL(destroyed()), this, SLOT(closeSceneryBgTiles()));
+    else
+        gvSceneryBgTiles.browser()->activateWindow();
 }
 void MainWindow::openSceneryCnfTiles()
 {
     if( openBrowser(&gvSceneryCnfTiles) )
-    {
-        /* Establish signal connection if a new browser has just been created. */
-        connect(gvSceneryCnfTiles.browser(), SIGNAL(destroyed()),
-                this, SLOT(closeSceneryCnfTiles()));
-    }
+        connect(gvSceneryCnfTiles.browser(), SIGNAL(destroyed()), this, SLOT(closeSceneryCnfTiles()));
+    else
+        gvSceneryCnfTiles.browser()->activateWindow();
+}
+void MainWindow::openScenerySprites()
+{
+    if( openBrowser(&gvScenerySprites) )
+        connect(gvScenerySprites.browser(), SIGNAL(destroyed()), this, SLOT(closeScenerySprites()));
+    else
+        gvScenerySprites.browser()->activateWindow();
+}
+void MainWindow::openSceneryWalls()
+{
+    if( openBrowser(&gvSceneryWalls) )
+        connect(gvSceneryWalls.browser(), SIGNAL(destroyed()), this, SLOT(closeSceneryWalls()));
+    else
+        gvSceneryWalls.browser()->activateWindow();
 }
 
 void MainWindow::closeSceneryCharSet()  { charSetWindow = nullptr; }
 void MainWindow::closeSceneryBgTiles()  { gvSceneryBgTiles.setBrowser(nullptr);  }
 void MainWindow::closeSceneryCnfTiles() { gvSceneryCnfTiles.setBrowser(nullptr); }
+void MainWindow::closeScenerySprites()  { gvScenerySprites.setBrowser(nullptr);  }
+void MainWindow::closeSceneryWalls()    { gvSceneryWalls.setBrowser(nullptr);    }
 
 void MainWindow::openEditSceneries()
 {

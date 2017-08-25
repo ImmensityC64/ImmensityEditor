@@ -3,6 +3,7 @@
 
 Map::Map():
     ceiling_idxs(SCENERY_MAP_SECTORS), wall_idxs(SCENERY_MAP_SECTORS), floor_idxs(SCENERY_MAP_SECTORS),
+    ceiling_clrs(SCENERY_MAP_SECTORS), wall_clrs(SCENERY_MAP_SECTORS), floor_clrs(SCENERY_MAP_SECTORS),
     block_c_idxs(SCENERY_MAP_BLOCKS), block_f_idxs(SCENERY_MAP_BLOCKS),
     block_0_idxs(SCENERY_MAP_BLOCKS), block_1_idxs(SCENERY_MAP_BLOCKS),
     block_2_idxs(SCENERY_MAP_BLOCKS), block_3_idxs(SCENERY_MAP_BLOCKS),
@@ -20,6 +21,9 @@ void Map::loadDefaultValues()
     for(int i=0; i<SCENERY_MAP_SECTORS; ceiling_idxs[i]=0, i++);
     for(int i=0; i<SCENERY_MAP_SECTORS;    wall_idxs[i]=0, i++);
     for(int i=0; i<SCENERY_MAP_SECTORS;   floor_idxs[i]=0, i++);
+    for(int i=0; i<SCENERY_MAP_SECTORS; ceiling_clrs[i]=0, i++);
+    for(int i=0; i<SCENERY_MAP_SECTORS;    wall_clrs[i]=0, i++);
+    for(int i=0; i<SCENERY_MAP_SECTORS;   floor_clrs[i]=0, i++);
 
     for(int i=0; i<SCENERY_MAP_BLOCKS; block_c_idxs[i]=0, i++);
     for(int i=0; i<SCENERY_MAP_BLOCKS; block_f_idxs[i]=0, i++);
@@ -47,6 +51,9 @@ Map *Map::copy()
     for(int i=0; i<SCENERY_MAP_SECTORS; ret->ceiling_idxs[i]=ceiling_idxs[i], i++);
     for(int i=0; i<SCENERY_MAP_SECTORS;    ret->wall_idxs[i]=wall_idxs[i],    i++);
     for(int i=0; i<SCENERY_MAP_SECTORS;   ret->floor_idxs[i]=floor_idxs[i],   i++);
+    for(int i=0; i<SCENERY_MAP_SECTORS; ret->ceiling_clrs[i]=ceiling_clrs[i], i++);
+    for(int i=0; i<SCENERY_MAP_SECTORS;    ret->wall_clrs[i]=wall_clrs[i],    i++);
+    for(int i=0; i<SCENERY_MAP_SECTORS;   ret->floor_clrs[i]=floor_clrs[i],   i++);
 
     for(int i=0; i<SCENERY_MAP_BLOCKS; ret->block_c_idxs[i]=block_c_idxs[i], i++);
     for(int i=0; i<SCENERY_MAP_BLOCKS; ret->block_f_idxs[i]=block_f_idxs[i], i++);
@@ -58,6 +65,9 @@ Map *Map::copy()
     ret->ceiling_idxs  = ceiling_idxs;
     ret->wall_idxs     = wall_idxs;
     ret->floor_idxs    = floor_idxs;
+    ret->ceiling_clrs  = ceiling_clrs;
+    ret->wall_clrs     = wall_clrs;
+    ret->floor_clrs    = floor_clrs;
     ret->block_c_idxs  = block_c_idxs;
     ret->block_f_idxs  = block_f_idxs;
     ret->block_0_idxs  = block_0_idxs;
