@@ -129,7 +129,7 @@ void MainWindow::initScrBgColors()
 
 void MainWindow::wallVisible    (int state) { wallState     = state; vrfyWallVisibility(); }
 void MainWindow::wallGridVisible(int state) { wallGridState = state; vrfyWallVisibility(); }
-void MainWindow::playerVisible  (int state) { playerState   = state; }
+void MainWindow::playerVisible  (int state) { playerState   = state; vrfyPlayerVisibility(); }
 
 void MainWindow::vrfyWallVisibility()
 {
@@ -144,6 +144,11 @@ void MainWindow::vrfyWallVisibility()
         wallGrp->hide();
         wallGridGrp->hide();
     }
+}
+
+void MainWindow::vrfyPlayerVisibility()
+{
+
 }
 
 void MainWindow::createGrids()
@@ -161,18 +166,22 @@ void MainWindow::createGrids()
     grid->createMainLine( -24,  48,  -20,  32);
     grid->createMainLine(  24,  48,   20,  32);
 
-    createWallLine( -24, -53,   24, -53);
-    createWallLine( -24,  52,   24,  52);
-    createWallLine( -24, -53,  -24,  52);
-    createWallLine(  24, -53,   24,  52);
+    createWallLine(Qt::SolidLine, -24, -53,  24, -53);
+    createWallLine(Qt::SolidLine, -24,  52,  24,  52);
+    createWallLine(Qt::SolidLine, -24, -53, -24,  52);
+    createWallLine(Qt::SolidLine,  24, -53,  24,  52);
+    createWallLine(Qt::DotLine, -24, -32,  24, -32);
+    createWallLine(Qt::DotLine, -24, -11,  24, -11);
+    createWallLine(Qt::DotLine, -24,  10,  24,  10);
+    createWallLine(Qt::DotLine, -24,  31,  24,  31);
 }
 
-void MainWindow::createWallLine(int x0, int y0, int x1, int y1)
+void MainWindow::createWallLine(Qt::PenStyle type, int x0, int y0, int x1, int y1)
 {
     QGraphicsLineItem *line;
     QPen pen = QPen(QColor::fromRgba( Cfg::ins().val(Cfg::EditorWallGridColor) ));
     pen.setWidth(0);
-    pen.setStyle( (Qt::PenStyle)Qt::SolidLine );
+    pen.setStyle(type);
     line = new QGraphicsLineItem(x0,y0,x1,y1);
     line->setPen(pen);
     wallItems.push_back(line);
@@ -245,16 +254,14 @@ void MainWindow::dndImport(QByteArray &src, QPoint p)
     {
         if (wallState)
         {
-            int wx = 0;
             int wy;
-
             if      ( y < -32 ) { wy =  0; }
             else if ( y < -11 ) { wy = 21; }
             else if ( y <  10 ) { wy = 42; }
             else if ( y <  31 ) { wy = 63; }
             else                { wy = 84; }
 
-            scrImgs.at((int)ScrPart::WallC)->importSpriteDataToImage(src, QPoint(wx,wy));
+            scrImgs.at((int)ScrPart::WallC)->importSpriteDataToImage(src, QPoint(0, wy));
         }
         else
         {
@@ -284,11 +291,19 @@ bool MainWindow::dndTest(QByteArray &src, QPoint p)
     {
         if (wallState)
         {
-            return true; // TODO: real check
+            return props.img2mapWall(scrDatas.at((int)ScrPart::WallC));
         }
         else
         {
-            return true; // TODO: real check
+            if ( y < 0 ) return props.img2mapSpriteCeiling(scrDatas.at((int)ScrPart::CeilingC));
+            else         return props.img2mapSpriteFloor  (scrDatas.at((int)ScrPart::FloorC  ));
+        }
+    }
+    else if ((quint8)GfxData::Type::Wall == src.at(0))
+    {
+        if (wallState)
+        {
+            return props.img2mapWall(scrDatas.at((int)ScrPart::WallC));
         }
     }
     else
@@ -313,6 +328,14 @@ void MainWindow::dndSave(QByteArray &src, QPoint p)
         {
             if ( y < 0 ) scrHisCSpr->save(scrDatas.at((int)ScrPart::CeilingC));
             else         scrHisFSpr->save(scrDatas.at((int)ScrPart::FloorC));
+        }
+    }
+    else if ((quint8)GfxData::Type::Wall == src.at(0))
+    {
+        if (wallState)
+        {
+            editor_img_s_modified=true;
+            scrHisWSpr->save(scrDatas.at((int)ScrPart::WallC));
         }
     }
     else
@@ -371,9 +394,48 @@ void MainWindow::editorImgLoad(void)
     scrDatas.at((int)ScrPart::CeilingFgC)->load(props.map2imgCeiling(map_index, sector));
     scrDatas.at((int)ScrPart::CeilingFgR)->load(props.map2imgCeiling(map_index, sR));
 
+    int sprL    = props.maps.at(map_index)->ceiling_idxs.at(sL);
+    int sprC    = props.maps.at(map_index)->ceiling_idxs.at(sector);
+    int sprR    = props.maps.at(map_index)->ceiling_idxs.at(sR);
+    int sprClrL = props.maps.at(map_index)->ceiling_clrs.at(sL);
+    int sprClrC = props.maps.at(map_index)->ceiling_clrs.at(sector);
+    int sprClrR = props.maps.at(map_index)->ceiling_clrs.at(sR);
+    scrDatas.at((int)ScrPart::CeilingL)->load(props.map2imgSprite(map_index, sprL));
+    scrDatas.at((int)ScrPart::CeilingC)->load(props.map2imgSprite(map_index, sprC));
+    scrDatas.at((int)ScrPart::CeilingR)->load(props.map2imgSprite(map_index, sprR));
+    scrDatas.at((int)ScrPart::CeilingL)->setColor((int)GfxData::ColorIndex::Color, sprClrL);
+    scrDatas.at((int)ScrPart::CeilingC)->setColor((int)GfxData::ColorIndex::Color, sprClrC);
+    scrDatas.at((int)ScrPart::CeilingR)->setColor((int)GfxData::ColorIndex::Color, sprClrR);
+
     scrDatas.at((int)ScrPart::BackgroundL)->load(props.map2imgBackground(map_index, sL));
     scrDatas.at((int)ScrPart::BackgroundC)->load(props.map2imgBackground(map_index, sector));
     scrDatas.at((int)ScrPart::BackgroundR)->load(props.map2imgBackground(map_index, sR));
+
+    sprL    = props.maps.at(map_index)->wall_idxs.at(sL);
+    sprC    = props.maps.at(map_index)->wall_idxs.at(sector);
+    sprR    = props.maps.at(map_index)->wall_idxs.at(sR);
+    sprClrL = props.maps.at(map_index)->wall_clrs.at(sL);
+    sprClrC = props.maps.at(map_index)->wall_clrs.at(sector);
+    sprClrR = props.maps.at(map_index)->wall_clrs.at(sR);
+    scrDatas.at((int)ScrPart::WallL)->load(props.map2imgWall(map_index, sprL));
+    scrDatas.at((int)ScrPart::WallC)->load(props.map2imgWall(map_index, sprC));
+    scrDatas.at((int)ScrPart::WallR)->load(props.map2imgWall(map_index, sprR));
+    scrDatas.at((int)ScrPart::WallL)->setColor((int)GfxData::ColorIndex::Color, sprClrL);
+    scrDatas.at((int)ScrPart::WallC)->setColor((int)GfxData::ColorIndex::Color, sprClrC);
+    scrDatas.at((int)ScrPart::WallR)->setColor((int)GfxData::ColorIndex::Color, sprClrR);
+
+    sprL    = props.maps.at(map_index)->floor_idxs.at(sL);
+    sprC    = props.maps.at(map_index)->floor_idxs.at(sector);
+    sprR    = props.maps.at(map_index)->floor_idxs.at(sR);
+    sprClrL = props.maps.at(map_index)->floor_clrs.at(sL);
+    sprClrC = props.maps.at(map_index)->floor_clrs.at(sector);
+    sprClrR = props.maps.at(map_index)->floor_clrs.at(sR);
+    scrDatas.at((int)ScrPart::FloorL)->load(props.map2imgSprite(map_index, sprL));
+    scrDatas.at((int)ScrPart::FloorC)->load(props.map2imgSprite(map_index, sprC));
+    scrDatas.at((int)ScrPart::FloorR)->load(props.map2imgSprite(map_index, sprR));
+    scrDatas.at((int)ScrPart::FloorL)->setColor((int)GfxData::ColorIndex::Color, sprClrL);
+    scrDatas.at((int)ScrPart::FloorC)->setColor((int)GfxData::ColorIndex::Color, sprClrC);
+    scrDatas.at((int)ScrPart::FloorR)->setColor((int)GfxData::ColorIndex::Color, sprClrR);
 
     scrDatas.at((int)ScrPart::FloorFgL)->load(props.map2imgFloor(map_index, sL));
     scrDatas.at((int)ScrPart::FloorFgC)->load(props.map2imgFloor(map_index, sector));
@@ -383,9 +445,21 @@ void MainWindow::editorImgLoad(void)
     scrImgs.at((int)ScrPart::CeilingFgC)->refresh();
     scrImgs.at((int)ScrPart::CeilingFgR)->refresh();
 
+    scrImgs.at((int)ScrPart::CeilingL)->refresh();
+    scrImgs.at((int)ScrPart::CeilingC)->refresh();
+    scrImgs.at((int)ScrPart::CeilingR)->refresh();
+
     scrImgs.at((int)ScrPart::BackgroundL)->refresh();
     scrImgs.at((int)ScrPart::BackgroundC)->refresh();
     scrImgs.at((int)ScrPart::BackgroundR)->refresh();
+
+    scrImgs.at((int)ScrPart::WallL)->refresh();
+    scrImgs.at((int)ScrPart::WallC)->refresh();
+    scrImgs.at((int)ScrPart::WallR)->refresh();
+
+    scrImgs.at((int)ScrPart::FloorL)->refresh();
+    scrImgs.at((int)ScrPart::FloorC)->refresh();
+    scrImgs.at((int)ScrPart::FloorR)->refresh();
 
     scrImgs.at((int)ScrPart::FloorFgL)->refresh();
     scrImgs.at((int)ScrPart::FloorFgC)->refresh();

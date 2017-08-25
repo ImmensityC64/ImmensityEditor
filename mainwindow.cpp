@@ -141,8 +141,8 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->view->scene->addItem(scrBgs.at(i));
     }
 
-    scrBgs[(int)ScrBg::BorderL]->setZValue(9);
-    scrBgs[(int)ScrBg::BorderR]->setZValue(9);
+    scrBgs[(int)ScrBg::BorderL]->setZValue(20);
+    scrBgs[(int)ScrBg::BorderR]->setZValue(20);
 
     selTgt = new GfxRectItemSelection(GfxRectItemSelection::Type::Target);
     selTgt->setZValue(22);
@@ -157,8 +157,6 @@ MainWindow::MainWindow(QWidget *parent) :
     /***   G R I D
      ******************************************************************************/
     grid = new Grid(ui->view);
-    wallState     = ui->checkWall->checkState();
-    wallGridState = ui->checkMainGrid->checkState();
     playerState   = ui->checkPlayer->checkState();
     wallGrp       = ui->view->scene->createItemGroup(wallItems);
     wallGridGrp   = ui->view->scene->createItemGroup(wallItems);
@@ -173,11 +171,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     grid->fineVisible(ui->checkFineGrid->checkState());
     grid->mainVisible(ui->checkMainGrid->checkState());
-    vrfyWallVisibility();
+    wallGridVisible(ui->checkWallGrid->checkState());
+    wallVisible(ui->checkWall->checkState());
+    playerVisible(ui->checkPlayer->checkState());
 
     connect(ui->checkFineGrid, SIGNAL(stateChanged(int)), grid, SLOT(fineVisible(int)));
     connect(ui->checkMainGrid, SIGNAL(stateChanged(int)), grid, SLOT(mainVisible(int)));
-    connect(ui->checkMainGrid, SIGNAL(stateChanged(int)), this, SLOT(wallGridVisible(int)));
+    connect(ui->checkWallGrid, SIGNAL(stateChanged(int)), this, SLOT(wallGridVisible(int)));
     connect(ui->checkWall,     SIGNAL(stateChanged(int)), this, SLOT(wallVisible(int)));
     connect(ui->checkPlayer,   SIGNAL(stateChanged(int)), this, SLOT(playerVisible(int)));
 

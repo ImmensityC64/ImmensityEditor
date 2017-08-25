@@ -595,12 +595,160 @@ IMG2MAP_BG_TILE_EXIT:
     return ret;
 }
 
-bool Props::img2sprite(int sector, shared_ptr<GfxData> img)
+bool Props::img2mapSpriteCeiling(shared_ptr<GfxData> img)
 {
-    return true;
+    return img2mapSpriteCnf(img, editor_ceiling_idx, editor_ceiling_clr);
 }
 
-bool Props::img2wall(  int sector, shared_ptr<GfxData> img)
+bool Props::img2mapSpriteFloor(shared_ptr<GfxData> img)
 {
-    return true;
+    return img2mapSpriteCnf(img, editor_floor_idx, editor_floor_clr);
+}
+
+bool Props::img2mapSpriteCnf(shared_ptr<GfxData> img, quint8 &idx, quint8 &clr)
+{
+    bool ret = true;
+
+    /* Temporary scenery
+     * All modificiations will be done in the temporary scenery below.
+     * It will be dropped in case of failure (lack of resources to store new data).
+     * It will be replaced with scenery got in paramaterers in case of success.
+     */
+    Scenery *s = editor_scenery.copy();
+
+    s->freeSprite(idx);
+
+    Sprite sprite(img);
+
+    qint16 sprite_ind = s->findSprite(sprite);
+    if(sprite_ind < 0)
+    {
+        /* not found, let's create it */
+        sprite_ind = s->createSprite(sprite);
+        if(sprite_ind < 0)
+        {
+            /* out of resources */
+            ret = false;
+            goto IMG2MAP_SPRITE_EXIT;
+        }
+    }
+    s->useSprite(sprite_ind);
+    editor_scenery = *s;
+    idx = sprite_ind;
+    clr = img->color((int)GfxData::ColorIndex::Color);
+
+IMG2MAP_SPRITE_EXIT:
+    delete s;
+    return ret;
+}
+
+bool Props::img2mapWall(shared_ptr<GfxData> img)
+{
+    bool ret = true;
+
+    /* Temporary scenery
+     * All modificiations will be done in the temporary scenery below.
+     * It will be dropped in case of failure (lack of resources to store new data).
+     * It will be replaced with scenery got in paramaterers in case of success.
+     */
+    Scenery *s = editor_scenery.copy();
+
+    QVector<Sprite> new_sprite_v;
+
+    Wall identified_sprites;
+    Wall wall;
+    qint16 wall_ind;
+
+    s->freeWall(editor_wall_idx);
+
+    /* Identify existing sprites */
+    for(int row=0; row<SCENERY_WALL_ROWS; row++)
+    {
+        Sprite sprite(img, row);
+        qint16 spr_ind = s->findSprite(sprite);
+        if(0 <= spr_ind)
+        {
+            /* Matching sprite found, let's store its index!
+             * Reserve the sprite, to make sure that creation of
+             * a new sprite will not override it until it will be
+             * registered as used! Note that it may not be used at this moment!
+             */
+            wall.sprite_idxs[row] = spr_ind;
+            identified_sprites.sprite_idxs[row] = 1;
+            s->reserveSprite(spr_ind);
+        }
+        else
+        {
+            /* Found a new sprite, we will create it later */
+            new_sprite_v.append(sprite);
+        }
+    }
+
+    /* Create new sprites */
+    for(int row=0; row<SCENERY_WALL_ROWS; row++)
+    {
+        /* Skip if it has already been identified */
+        if(!identified_sprites.sprite_idxs[row])
+        {
+            Sprite sprite = new_sprite_v.takeFirst();
+
+            /* new_sprite_v may contain the same sprite several times.
+             * Verify wether the current sprite has already been created
+             * in this very loop.
+             */
+            qint16 spr_ind = s->findSprite(sprite);
+
+            if(spr_ind < 0)
+            {
+                /* Sprite must be created */
+                spr_ind = s->createSprite(sprite);
+                s->reserveSprite(spr_ind);
+            }
+
+            if(0 <= spr_ind)
+            {
+                wall.sprite_idxs[row] = spr_ind;
+            }
+            else
+            {
+                /* out of resources */
+                ret = false;
+                goto IMG2MAP_WALL_EXIT;
+            }
+        }
+    }
+
+    wall_ind = s->findWall(wall);
+
+    if(wall_ind < 0)
+    {
+        wall_ind = s->createWall(wall);
+        if(wall_ind < 0)
+        {
+            /* out of resources */
+            ret = false;
+            goto IMG2MAP_WALL_EXIT;
+        }
+    }
+
+    /* Everything was successful, we can save the changes */
+    s->useWall(wall_ind);
+    s->clearReservations();
+    editor_scenery = *s;
+    editor_wall_idx = wall_ind;
+    editor_wall_clr = img->color((int)GfxData::ColorIndex::Color);
+
+IMG2MAP_WALL_EXIT:
+    delete s;
+    return ret;
+}
+
+void Props::img2sprite(quint8 index, shared_ptr<GfxData> img)
+{
+    editor_scenery.sprite_vector[index].sprite.load_gfx_data(img);
+}
+
+void Props::img2wall(quint8 index, shared_ptr<GfxData> img)
+{
+    /* TODO img2wall() */
 }

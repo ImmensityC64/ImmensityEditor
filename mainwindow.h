@@ -191,8 +191,9 @@ private:
     QGraphicsItemGroup *wallGridGrp;
     QGraphicsItemGroup *playerGrp;
     void createGrids();
-    void createWallLine(int x0, int y0, int x1, int y1);
+    void createWallLine(Qt::PenStyle type, int x0, int y0, int x1, int y1);
     void vrfyWallVisibility();
+    void vrfyPlayerVisibility();
 
     /* Helpers */
     void dndLoad();

@@ -174,7 +174,7 @@ void Scenery::freeBgChar(quint8 ind)
             if(!chr_counter)
             {
                 /* Report error, this counter should not be zero! */
-                cerr << __func__ << "(" << ind << ") tries to decrease overall counter but it is zero already!" << endl;
+                fprintf( stderr, "%s(%d) tries to decrease overall counter but it is zero already!\n", __func__, ind);
             }
             else
             {
@@ -224,7 +224,7 @@ void Scenery::freeCnfChar(quint8 ind)
             if(!cnf_chr_counter)
             {
                 /* Report error, this counter should not be zero! */
-                cerr << __func__ << "(" << ind << ") tries to decrease overall counter but it is zero already!" << endl;
+                fprintf( stderr, "%s(%d) tries to decrease overall counter but it is zero already!\n", __func__, ind);
             }
             else
             {
@@ -293,8 +293,8 @@ void Scenery::useBgTile(quint8 ind)
         bg_tile_counter++; /* overall tile usage in scenery */
         BgTile tile = bg_tile_vector.at(ind).tile;
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
-            for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
-                useBgChar(tile.char_idxs.at(row).at(col));
+        for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
+            useBgChar(tile.char_idxs.at(row).at(col));
     }
     usage++;
     bg_tile_vector[ind].usage = usage;
@@ -322,7 +322,7 @@ void Scenery::freeBgTile(quint8 ind)
             if(!bg_tile_counter)
             {
                 /* Report error, this counter should not be zero! */
-                cerr << __func__ << "(" << ind << ") tries to decrease overall counter but it is zero already!" << endl;
+                fprintf( stderr, "%s(%d) tries to decrease overall counter but it is zero already!\n", __func__, ind);
             }
             else
             {
@@ -387,11 +387,11 @@ bool Scenery::useCnfTile(quint8 ind)
         cnf_tile_counter++; /* overall tile usage in scenery */
         CnfTile tile = cnf_tile_vector.at(ind).tile;
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
-            for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
-            {
-                if(!useCnfChar(tile.char_idxs.at(row).at(col)))
-                    return false;
-            }
+        for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
+        {
+            if(!useCnfChar(tile.char_idxs.at(row).at(col)))
+                return false;
+        }
     }
     usage++;
     cnf_tile_vector[ind].usage = usage;
@@ -420,7 +420,7 @@ void Scenery::freeCnfTile(quint8 ind)
             if(!cnf_tile_counter)
             {
                 /* Report error, this counter should not be zero! */
-                cerr << __func__ << "(" << ind << ") tries to decrease overall counter but it is zero already!" << endl;
+                fprintf( stderr, "%s(%d) tries to decrease overall counter but it is zero already!\n", __func__, ind);
             }
             else
             {
@@ -445,12 +445,31 @@ void Scenery::freeCnfTile(quint8 ind)
 
 qint16 Scenery::createSprite(Sprite sprite)
 {
-    return -1;
+    for(qint16 i=0; i<SCENERY_SPRITE_NUM; i++)
+    {
+        if(!sprite_vector.at(i).usage &&
+           !sprite_vector.at(i).keep  &&
+           !sprite_vector.at(i).reserved)
+        {
+            /* We have just found an unused sprite.
+             * Let's overwrite it with the new data.
+             * It is the caller's responsibility to register usage of the sprite!
+             * Caller must check that return value is non-negative (means success)
+             * and call useSprite()!
+             */
+            modifySprite(i, sprite);
+            return i; /* return index of created tile */
+        }
+    }
+    return -1; /* failure, all sprites are in use */
 }
 
 qint16 Scenery::findSprite(Sprite sprite)
 {
-    return -1;
+    for(qint16 i=0; i<SCENERY_SPRITE_NUM; i++)
+        if(sprite_vector.at(i).sprite == sprite)
+            return i; /* found a match */
+    return -1; /* no match was found */
 }
 
 void Scenery::reserveSprite(quint8 ind)
@@ -465,12 +484,44 @@ void Scenery::modifySprite(quint8 ind, Sprite sprite)
 
 void Scenery::useSprite(quint8 ind)
 {
-
+    quint32 usage = sprite_vector.at(ind).usage;
+    if(!usage) sprite_counter++; /* overall sprite usage in scenery */
+    usage++;
+    sprite_vector[ind].usage = usage;
 }
 
 void Scenery::freeSprite(quint8 ind)
 {
+    quint32 usage = sprite_vector.at(ind).usage;
 
+    /* Decrease element usage */
+    if(!usage)
+    {
+        /* Report error, this function should have not been called if element is unused! */
+        fprintf( stderr, "%s(%d) was called, but element is unused!\n", __func__, ind);
+    }
+    else
+    {
+        /* It can be decreased, do it! */
+        usage--;
+
+        /* Has element just become unused? */
+        if(!usage)
+        {
+            /* Decrease overall usage counter in scenery */
+            if(!sprite_counter)
+            {
+                /* Report error, this counter should not be zero! */
+                fprintf( stderr, "%s(%d) tries to decrease overall counter but it is zero already!\n", __func__, ind);
+            }
+            else
+            {
+                sprite_counter--;
+            }
+        }
+    }
+
+    sprite_vector[ind].usage = usage;
 }
 
 /*******************************************************************************
@@ -481,12 +532,31 @@ void Scenery::freeSprite(quint8 ind)
 
 qint16 Scenery::createWall(Wall wall)
 {
-    return -1;
+    for(qint16 i=0; i<SCENERY_WALL_NUM; i++)
+    {
+        if(!wall_vector.at(i).usage &&
+           !wall_vector.at(i).keep  &&
+           !wall_vector.at(i).reserved)
+        {
+            /* We have just found an unused wall.
+             * Let's overwrite it with the new data.
+             * It is the caller's responsibility to register usage of the wall!
+             * Caller must check that return value is non-negative (means success)
+             * and call useWall()!
+             */
+            modifyWall(i,wall);
+            return i; /* return index of created wall */
+        }
+    }
+    return -1; /* failure, all walls are in use */
 }
 
 qint16 Scenery::findWall(Wall wall)
 {
-    return -1;
+    for(qint16 i=0; i<SCENERY_WALL_NUM; i++)
+        if(wall_vector.at(i).wall == wall)
+            return i; /* found a match */
+    return -1; /* no match was found */
 }
 
 void Scenery::reserveWall(quint8 ind)
@@ -501,12 +571,55 @@ void Scenery::modifyWall(quint8 ind, Wall wall)
 
 void Scenery::useWall(quint8 ind)
 {
-
+    quint32 usage = wall_vector.at(ind).usage;
+    if(!usage)
+    {
+        /* it is being used the first time */
+        wall_counter++; /* overall wall usage in scenery */
+        Wall wall = wall_vector.at(ind).wall;
+        for(int row=0; row<SCENERY_WALL_ROWS; row++)
+            useSprite(wall.sprite_idxs.at(row));
+    }
+    usage++;
+    wall_vector[ind].usage = usage;
 }
 
 void Scenery::freeWall(quint8 ind)
 {
+    quint32 usage = wall_vector.at(ind).usage;
 
+    /* Decrease element usage */
+    if(!usage)
+    {
+        /* Report error, this function should have not been called if element is unused! */
+        fprintf( stderr, "%s(%d) was called, but element is unused!\n", __func__, ind);
+    }
+    else
+    {
+        /* It can be decreased, do it! */
+        usage--;
+
+        /* Has element just become unused? */
+        if(!usage)
+        {
+            /* Decrease overall usage counter in scenery */
+            if(!wall_counter)
+            {
+                /* Report error, this counter should not be zero! */
+                fprintf( stderr, "%s(%d) tries to decrease overall counter but it is zero already!\n", __func__, ind);
+            }
+            else
+            {
+                wall_counter--;
+            }
+
+            Wall wall = wall_vector.at(ind).wall;
+            for(int row=0; row<SCENERY_WALL_ROWS; row++)
+                freeSprite(wall.sprite_idxs.at(row));
+        }
+    }
+
+    wall_vector[ind].usage = usage;
 }
 
 /*******************************************************************************

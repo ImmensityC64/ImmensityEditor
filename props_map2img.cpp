@@ -134,15 +134,22 @@ shared_ptr<GfxData> Props::map2imgCnfTile(int map_index, int tile_index)
 
 shared_ptr<GfxData> Props::map2imgSprite(int map_index, int sprite_index)
 {
-    shared_ptr<GfxData> ret(new GfxData(GfxData::Type::Sprite));
     int s = maps.at(map_index)->scenery_index;
-    sprite_container *sprite = &(sceneries.at(s)->sprite_vector.data()[sprite_index]);
-    return ret;
+    return sceneries.at(s)->sprite_vector[sprite_index].sprite.gfx_data();
 }
 
 shared_ptr<GfxData> Props::map2imgWall(int map_index, int wall_index)
 {
+    /* This function does not set sprite color! */
     shared_ptr<GfxData> ret(new GfxData(GfxData::Type::Wall));
+    int s = maps.at(map_index)->scenery_index;
+    const Wall &wall = sceneries.at(s)->wall_vector.at(wall_index).wall;
+    for(int wr=0; wr<SCENERY_WALL_ROWS; wr++)
+    {
+        int sprite_index = wall.sprite_idxs.at(wr);
+        shared_ptr<GfxData> sprImg = map2imgSprite(map_index, sprite_index);
+        ret->paste(sprImg, 0, wr*(int)C64::SpriteHeight);
+    }
     return ret;
 }
 
