@@ -562,8 +562,10 @@ public:
 
     void all_tiles_need_refresh()
     {
-        for(int i=0; i<SCENERY_BG_TILE_NUM; i++) editor_modified_bg_tiles.setBit(i, true);
+        for(int i=0; i<SCENERY_BG_TILE_NUM;  i++) editor_modified_bg_tiles.setBit(i, true);
         for(int i=0; i<SCENERY_CNF_TILE_NUM; i++) editor_modified_cnf_tiles.setBit(i, true);
+        for(int i=0; i<SCENERY_SPRITE_NUM;   i++) editor_modified_sprites.setBit(i, true);
+        for(int i=0; i<SCENERY_WALL_NUM;     i++) editor_modified_walls.setBit(i, true);
     }
 
     /* generate map editor's images from map data */
@@ -586,7 +588,7 @@ public:
     bool img2mapSpriteFloor  (shared_ptr<GfxData> img);
     bool img2mapWall(shared_ptr<GfxData> img);
     void img2sprite(quint8 index, shared_ptr<GfxData> img);
-    void img2wall  (quint8 index, shared_ptr<GfxData> img);
+    bool img2wall(quint8 index, shared_ptr<GfxData> img);
 private:
     bool img2mapCnf(int sector, shared_ptr<GfxData> img, QVector<quint8> *block_idxs);
     bool img2mapSpriteCnf(shared_ptr<GfxData> img, quint8 &idx, quint8 &clr);

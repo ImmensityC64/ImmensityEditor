@@ -48,13 +48,13 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         shared_ptr<GfxData> data(new GfxData(gvScenerySprites.type()));
         gvScenerySprites.setDataAt((int)GfxData::Id::Append, data);
-        connect(data.get(), SIGNAL(dataChanged()), this, SLOT(tileChanged()));
+        connect(data.get(), SIGNAL(dataChanged()), this, SLOT(spriteChanged()));
     }
     for(int v=0; v<SCENERY_WALL_NUM; v++)
     {
         shared_ptr<GfxData> data(new GfxData(gvSceneryWalls.type()));
         gvSceneryWalls.setDataAt((int)GfxData::Id::Append, data);
-        connect(data.get(), SIGNAL(dataChanged()), this, SLOT(tileChanged()));
+        connect(data.get(), SIGNAL(dataChanged()), this, SLOT(wallChanged()));
     }
 
     charSetWindow = nullptr;
@@ -348,6 +348,22 @@ void MainWindow::tileChanged()
     editor_img_t_modified = true;
     editorImgSave();
     refreshEditor();
+}
+
+void MainWindow::spriteChanged()
+{
+    /* Scenery Wall Browser must be update all walls as some of them may contain the modified sprite */
+    for(int v=0; v<SCENERY_WALL_NUM; v++)
+        props.editor_modified_walls.setBit(v, true);
+    tileChanged();
+}
+
+void MainWindow::wallChanged()
+{
+    /* Scenery Sprite Browser must be update all sprites as some of them may contained by the modified wall */
+    for(int v=0; v<SCENERY_SPRITE_NUM; v++)
+        props.editor_modified_sprites.setBit(v, true);
+    tileChanged();
 }
 
 void MainWindow::incSector()

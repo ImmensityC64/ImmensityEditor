@@ -232,12 +232,24 @@ void Browser::openEditor(int index)
     {
         switch (gv->type()) {
         case GfxData::Type::Sprite:
+        {
+            if(GfxVector::Scope::Sketches == gv->scope())
+            {
+                SpriteEditor *se = new SpriteEditor(gv->dataAt(index), index);
+                if     (gv->mode() == GfxImage::Mode::Ceiling) se->changeDisplayMode(1);
+                else if(gv->mode() == GfxImage::Mode::Floor)   se->changeDisplayMode(2);
+                e = se;
+            }
+            else
+                e = (Editor *)new ScenerySpriteEditor(gv->dataAt(index), index);
+            break;
+        }
         case GfxData::Type::Wall:
         {
-            SpriteEditor *se = new SpriteEditor(gv->dataAt(index), index);
-            if     (gv->mode() == GfxImage::Mode::Ceiling) se->changeDisplayMode(1);
-            else if(gv->mode() == GfxImage::Mode::Floor)   se->changeDisplayMode(2);
-            e = se;
+            if(GfxVector::Scope::Sketches == gv->scope())
+                e = (Editor *)new SpriteEditor(gv->dataAt(index), index);
+            else
+                e = (Editor *)new SceneryWallEditor(gv->dataAt(index), index);
             break;
         }
         case GfxData::Type::Sketch:

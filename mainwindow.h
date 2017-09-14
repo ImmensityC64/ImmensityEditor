@@ -92,6 +92,8 @@ public slots:
     void sceneryChanged(int);
     void themeChanged(int);
     void tileChanged();
+    void spriteChanged();
+    void wallChanged();
 
     void wallVisible(int);
     void wallGridVisible(int);

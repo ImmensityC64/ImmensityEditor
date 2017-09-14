@@ -84,3 +84,81 @@ void SpriteEditor::changeImgDisplayMode(int i)
     grid->clear();
     createGrids();
 }
+
+/****    S C E N E R Y   E D I T O R S
+ ******************************************************************************/
+
+ScenerySpriteEditor::ScenerySpriteEditor(shared_ptr<GfxData> init, int index, QWidget *parent) :
+    SpriteEditor(init, index, parent)
+{
+    setWindowTitle("Scenery Sprite Editor");
+}
+
+ScenerySpriteEditor::~ScenerySpriteEditor() {}
+
+void ScenerySpriteEditor::apply()
+{
+    if (props.editor_scenery.sprite_vector.at(I).usage == 0)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Unused sprites are not allowed to be modified!\nSorry!");
+        msgBox.exec();
+        return;
+    }
+
+    props.img2sprite(I,data);
+
+    shared_ptr<GfxData> d = src.lock();
+    if(d)
+    {
+        d->load(data);
+        d->dataChanged();
+    }
+}
+
+void ScenerySpriteEditor::revert()
+{
+
+}
+
+SceneryWallEditor::SceneryWallEditor(shared_ptr<GfxData> init, int index, QWidget *parent) :
+    SpriteEditor(init, index, parent)
+{
+    setWindowTitle("Scenery Wall Editor");
+}
+
+SceneryWallEditor::~SceneryWallEditor() {}
+
+void SceneryWallEditor::apply()
+{
+    if (props.editor_scenery.wall_vector.at(I).usage == 0)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Unused walls are not allowed to be modified!\nSorry!");
+        msgBox.exec();
+        return;
+    }
+
+    if(props.img2wall(I,data))
+    {
+        shared_ptr<GfxData> d = src.lock();
+        if(d)
+        {
+            d->load(data);
+            d->dataChanged();
+        }
+        /* No 'else'. It is a scenery tile. Its data must exist! */
+    }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.setText("There are not enough resources to modify wall!");
+        msgBox.exec();
+        return;
+    }
+}
+
+void SceneryWallEditor::revert()
+{
+
+}

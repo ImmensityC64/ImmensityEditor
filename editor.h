@@ -87,6 +87,28 @@ public slots:
     void changeImgDisplayMode(int i);
 };
 
+class ScenerySpriteEditor : public SpriteEditor
+{
+    Q_OBJECT
+public:
+    explicit ScenerySpriteEditor(shared_ptr<GfxData> init, int index = 0, QWidget *parent = 0);
+    virtual ~ScenerySpriteEditor();
+public slots:
+    void apply(void);
+    void revert(void);
+};
+
+class SceneryWallEditor : public SpriteEditor
+{
+    Q_OBJECT
+public:
+    explicit SceneryWallEditor(shared_ptr<GfxData> init, int index = 0, QWidget *parent = 0);
+    virtual ~SceneryWallEditor();
+public slots:
+    void apply(void);
+    void revert(void);
+};
+
 class BgSketchEditor : public Editor
 {
     Q_OBJECT

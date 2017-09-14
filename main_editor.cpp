@@ -502,6 +502,7 @@ void MainWindow::editorImgSave(void)
 {
     bool save_scenery=false;
     int blockL = props.sector2blockL(sector);
+    Map *m = props.maps.at(map_index);
 
     if(editor_img_c_modified)
     {
@@ -509,7 +510,7 @@ void MainWindow::editorImgSave(void)
         for(int b=0; b<=2; b++)
         {
             props.editor_modified_cnf_tiles.setBit( props.editor_block_c_idxs.at(b) , true);
-            props.editor_modified_cnf_tiles.setBit( props.maps.at(map_index)->block_c_idxs.at(blockL+b) , true);
+            props.editor_modified_cnf_tiles.setBit( m->block_c_idxs.at(blockL+b) , true);
         }
         save_scenery=true;
         editor_img_c_modified=false;
@@ -521,7 +522,7 @@ void MainWindow::editorImgSave(void)
         for(int b=0; b<=2; b++)
         {
             props.editor_modified_cnf_tiles.setBit( props.editor_block_f_idxs.at(b) , true);
-            props.editor_modified_cnf_tiles.setBit( props.maps.at(map_index)->block_f_idxs.at(blockL+b) , true);
+            props.editor_modified_cnf_tiles.setBit( m->block_f_idxs.at(blockL+b) , true);
         }
         save_scenery=true;
         editor_img_f_modified=false;
@@ -536,10 +537,10 @@ void MainWindow::editorImgSave(void)
             props.editor_modified_bg_tiles.setBit( props.editor_block_1_idxs.at(b) , true);
             props.editor_modified_bg_tiles.setBit( props.editor_block_2_idxs.at(b) , true);
             props.editor_modified_bg_tiles.setBit( props.editor_block_3_idxs.at(b) , true);
-            props.editor_modified_bg_tiles.setBit( props.maps.at(map_index)->block_0_idxs.at(blockL+b) , true);
-            props.editor_modified_bg_tiles.setBit( props.maps.at(map_index)->block_1_idxs.at(blockL+b) , true);
-            props.editor_modified_bg_tiles.setBit( props.maps.at(map_index)->block_2_idxs.at(blockL+b) , true);
-            props.editor_modified_bg_tiles.setBit( props.maps.at(map_index)->block_3_idxs.at(blockL+b) , true);
+            props.editor_modified_bg_tiles.setBit( m->block_0_idxs.at(blockL+b) , true);
+            props.editor_modified_bg_tiles.setBit( m->block_1_idxs.at(blockL+b) , true);
+            props.editor_modified_bg_tiles.setBit( m->block_2_idxs.at(blockL+b) , true);
+            props.editor_modified_bg_tiles.setBit( m->block_3_idxs.at(blockL+b) , true);
         }
         save_scenery=true;
         editor_img_b_modified=false;
@@ -550,14 +551,20 @@ void MainWindow::editorImgSave(void)
         props.editor_modified_sprites.setBit( props.editor_ceiling_idx , true);
         props.editor_modified_sprites.setBit( props.editor_floor_idx   , true);
         props.editor_modified_walls.setBit  ( props.editor_wall_idx    , true);
-        for(int s=0; s<SCENERY_WALL_ROWS; s++)
-            props.editor_modified_sprites.setBit( /* TODO: sprite index */ s , true);
+        for(int r=0; r<SCENERY_WALL_ROWS; r++)
+        {
+            int s = props.editor_scenery.wall_vector.at(props.editor_wall_idx).wall.sprite_idxs.at(r);
+            props.editor_modified_sprites.setBit(s, true);
+        }
 
-        props.editor_modified_sprites.setBit( props.maps.at(map_index)->ceiling_idxs[sector] , true);
-        props.editor_modified_sprites.setBit( props.maps.at(map_index)->floor_idxs[sector]   , true);
-        props.editor_modified_walls.setBit  ( props.maps.at(map_index)->wall_idxs[sector]    , true);
-        for(int s=0; s<SCENERY_WALL_ROWS; s++)
-            props.editor_modified_sprites.setBit( /* TODO: sprite index */ s , true);
+        props.editor_modified_sprites.setBit( m->ceiling_idxs[sector] , true);
+        props.editor_modified_sprites.setBit( m->floor_idxs[sector]   , true);
+        props.editor_modified_walls.setBit  ( m->wall_idxs[sector]    , true);
+        for(int r=0; r<SCENERY_WALL_ROWS; r++)
+        {
+            int s = props.sceneries.at(m->scenery_index)->wall_vector.at(m->wall_idxs[sector]).wall.sprite_idxs.at(r);
+            props.editor_modified_sprites.setBit(s, true);
+        }
 
         save_scenery=true;
         editor_img_s_modified=false;
