@@ -911,14 +911,14 @@
               <number>7</number>
              </property>
              <item>
-              <widget class="QLabel" name="label_4">
+              <widget class="QLabel" name="label_6">
                <property name="text">
-                <string>Floor:</string>
+                <string>Ceiling:</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="ColorDialogButton" name="colorFloor">
+              <widget class="ColorDialogButton" name="colorCeiling">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -981,14 +981,14 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="label_6">
+              <widget class="QLabel" name="label_4">
                <property name="text">
-                <string>Ceiling:</string>
+                <string>Floor:</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="ColorDialogButton" name="colorCeiling">
+              <widget class="ColorDialogButton" name="colorFloor">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>

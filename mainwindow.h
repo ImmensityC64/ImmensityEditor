@@ -86,6 +86,10 @@ private slots:
 
     void editorMousePressEvent(QPoint p, int /* unused */);
 
+    void receiveColorCeiling(quint8 i);
+    void receiveColorWall(quint8 i);
+    void receiveColorFloor(quint8 i);
+
 public slots:
     void selectMap(int index);
     void mapSettingsChanged();

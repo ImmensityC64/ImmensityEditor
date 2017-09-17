@@ -153,6 +153,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->view, SIGNAL(gfxEditorViewDropEvent (QByteArray&,QPoint)), this, SLOT(dndDrop (QByteArray&,QPoint)));
     connect(ui->view, SIGNAL(gfxEditorViewLeaveEvent()), this, SLOT(dndLeave()));
     connect(ui->view, SIGNAL(gfxEditorViewPressEvent(QPoint,int)), this, SLOT(editorMousePressEvent(QPoint,int)));
+    connect(ui->colorCeiling, SIGNAL(sendColor(quint8)), this, SLOT(receiveColorCeiling(quint8)));
+    connect(ui->colorWall,    SIGNAL(sendColor(quint8)), this, SLOT(receiveColorWall(quint8)));
+    connect(ui->colorFloor,   SIGNAL(sendColor(quint8)), this, SLOT(receiveColorFloor(quint8)));
 
     /***   G R I D
      ******************************************************************************/
