@@ -308,9 +308,9 @@ bool MainWindow::dndTest(QByteArray &src, QPoint p)
     }
     else
     {
-        if      ( y < -40 ) return props.img2mapCeiling(   sector, scrDatas.at((int)ScrPart::CeilingFgC));
-        else if ( y <  40 ) return props.img2mapBackground(sector, scrDatas.at((int)ScrPart::BackgroundC));
-        else                return props.img2mapFloor(     sector, scrDatas.at((int)ScrPart::FloorFgC));
+        if      ( y < -40 ) return props.img2mapCeiling(   scrDatas.at((int)ScrPart::CeilingFgC ));
+        else if ( y <  40 ) return props.img2mapBackground(scrDatas.at((int)ScrPart::BackgroundC));
+        else                return props.img2mapFloor(     scrDatas.at((int)ScrPart::FloorFgC   ));
     }
 }
 
@@ -397,8 +397,8 @@ void MainWindow::editorImgLoad(void)
      * Ooooh, dear Future David! I hope you will understand this comment later...
      */
 
-    int sL = sector; props.sectorDec(sL);
-    int sR = sector; props.sectorInc(sR);
+    sector_modint sL(sector); sL--;
+    sector_modint sR(sector); sR++;
 
     scrDatas.at((int)ScrPart::CeilingFgL)->load(props.map2imgCeiling(map_index, sL));
     scrDatas.at((int)ScrPart::CeilingFgC)->load(props.map2imgCeiling(map_index, sector));

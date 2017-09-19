@@ -372,14 +372,14 @@ void MainWindow::wallChanged()
 void MainWindow::incSector()
 {
     editorImgSave();
-    props.sectorInc(sector);
+    sector++;
     refreshEditor();
 }
 
 void MainWindow::decSector()
 {
     editorImgSave();
-    props.sectorDec(sector);
+    sector--;
     refreshEditor();
 }
 

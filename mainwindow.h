@@ -157,7 +157,7 @@ private:
 
     Props &props;
     int map_index;
-    int sector;
+    sector_modint sector;
     bool editor_img_c_modified; /* ceiling */
     bool editor_img_b_modified; /* background */
     bool editor_img_f_modified; /* floor */
