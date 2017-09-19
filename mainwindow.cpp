@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     scrImgs((int)ScrPart::Size),
     scrDatas((int)ScrPart::Size),
     map_index(0),
-    sector(0),
+    sector(0), sectorSelectionL(0), sectorSelectionR(0),
     ui(new Ui::MainWindow)
 {
     /***   W I N D O W
@@ -201,6 +201,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->sectorSlider, SIGNAL(valueChanged(int)), this, SLOT(setSector(int)));
     connect(ui->sectorInc, SIGNAL(clicked()), this, SLOT(incSector()));
     connect(ui->sectorDec, SIGNAL(clicked()), this, SLOT(decSector()));
+    connect(ui->btnSelectionL, SIGNAL(clicked()), this, SLOT(setSectorSelectionL()));
+    connect(ui->btnSelectionR, SIGNAL(clicked()), this, SLOT(setSectorSelectionR()));
 
     connect(ui->btnReload, SIGNAL(clicked()), this, SLOT(refreshEditor()));
     connect(ui->btnApply,  SIGNAL(clicked()), this, SLOT(saveModifications()));
@@ -397,6 +399,18 @@ void MainWindow::setSector(QString s)
     refreshEditor();
 }
 
+void MainWindow::setSectorSelectionL()
+{
+    sectorSelectionL = sector;
+    calculateSectorSelection();
+}
+
+void MainWindow::setSectorSelectionR()
+{
+    sectorSelectionR = sector;
+    calculateSectorSelection();
+}
+
 void MainWindow::saveModifications()
 {
     editorImgSave();
@@ -410,9 +424,29 @@ void MainWindow::refreshEditor()
     refreshSceneryBrowsers();
     ui->checkDelete->setChecked(false);
     enableDeletBtn(false);
-    QString s = QString::number(sector);
-    ui->sector->setText(s);
+    ui->sector->setText(QString::number(sector));
     ui->sectorSlider->setSliderPosition(sector);
+    calculateSectorSelection();
+}
+
+void MainWindow::calculateSectorSelection()
+{
+    sectorMoveL = sector;
+    sectorMoveR = sector;
+    sectorMoveR++;
+
+    sectorCopyL = sector;
+    sectorCopyR = sector+sectorSelectionR-sectorSelectionL;
+
+    sectorSelectionNum = int(sectorSelectionR-sectorSelectionL)+1;
+
+    ui->lblSelectionL->setText(QString::number(sectorSelectionL));
+    ui->lblSelectionR->setText(QString::number(sectorSelectionR));
+    ui->lblSelectionNum->setText(QString::number(sectorSelectionNum));
+    ui->lblMoveL->setText(QString::number(sectorMoveL));
+    ui->lblMoveR->setText(QString::number(sectorMoveR));
+    ui->lblCopyL->setText(QString::number(sectorCopyL));
+    ui->lblCopyR->setText(QString::number(sectorCopyR));
 }
 
 void MainWindow::openSectorCEditor()

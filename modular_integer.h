@@ -49,13 +49,13 @@ public:
     {
         return value;
     }
-    modint(T val) { value=val%mod; }
+    modint(T val=0) { value=val%mod; }
     modint<T,mod>& operator =(T val) { value=val%mod; return *this; }
     operator T () const { return value; }
 
-    modint<T,mod>& operator  =(modint<T,mod>& other) { value=other.value; return *this; }
-    modint<T,mod>& operator +=(modint<T,mod>& other) { add(other.value);  return *this; }
-    modint<T,mod>& operator -=(modint<T,mod>& other) { sub(other.value);  return *this; }
+    modint<T,mod>& operator  =(const modint<T,mod>& other) { value=other.value; return *this; }
+    modint<T,mod>& operator +=(const modint<T,mod>& other) { add(other.value);  return *this; }
+    modint<T,mod>& operator -=(const modint<T,mod>& other) { sub(other.value);  return *this; }
 
     // pre-increment
     modint<T,mod>& operator ++() { add(1); return *this; }

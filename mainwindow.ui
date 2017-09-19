@@ -397,13 +397,13 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>25</width>
+              <width>20</width>
               <height>0</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>25</width>
+              <width>20</width>
               <height>16777215</height>
              </size>
             </property>
@@ -414,7 +414,7 @@
              </font>
             </property>
             <property name="text">
-             <string>0</string>
+             <string>XX</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -444,13 +444,13 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>25</width>
+              <width>20</width>
               <height>0</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>25</width>
+              <width>20</width>
               <height>16777215</height>
              </size>
             </property>
@@ -461,7 +461,7 @@
              </font>
             </property>
             <property name="text">
-             <string>0</string>
+             <string>XX</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -516,6 +516,47 @@
             </property>
             <property name="text">
              <string>Right</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Length:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lblSelectionNum">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>20</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>20</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Courier New</family>
+              <pointsize>9</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>XX</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -584,13 +625,13 @@
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>25</width>
+                 <width>20</width>
                  <height>0</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>25</width>
+                 <width>20</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -601,7 +642,7 @@
                 </font>
                </property>
                <property name="text">
-                <string>0</string>
+                <string>XX</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -631,13 +672,13 @@
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>25</width>
+                 <width>20</width>
                  <height>0</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>25</width>
+                 <width>20</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -648,7 +689,7 @@
                 </font>
                </property>
                <property name="text">
-                <string>0</string>
+                <string>XX</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -739,13 +780,13 @@
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>25</width>
+                 <width>20</width>
                  <height>0</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>25</width>
+                 <width>20</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -756,7 +797,7 @@
                 </font>
                </property>
                <property name="text">
-                <string>0</string>
+                <string>XX</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -786,13 +827,13 @@
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>25</width>
+                 <width>20</width>
                  <height>0</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>25</width>
+                 <width>20</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -803,7 +844,7 @@
                 </font>
                </property>
                <property name="text">
-                <string>0</string>
+                <string>XX</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
