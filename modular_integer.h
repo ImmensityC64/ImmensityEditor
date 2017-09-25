@@ -103,7 +103,7 @@ modint<T,mod> operator -(const T& lhs, const modint<T,mod>& rhs) {
 
 template <typename T, T mod>
 bool operator ==(const modint<T,mod>& lhs, const modint<T,mod>& rhs) {
-    return lhs.value == rhs.value;
+    return lhs.get() == rhs.get();
 }
 template <typename T, T mod>
 bool operator !=(const modint<T,mod>& lhs, const modint<T,mod>& rhs) {
@@ -111,7 +111,7 @@ bool operator !=(const modint<T,mod>& lhs, const modint<T,mod>& rhs) {
 }
 template <typename T, T mod>
 bool operator  <(const modint<T,mod>& lhs, const modint<T,mod>& rhs) {
-    return lhs.value < rhs.value;
+    return lhs.get() < rhs.get();
 }
 template <typename T, T mod>
 bool operator  >(const modint<T,mod>& lhs, const modint<T,mod>& rhs) {

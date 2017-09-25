@@ -83,6 +83,8 @@ private slots:
     void setSector(QString s);
     void setSectorSelectionL();
     void setSectorSelectionR();
+    void remapSectorsForMove();
+    void remapSectorsForCopy();
     void saveModifications();
     void refreshEditor();
 
@@ -173,6 +175,8 @@ private:
     bool editor_img_s_modified; /* sprites */
     bool editor_img_t_modified; /* tile */
     void calculateSectorSelection();
+    QVector<int> remapSectors;
+    void sectorMoveOrCopy();
 
     /* Map Editor */
     QVector<QGraphicsRectItem *> scrBgs;

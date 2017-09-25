@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     scrDatas((int)ScrPart::Size),
     map_index(0),
     sector(0), sectorSelectionL(0), sectorSelectionR(0),
+    remapSectors(SCENERY_MAP_SECTORS),
     ui(new Ui::MainWindow)
 {
     /***   W I N D O W
@@ -203,6 +204,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->sectorDec, SIGNAL(clicked()), this, SLOT(decSector()));
     connect(ui->btnSelectionL, SIGNAL(clicked()), this, SLOT(setSectorSelectionL()));
     connect(ui->btnSelectionR, SIGNAL(clicked()), this, SLOT(setSectorSelectionR()));
+    connect(ui->btnMove, SIGNAL(clicked()), this, SLOT(remapSectorsForMove()));
+    connect(ui->btnCopy, SIGNAL(clicked()), this, SLOT(remapSectorsForCopy()));
 
     connect(ui->btnReload, SIGNAL(clicked()), this, SLOT(refreshEditor()));
     connect(ui->btnApply,  SIGNAL(clicked()), this, SLOT(saveModifications()));
@@ -448,6 +451,113 @@ void MainWindow::calculateSectorSelection()
     ui->lblCopyL->setText(QString::number(sectorCopyL));
     ui->lblCopyR->setText(QString::number(sectorCopyR));
 }
+
+void MainWindow::remapSectorsForMove()
+{
+    sector_modint src = sectorSelectionL;
+    sector_modint dst = sectorMoveR;
+    int num = sectorSelectionNum;
+    QBitArray alreadyMoved(SCENERY_MAP_SECTORS);
+
+    for (int i=0; i<SCENERY_MAP_SECTORS; ++i)
+    {
+        while (alreadyMoved.at(src))
+        {
+            /* do not move what has already been moved! */
+            src++;
+        }
+
+        remapSectors[dst] = src;
+        alreadyMoved.setBit(src);
+
+        ++dst;
+        ++src;
+        --num;
+
+        if (0 == num)
+        {
+            /* selection has just been moved,
+             * let's move the remaining sectors! */
+            src = sectorMoveR;
+        }
+    }
+
+    sectorMoveOrCopy();
+}
+
+void MainWindow::remapSectorsForCopy()
+{
+    sector_modint src = sectorSelectionL;
+    sector_modint dst = sectorCopyL;
+    int num = sectorSelectionNum;
+
+    for (int i=0; i<SCENERY_MAP_SECTORS; ++i)
+    {
+        if (num)
+        {
+            /* copy selection */
+            remapSectors[dst] = src;
+            ++src;
+            --num;
+        }
+        else
+        {
+            /* leave the remaining sectors */
+            remapSectors[dst] = dst;
+        }
+        ++dst;
+    }
+
+    sectorMoveOrCopy();
+}
+
+void MainWindow::sectorMoveOrCopy()
+{
+    editorImgSave();
+    Map *m = props.maps.at(map_index);
+    Map *tmpM = m->copy();
+
+    for(int dst=0; dst<SCENERY_MAP_SECTORS; dst++)
+    {
+        int src = remapSectors.at(dst);
+        int srcL = props.sector2blockL(src);
+        int srcC = srcL+1;
+        int srcR = srcC+1;
+        int dstL = props.sector2blockL(dst);
+        int dstC = dstL+1;
+        int dstR = dstC+1;
+
+        m->ceiling_idxs[dst] = tmpM->ceiling_idxs.at(src);
+        m->wall_idxs[dst]    = tmpM->wall_idxs.at(src);
+        m->floor_idxs[dst]   = tmpM->floor_idxs.at(src);
+        m->ceiling_clrs[dst] = tmpM->ceiling_clrs.at(src);
+        m->wall_clrs[dst]    = tmpM->wall_clrs.at(src);
+        m->floor_clrs[dst]   = tmpM->floor_clrs.at(src);
+
+        m->block_c_idxs[dstL] = tmpM->block_c_idxs.at(srcL);
+        m->block_c_idxs[dstC] = tmpM->block_c_idxs.at(srcC);
+        m->block_c_idxs[dstR] = tmpM->block_c_idxs.at(srcR);
+        m->block_f_idxs[dstL] = tmpM->block_f_idxs.at(srcL);
+        m->block_f_idxs[dstC] = tmpM->block_f_idxs.at(srcC);
+        m->block_f_idxs[dstR] = tmpM->block_f_idxs.at(srcR);
+        m->block_0_idxs[dstL] = tmpM->block_0_idxs.at(srcL);
+        m->block_0_idxs[dstC] = tmpM->block_0_idxs.at(srcC);
+        m->block_0_idxs[dstR] = tmpM->block_0_idxs.at(srcR);
+        m->block_1_idxs[dstL] = tmpM->block_1_idxs.at(srcL);
+        m->block_1_idxs[dstC] = tmpM->block_1_idxs.at(srcC);
+        m->block_1_idxs[dstR] = tmpM->block_1_idxs.at(srcR);
+        m->block_2_idxs[dstL] = tmpM->block_2_idxs.at(srcL);
+        m->block_2_idxs[dstC] = tmpM->block_2_idxs.at(srcC);
+        m->block_2_idxs[dstR] = tmpM->block_2_idxs.at(srcR);
+        m->block_3_idxs[dstL] = tmpM->block_3_idxs.at(srcL);
+        m->block_3_idxs[dstC] = tmpM->block_3_idxs.at(srcC);
+        m->block_3_idxs[dstR] = tmpM->block_3_idxs.at(srcR);
+    }
+
+    delete tmpM;
+    refreshEditor();
+}
+
 
 void MainWindow::openSectorCEditor()
 {
