@@ -1,17 +1,17 @@
 
 #include "map_general.h"
 
-bool Props::img2mapCeiling(int sector, shared_ptr<GfxData> img)
+bool Props::img2mapCeiling(shared_ptr<GfxData> img)
 {
-    return img2mapCnf(sector, img, &editor_block_c_idxs);
+    return img2mapCnf(img, &editor_block_c_idxs);
 }
 
-bool Props::img2mapFloor(int sector, shared_ptr<GfxData> img)
+bool Props::img2mapFloor(shared_ptr<GfxData> img)
 {
-    return img2mapCnf(sector, img, &editor_block_f_idxs);
+    return img2mapCnf(img, &editor_block_f_idxs);
 }
 
-bool Props::img2mapCnf(int sector, shared_ptr<GfxData> img, QVector<quint8> *block_idxs)
+bool Props::img2mapCnf(shared_ptr<GfxData> img, QVector<quint8> *block_idxs)
 {
     bool ret = true;
 
@@ -189,7 +189,7 @@ IMG2MAP_CNF_EXIT:
     return ret;
 }
 
-bool Props::img2mapBackground(int sector, shared_ptr<GfxData> img)
+bool Props::img2mapBackground(shared_ptr<GfxData> img)
 {
     bool ret = true;
 

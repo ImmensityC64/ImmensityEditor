@@ -63,7 +63,8 @@ HEADERS  += general.h \
     cyber.h \
     enemy.h \
     new_dialog.h \
-    char_set_w.h
+    char_set_w.h \
+    modular_integer.h
 
 FORMS    += mainwindow.ui \
     color_dialog.ui \

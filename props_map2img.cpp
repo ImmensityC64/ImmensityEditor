@@ -2,7 +2,7 @@
 #include "map_general.h"
 
 /* generate 3 ceiling tiles of a sector from map data */
-shared_ptr<GfxData> Props::map2imgCeiling(int map_index, int sector)
+shared_ptr<GfxData> Props::map2imgCeiling(int map_index, sector_modint sector)
 {
     shared_ptr<GfxData> ret(new GfxData(GfxData::Type::CnfSketch,
                                         3*8*SCENERY_CNF_TILE_COLS,
@@ -26,7 +26,7 @@ shared_ptr<GfxData> Props::map2imgCeiling(int map_index, int sector)
 }
 
 /* generate 3 floor tiles of a sector from map data */
-shared_ptr<GfxData> Props::map2imgFloor(int map_index, int sector)
+shared_ptr<GfxData> Props::map2imgFloor(int map_index, sector_modint sector)
 {
     shared_ptr<GfxData> ret(new GfxData(GfxData::Type::CnfSketch,
                                         3*8*SCENERY_CNF_TILE_COLS,
@@ -50,7 +50,7 @@ shared_ptr<GfxData> Props::map2imgFloor(int map_index, int sector)
 }
 
 /* generate 3*4 background tiles of a sector from map data */
-shared_ptr<GfxData> Props::map2imgBackground(int map_index, int sector)
+shared_ptr<GfxData> Props::map2imgBackground(int map_index, sector_modint sector)
 {
     shared_ptr<GfxData> ret(new GfxData(GfxData::Type::Sketch,
                                         3*8*SCENERY_BG_TILE_COLS,

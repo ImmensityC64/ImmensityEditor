@@ -2,6 +2,7 @@
 #define MAP_GENERAL_H
 
 #include <gfx_data.h>
+#include <modular_integer.h>
 #include <Qt>
 #include <QVector>
 #include <QString>
@@ -17,8 +18,8 @@
 #define SCENERY_SPRITE_NUM SCENERY_BASIC_SPRITE_NUM+SCENERY_ENEMY_SPRITE_NUM
 #define SCENERY_WALL_NUM 51
 
-#define SCENERY_MAP_BLOCKS 255
 #define SCENERY_MAP_SECTORS 85
+#define SCENERY_MAP_BLOCKS SCENERY_MAP_SECTORS*3 /* Left, Center, Right */
 #define SCENERY_MAP_BLOCK_LAST SCENERY_MAP_BLOCKS-1
 #define SCENERY_MAP_SECTOR_LAST SCENERY_MAP_SECTORS-1
 
@@ -27,6 +28,9 @@
 #define SCENERY_CNF_TILE_ROWS 3
 #define SCENERY_CNF_TILE_COLS 6
 #define SCENERY_WALL_ROWS 5
+
+typedef modint<quint8, SCENERY_MAP_SECTORS> sector_modint;
+typedef modint<quint8, SCENERY_MAP_BLOCKS>  block_modint;
 
 class VE { // Vector Element
 public:
@@ -60,7 +64,7 @@ public:
         colors(SCENERY_BG_TILE_ROWS,QVector<quint8>(SCENERY_BG_TILE_COLS, 0)){}
     virtual ~BgTile(){}
 
-    bool operator ==(BgTile &other) const
+    bool operator ==(BgTile& other) const
     {
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
         for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
@@ -70,6 +74,7 @@ public:
         }
         return true;
     }
+    bool operator !=(BgTile& other) const { return !(operator ==(other)); }
     BgTile& operator=(const BgTile& other)
     {
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
@@ -94,7 +99,7 @@ public:
         colors(SCENERY_CNF_TILE_ROWS,QVector<quint8>(SCENERY_CNF_TILE_COLS, 0)){}
     virtual ~CnfTile(){}
 
-    bool operator ==(CnfTile &other) const
+    bool operator ==(CnfTile& other) const
     {
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
         for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
@@ -104,6 +109,7 @@ public:
         }
         return true;
     }
+    bool operator !=(CnfTile& other) const { return !(operator ==(other)); }
     CnfTile& operator=(const CnfTile& other)
     {
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
@@ -154,7 +160,7 @@ public:
             ret->setBitVal(col, row, sprite_bits.at(row).at(col));
         return ret;
     }
-    bool operator ==(Sprite &other) const
+    bool operator ==(Sprite& other) const
     {
         for(int row=0; row<(int)C64::SpriteHeight; row++)
         for(int col=0; col<(int)C64::SpriteWidth; col++)
@@ -162,6 +168,7 @@ public:
                 return false;
         return true;
     }
+    bool operator !=(Sprite& other) const { return !(operator ==(other)); }
     Sprite& operator=(const Sprite& other)
     {
         for(int row=0; row<(int)C64::SpriteHeight; row++)
@@ -179,13 +186,14 @@ public:
     QVector<quint8> sprite_idxs;
     explicit Wall():sprite_idxs(SCENERY_WALL_ROWS){}
     virtual ~Wall(){}
-    bool operator ==(Wall &other) const
+    bool operator ==(Wall& other) const
     {
         for(int row=0; row<SCENERY_WALL_ROWS; row++)
             if(sprite_idxs.at(row) != other.sprite_idxs.at(row))
                 return false;
         return true;
     }
+    bool operator !=(Wall& other) const { return !(operator ==(other)); }
     Wall& operator=(const Wall& other)
     {
         for(int row=0; row<SCENERY_WALL_ROWS; row++)
@@ -530,35 +538,11 @@ public:
     void deleteMusic(int index);
     bool deleteMap(int index);
 
-    void sectorInc(int &sector)
-    {
-        if(SCENERY_MAP_SECTOR_LAST <= sector) sector = 0;
-        else sector++;
-    }
-
-    void sectorDec(int &sector)
-    {
-        if(0 >= sector) sector = SCENERY_MAP_SECTOR_LAST;
-        else sector--;
-    }
-
-    void blockInc(int &block)
-    {
-        if(SCENERY_MAP_BLOCK_LAST <= block) block = 0;
-        else block++;
-    }
-
-    void blockDec(int &block)
-    {
-        if(0 >= block) block = SCENERY_MAP_BLOCK_LAST;
-        else block--;
-    }
-
     /* return index sector's center block */
-    int sector2block(int sector) { return sector*3+1; }
-    int sector2blockL(int sector) { return sector*3; }
-    int sector2blockR(int sector) { return sector*3+2; }
-    int block2sector(int block) { return block/3; }
+    int sector2blockL(sector_modint sector) { return sector.get()*3; }
+    int sector2block (sector_modint sector) { return sector.get()*3+1; }
+    int sector2blockR(sector_modint sector) { return sector.get()*3+2; }
+    sector_modint block2sector(int block) { return sector_modint((int)(block/3)); }
 
     void all_tiles_need_refresh()
     {
@@ -569,9 +553,9 @@ public:
     }
 
     /* generate map editor's images from map data */
-    shared_ptr<GfxData> map2imgCeiling   (int map_index, int sector);
-    shared_ptr<GfxData> map2imgFloor     (int map_index, int sector);
-    shared_ptr<GfxData> map2imgBackground(int map_index, int sector);
+    shared_ptr<GfxData> map2imgCeiling   (int map_index, sector_modint sector);
+    shared_ptr<GfxData> map2imgFloor     (int map_index, sector_modint sector);
+    shared_ptr<GfxData> map2imgBackground(int map_index, sector_modint sector);
     shared_ptr<GfxData> map2imgBgTile (int map_index, int tile_index);
     shared_ptr<GfxData> map2imgCnfTile(int map_index, int tile_index);
     shared_ptr<GfxData> map2imgSprite (int map_index, int sprite_index);
@@ -579,9 +563,9 @@ public:
     shared_ptr<GfxData> map2imgCharSet(int map_index);
 
     /* generate map data from map editor's images */
-    bool img2mapCeiling   (int sector, shared_ptr<GfxData> img);
-    bool img2mapBackground(int sector, shared_ptr<GfxData> img);
-    bool img2mapFloor     (int sector, shared_ptr<GfxData> img);
+    bool img2mapCeiling   (shared_ptr<GfxData> img);
+    bool img2mapBackground(shared_ptr<GfxData> img);
+    bool img2mapFloor     (shared_ptr<GfxData> img);
     bool img2cnfTile(quint8 index, shared_ptr<GfxData> img);
     bool img2bgTile (quint8 index, shared_ptr<GfxData> img);
     bool img2mapSpriteCeiling(shared_ptr<GfxData> img);
@@ -590,7 +574,7 @@ public:
     void img2sprite(quint8 index, shared_ptr<GfxData> img);
     bool img2wall(quint8 index, shared_ptr<GfxData> img);
 private:
-    bool img2mapCnf(int sector, shared_ptr<GfxData> img, QVector<quint8> *block_idxs);
+    bool img2mapCnf(shared_ptr<GfxData> img, QVector<quint8> *block_idxs);
     bool img2mapSpriteCnf(shared_ptr<GfxData> img, quint8 &idx, quint8 &clr);
 
 }; /* Props */

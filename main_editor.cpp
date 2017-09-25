@@ -308,9 +308,9 @@ bool MainWindow::dndTest(QByteArray &src, QPoint p)
     }
     else
     {
-        if      ( y < -40 ) return props.img2mapCeiling(   sector, scrDatas.at((int)ScrPart::CeilingFgC));
-        else if ( y <  40 ) return props.img2mapBackground(sector, scrDatas.at((int)ScrPart::BackgroundC));
-        else                return props.img2mapFloor(     sector, scrDatas.at((int)ScrPart::FloorFgC));
+        if      ( y < -40 ) return props.img2mapCeiling(   scrDatas.at((int)ScrPart::CeilingFgC ));
+        else if ( y <  40 ) return props.img2mapBackground(scrDatas.at((int)ScrPart::BackgroundC));
+        else                return props.img2mapFloor(     scrDatas.at((int)ScrPart::FloorFgC   ));
     }
 }
 
@@ -323,11 +323,20 @@ void MainWindow::dndSave(QByteArray &src, QPoint p)
         if (wallState)
         {
             scrHisWSpr->save(scrDatas.at((int)ScrPart::WallC));
+            ui->colorWall->buttonColor(scrDatas.at((int)ScrPart::WallC)->color((int)GfxData::ColorIndex::Color));
         }
         else
         {
-            if ( y < 0 ) scrHisCSpr->save(scrDatas.at((int)ScrPart::CeilingC));
-            else         scrHisFSpr->save(scrDatas.at((int)ScrPart::FloorC));
+            if ( y < 0 )
+            {
+                scrHisCSpr->save(scrDatas.at((int)ScrPart::CeilingC));
+                ui->colorCeiling->buttonColor(scrDatas.at((int)ScrPart::CeilingC)->color((int)GfxData::ColorIndex::Color));
+            }
+            else
+            {
+                scrHisFSpr->save(scrDatas.at((int)ScrPart::FloorC));
+                ui->colorFloor->buttonColor(scrDatas.at((int)ScrPart::FloorC)->color((int)GfxData::ColorIndex::Color));
+            }
         }
     }
     else if ((quint8)GfxData::Type::Wall == src.at(0))
@@ -336,6 +345,7 @@ void MainWindow::dndSave(QByteArray &src, QPoint p)
         {
             editor_img_s_modified=true;
             scrHisWSpr->save(scrDatas.at((int)ScrPart::WallC));
+            ui->colorWall->buttonColor(scrDatas.at((int)ScrPart::WallC)->color((int)GfxData::ColorIndex::Color));
         }
     }
     else
@@ -387,8 +397,8 @@ void MainWindow::editorImgLoad(void)
      * Ooooh, dear Future David! I hope you will understand this comment later...
      */
 
-    int sL = sector; props.sectorDec(sL);
-    int sR = sector; props.sectorInc(sR);
+    sector_modint sL(sector); sL--;
+    sector_modint sR(sector); sR++;
 
     scrDatas.at((int)ScrPart::CeilingFgL)->load(props.map2imgCeiling(map_index, sL));
     scrDatas.at((int)ScrPart::CeilingFgC)->load(props.map2imgCeiling(map_index, sector));
@@ -406,6 +416,7 @@ void MainWindow::editorImgLoad(void)
     scrDatas.at((int)ScrPart::CeilingL)->setColor((int)GfxData::ColorIndex::Color, sprClrL);
     scrDatas.at((int)ScrPart::CeilingC)->setColor((int)GfxData::ColorIndex::Color, sprClrC);
     scrDatas.at((int)ScrPart::CeilingR)->setColor((int)GfxData::ColorIndex::Color, sprClrR);
+    ui->colorCeiling->buttonColor(sprClrC);
 
     scrDatas.at((int)ScrPart::BackgroundL)->load(props.map2imgBackground(map_index, sL));
     scrDatas.at((int)ScrPart::BackgroundC)->load(props.map2imgBackground(map_index, sector));
@@ -423,6 +434,7 @@ void MainWindow::editorImgLoad(void)
     scrDatas.at((int)ScrPart::WallL)->setColor((int)GfxData::ColorIndex::Color, sprClrL);
     scrDatas.at((int)ScrPart::WallC)->setColor((int)GfxData::ColorIndex::Color, sprClrC);
     scrDatas.at((int)ScrPart::WallR)->setColor((int)GfxData::ColorIndex::Color, sprClrR);
+    ui->colorWall->buttonColor(sprClrC);
 
     sprL    = props.maps.at(map_index)->floor_idxs.at(sL);
     sprC    = props.maps.at(map_index)->floor_idxs.at(sector);
@@ -436,6 +448,7 @@ void MainWindow::editorImgLoad(void)
     scrDatas.at((int)ScrPart::FloorL)->setColor((int)GfxData::ColorIndex::Color, sprClrL);
     scrDatas.at((int)ScrPart::FloorC)->setColor((int)GfxData::ColorIndex::Color, sprClrC);
     scrDatas.at((int)ScrPart::FloorR)->setColor((int)GfxData::ColorIndex::Color, sprClrR);
+    ui->colorFloor->buttonColor(sprClrC);
 
     scrDatas.at((int)ScrPart::FloorFgL)->load(props.map2imgFloor(map_index, sL));
     scrDatas.at((int)ScrPart::FloorFgC)->load(props.map2imgFloor(map_index, sector));
@@ -601,6 +614,33 @@ void MainWindow::editorImgSave(void)
 
 /****    S P R I T E S
  ******************************************************************************/
+
+void MainWindow::receiveColorCeiling(quint8 i)
+{
+    props.editor_ceiling_clr = i;
+    scrDatas.at((int)ScrPart::CeilingC)->setColor((int)GfxData::ColorIndex::Color, i);
+    scrImgs.at((int)ScrPart::CeilingC)->refresh();
+    editor_img_t_modified=true;
+    ui->colorCeiling->buttonColor(i);
+}
+
+void MainWindow::receiveColorWall(quint8 i)
+{
+    props.editor_wall_clr = i;
+    scrDatas.at((int)ScrPart::WallC)->setColor((int)GfxData::ColorIndex::Color, i);
+    scrImgs.at((int)ScrPart::WallC)->refresh();
+    editor_img_t_modified=true;
+    ui->colorWall->buttonColor(i);
+}
+
+void MainWindow::receiveColorFloor(quint8 i)
+{
+    props.editor_floor_clr = i;
+    scrDatas.at((int)ScrPart::FloorC)->setColor((int)GfxData::ColorIndex::Color, i);
+    scrImgs.at((int)ScrPart::FloorC)->refresh();
+    editor_img_t_modified=true;
+    ui->colorFloor->buttonColor(i);
+}
 
 /****    W A L L S
  ******************************************************************************/

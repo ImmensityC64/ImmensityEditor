@@ -81,10 +81,18 @@ private slots:
     void decSector();
     void setSector(int s);
     void setSector(QString s);
+    void setSectorSelectionL();
+    void setSectorSelectionR();
+    void remapSectorsForMove();
+    void remapSectorsForCopy();
     void saveModifications();
     void refreshEditor();
 
     void editorMousePressEvent(QPoint p, int /* unused */);
+
+    void receiveColorCeiling(quint8 i);
+    void receiveColorWall(quint8 i);
+    void receiveColorFloor(quint8 i);
 
 public slots:
     void selectMap(int index);
@@ -153,12 +161,22 @@ private:
 
     Props &props;
     int map_index;
-    int sector;
+    sector_modint sector;
+    sector_modint sectorSelectionL;
+    sector_modint sectorSelectionR;
+    int sectorSelectionNum; /* intentionally integer, can be equal to mod */
+    sector_modint sectorMoveL;
+    sector_modint sectorMoveR;
+    sector_modint sectorCopyL;
+    sector_modint sectorCopyR;
     bool editor_img_c_modified; /* ceiling */
     bool editor_img_b_modified; /* background */
     bool editor_img_f_modified; /* floor */
     bool editor_img_s_modified; /* sprites */
     bool editor_img_t_modified; /* tile */
+    void calculateSectorSelection();
+    QVector<int> remapSectors;
+    void sectorMoveOrCopy();
 
     /* Map Editor */
     QVector<QGraphicsRectItem *> scrBgs;
