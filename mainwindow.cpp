@@ -58,7 +58,9 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(data.get(), SIGNAL(dataChanged()), this, SLOT(wallChanged()));
     }
 
-    charSetWindow = nullptr;
+    charSet = nullptr;
+    browseSketches = nullptr;
+    browseScenery  = nullptr;
 
     /***   M E N U
      ******************************************************************************/
@@ -68,24 +70,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionFileRevert, SIGNAL(triggered()), this, SLOT(loadProject())  );
     connect(ui->actionFileExit,   SIGNAL(triggered()), this, SLOT(close())        );
 
-    connect(ui->actionEditSceneries,    SIGNAL(triggered()), this, SLOT(openEditSceneries())    );
-    connect(ui->actionEditThemes,       SIGNAL(triggered()), this, SLOT(openEditThemes())       );
+    connect(ui->actionEditSceneries, SIGNAL(triggered()), this, SLOT(openEditSceneries()));
+    connect(ui->actionEditThemes,    SIGNAL(triggered()), this, SLOT(openEditThemes())   );
 
-    connect(ui->actionSketchesCelinigs, SIGNAL(triggered()), this, SLOT(openSketchesCeilings()) );
-    connect(ui->actionSketchesFloors,   SIGNAL(triggered()), this, SLOT(openSketchesFloors())   );
-    connect(ui->actionSketchesWalls,    SIGNAL(triggered()), this, SLOT(openSketchesWalls())    );
-    connect(ui->actionSketchesBgTiles,  SIGNAL(triggered()), this, SLOT(openSketchesBgTiles())  );
-    connect(ui->actionSketchesCnfTiles, SIGNAL(triggered()), this, SLOT(openSketchesCnfTiles()) );
-    connect(ui->actionSketchesOpenAll,  SIGNAL(triggered()), this, SLOT(openSketchesAll())      );
-    connect(ui->actionSketchesCloseAll, SIGNAL(triggered()), this, SLOT(closeSketchesAll())     );
+    connect(ui->actionBrowseSketches, SIGNAL(triggered()), this, SLOT(openBrowseSketches()));
+    connect(ui->actionBrowseScenery,  SIGNAL(triggered()), this, SLOT(openBrowseScenery()) );
 
-    connect(ui->actionSceneryCharSet,  SIGNAL(triggered()), this, SLOT(openSceneryCharSet())    );
-    connect(ui->actionSceneryBgTiles,  SIGNAL(triggered()), this, SLOT(openSceneryBgTiles())    );
-    connect(ui->actionSceneryCnfTiles, SIGNAL(triggered()), this, SLOT(openSceneryCnfTiles())   );
-    connect(ui->actionScenerySprites,  SIGNAL(triggered()), this, SLOT(openScenerySprites())    );
-    connect(ui->actionSceneryWalls,    SIGNAL(triggered()), this, SLOT(openSceneryWalls())      );
-
-    connect(ui->actionMapSettings,     SIGNAL(triggered()), this, SLOT(settingsClicked())       );
+    connect(ui->actionMapSettings, SIGNAL(triggered()), this, SLOT(settingsClicked()));
 
     /***   F I L E
      ******************************************************************************/
@@ -230,7 +221,6 @@ MainWindow::~MainWindow()
     gvSketchesBgTiles.close();
     gvSketchesCnfTiles.close();
 
-    if(charSetWindow) charSetWindow->close();
     gvSceneryBgTiles.close();
     gvSceneryCnfTiles.close();
     gvScenerySprites.close();
@@ -238,6 +228,9 @@ MainWindow::~MainWindow()
 
     if(themeEditor) themeEditor->close();
     if(sceneryEditor) sceneryEditor->close();
+
+    if(browseSketches) browseSketches->close();
+    if(browseScenery) browseScenery->close();
 
     if(sectorCEditor) sectorCEditor->close();
     if(sectorBEditor) sectorBEditor->close();

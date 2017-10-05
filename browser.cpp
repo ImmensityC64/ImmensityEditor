@@ -2,20 +2,15 @@
 #include "browser.h"
 
 Browser::Browser(GfxVector *gv, QWidget *parent) :
-    QMainWindow(parent)
+    QWidget(parent)
 {
     no_of_elements = 0;
     this->gv = gv;
+    gv->setBrowser(this);
     connect(gv, SIGNAL(vectorChanged()), this, SLOT(refresh()));
 
-    QString title_str = GfxVector::Scope::Sketches == gv->scope() ? gv->title()+" Sketches" : gv->title()+" Scenery";
-    setWindowTitle(title_str);
-
-    status_bar = new QStatusBar(); /* QMainWindow will delete it */
-    setStatusBar(status_bar);
-
     /* Widget and layout arrangement of the Browser window:
-     * @ central widget
+     * @ this (like central widget)
      * `-@ central layout
      *   `-@ scroll area
      *     `-@ scroll widget
@@ -25,10 +20,8 @@ Browser::Browser(GfxVector *gv, QWidget *parent) :
      *         +-@ tile
      *         +-@ ...
      */
-    central = new QWidget();
-    setCentralWidget(central);
     central_layout = new QHBoxLayout();
-    central->setLayout(central_layout);
+    setLayout(central_layout);
 
     scroll_widget = new QWidget(this);
     scroll_widget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);

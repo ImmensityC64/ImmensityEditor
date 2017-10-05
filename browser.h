@@ -13,14 +13,12 @@
 #include "gfx.h"
 #include "editor.h"
 
-class Browser : public QMainWindow
+class Browser : public QWidget
 {
     Q_OBJECT
 
 private:
     GfxVector *gv;
-    QStatusBar *status_bar;
-    QWidget *central;
     QHBoxLayout *central_layout;
     QScrollArea *scroll_area;
     QWidget *scroll_widget;

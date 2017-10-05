@@ -10,7 +10,7 @@
 #include "scenery_editor.h"
 #include "theme_editor.h"
 #include "new_dialog.h"
-#include "char_set_w.h"
+#include "char_set.h"
 #include <QApplication>
 #include <QMainWindow>
 #include <QList>
@@ -32,37 +32,17 @@ public:
 
 private slots:
     /* Browsers */
-    void openSketchesCeilings();
-    void openSketchesFloors();
-    void openSketchesWalls();
-    void openSketchesBgTiles();
-    void openSketchesCnfTiles();
-    void openSketchesAll();
-
-    void closeSketchesCeilings();
-    void closeSketchesFloors();
-    void closeSketchesWalls();
-    void closeSketchesBgTiles();
-    void closeSketchesCnfTiles();
-    void closeSketchesAll();
-
-    void openSceneryCharSet();
-    void openSceneryBgTiles();
-    void openSceneryCnfTiles();
-    void openScenerySprites();
-    void openSceneryWalls();
-
-    void closeSceneryCharSet();
-    void closeSceneryBgTiles();
-    void closeSceneryCnfTiles();
-    void closeScenerySprites();
-    void closeSceneryWalls();
-
     void openEditSceneries();
     void openEditThemes();
 
-    void closeSceneryEditor();
-    void closeThemeEditor();
+    void closeEditSceneries();
+    void closeEditThemes();
+
+    void openBrowseSketches();
+    void openBrowseScenery();
+
+    void closeBrowseSketches();
+    void closeBrowseScenery();
 
     void openSectorCEditor(); /* edit ceiling tiles */
     void openSectorBEditor(); /* edit background tiles */
@@ -146,8 +126,6 @@ private:
     void saveGfxData(void);
     void resetGfxData(void);
 
-    bool openBrowser(GfxVector *gv);
-
     GfxVector gvSketchesCeilings;
     GfxVector gvSketchesFloors;
     GfxVector gvSketchesWalls;
@@ -230,7 +208,9 @@ private:
     SceneryEditor* sceneryEditor;
     ThemeEditor* themeEditor;
 
-    CharSetW *charSetWindow;
+    CharSet *charSet;
+    QMainWindow *browseSketches;
+    QMainWindow *browseScenery;
 };
 
 #endif // MAINWINDOW_H
