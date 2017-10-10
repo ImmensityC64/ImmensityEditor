@@ -89,15 +89,33 @@ BgTileEditor::~BgTileEditor() {}
 
 void BgTileEditor::apply()
 {
-    if (props.editor_scenery.bg_tile_vector.at(I).usage == 0)
+    bool can_be_saved = false;
+
+    if (indexEditSectorBackground == I)
     {
-        QMessageBox msgBox;
-        msgBox.setText("Unused tiles are not allowed to be modified!\nSorry!");
-        msgBox.exec();
+        /* Editing background of main editor */
+        can_be_saved = props.img2mapBackground(data);
+    }
+    else if (0 <= I)
+    {
+        /* Editing a tile */
+        if (props.editor_scenery.bg_tile_vector.at(I).usage == 0)
+        {
+            QMessageBox msgBox;
+            msgBox.setText("Unused tiles are not allowed to be modified!\nSorry!");
+            msgBox.exec();
+            return;
+        }
+        can_be_saved = props.img2bgTile(I,data);
+    }
+    else
+    {
+        /* Do not know what is being edited */
+        BgSketchEditor::apply();
         return;
     }
 
-    if(props.img2bgTile(I,data))
+    if(can_be_saved)
     {
         shared_ptr<GfxData> d = src.lock();
         if(d)

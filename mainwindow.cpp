@@ -353,7 +353,7 @@ void MainWindow::tileChanged()
 
 void MainWindow::spriteChanged()
 {
-    /* Scenery Wall Browser must be update all walls as some of them may contain the modified sprite */
+    /* Scenery Wall Browser must update all walls as some of them may contain the modified sprite */
     for(int v=0; v<SCENERY_WALL_NUM; v++)
         props.editor_modified_walls.setBit(v, true);
     tileChanged();
@@ -361,9 +361,27 @@ void MainWindow::spriteChanged()
 
 void MainWindow::wallChanged()
 {
-    /* Scenery Sprite Browser must be update all sprites as some of them may contained by the modified wall */
+    /* Scenery Sprite Browser must update all sprites as some of them may contained by the modified wall */
     for(int v=0; v<SCENERY_SPRITE_NUM; v++)
         props.editor_modified_sprites.setBit(v, true);
+    tileChanged();
+}
+
+void MainWindow::sectorCChanged()
+{
+    editor_img_c_modified = true;
+    tileChanged();
+}
+
+void MainWindow::sectorBChanged()
+{
+    editor_img_b_modified = true;
+    tileChanged();
+}
+
+void MainWindow::sectorFChanged()
+{
+    editor_img_f_modified = true;
     tileChanged();
 }
 
@@ -556,10 +574,12 @@ void MainWindow::openSectorCEditor()
 {
     if(nullptr == sectorCEditor)
     {
-        sectorCEditor = new CnfTileEditor(scrDatas.at((int)ScrPart::CeilingFgC));
+        shared_ptr<GfxData> data(scrDatas.at((int)ScrPart::CeilingFgC));
+        sectorCEditor = new CnfTileEditor(data, indexEditSectorCeiling);
         sectorCEditor->setAttribute(Qt::WA_DeleteOnClose, true);
         sectorCEditor->show();
-        connect(sectorCEditor, SIGNAL(destroyed()), this, SLOT(closeSectorCEditor()));
+        connect(sectorCEditor, SIGNAL(destroyed()),   this, SLOT(closeSectorCEditor()));
+        connect(data.get(),    SIGNAL(dataChanged()), this, SLOT(sectorCChanged()));
     }
     /* ... or activate the already existing one */
     else sectorCEditor->activateWindow();
@@ -569,10 +589,12 @@ void MainWindow::openSectorBEditor()
 {
     if(nullptr == sectorBEditor)
     {
-        sectorBEditor = new BgTileEditor(scrDatas.at((int)ScrPart::BackgroundC));
+        shared_ptr<GfxData> data(scrDatas.at((int)ScrPart::BackgroundC));
+        sectorBEditor = new BgTileEditor(data, indexEditSectorBackground);
         sectorBEditor->setAttribute(Qt::WA_DeleteOnClose, true);
         sectorBEditor->show();
-        connect(sectorBEditor, SIGNAL(destroyed()), this, SLOT(closeSectorBEditor()));
+        connect(sectorBEditor, SIGNAL(destroyed()),   this, SLOT(closeSectorBEditor()));
+        connect(data.get(),    SIGNAL(dataChanged()), this, SLOT(sectorBChanged()));
     }
     /* ... or activate the already existing one */
     else sectorBEditor->activateWindow();
@@ -582,10 +604,12 @@ void MainWindow::openSectorFEditor()
 {
     if(nullptr == sectorFEditor)
     {
-        sectorFEditor = new CnfTileEditor(scrDatas.at((int)ScrPart::FloorFgC));
+        shared_ptr<GfxData> data(scrDatas.at((int)ScrPart::FloorFgC));
+        sectorFEditor = new CnfTileEditor(data, indexEditSectorFloor);
         sectorFEditor->setAttribute(Qt::WA_DeleteOnClose, true);
         sectorFEditor->show();
-        connect(sectorFEditor, SIGNAL(destroyed()), this, SLOT(closeSectorFEditor()));
+        connect(sectorFEditor, SIGNAL(destroyed()),   this, SLOT(closeSectorFEditor()));
+        connect(data.get(),    SIGNAL(dataChanged()), this, SLOT(sectorFChanged()));
     }
     /* ... or activate the already existing one */
     else sectorFEditor->activateWindow();

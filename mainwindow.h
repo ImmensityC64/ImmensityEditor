@@ -82,6 +82,9 @@ public slots:
     void tileChanged();
     void spriteChanged();
     void wallChanged();
+    void sectorCChanged();
+    void sectorBChanged();
+    void sectorFChanged();
 
     void wallVisible(int);
     void wallGridVisible(int);
