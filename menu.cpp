@@ -48,6 +48,7 @@ void MainWindow::openBrowseScenery()
         mw->setAttribute(Qt::WA_DeleteOnClose, true);
         w = new QWidget();
         QVBoxLayout *central_layout = new QVBoxLayout();
+        central_layout->setContentsMargins(7,7,7,7);
         w->setLayout(central_layout);
         mw->setCentralWidget(w);
 
@@ -55,6 +56,7 @@ void MainWindow::openBrowseScenery()
         b = new Browser(&gvSceneryWalls);
         central_layout->addWidget(b);
         QHBoxLayout *v_browsers_layout = new QHBoxLayout();
+        v_browsers_layout->setContentsMargins(0,0,0,0);
         w = new QWidget();
         w->setLayout(v_browsers_layout);
         central_layout->addWidget(w);
@@ -73,6 +75,7 @@ void MainWindow::openBrowseScenery()
 
         /* CharSet */
         QVBoxLayout *info_layout = new QVBoxLayout();
+        info_layout->setContentsMargins(0,0,0,0);
         w = new QWidget();
         w->setLayout(info_layout);
         v_browsers_layout->addWidget(w);
@@ -103,6 +106,7 @@ void MainWindow::openBrowseSketches()
         mw->setAttribute(Qt::WA_DeleteOnClose, true);
         w = new QWidget();
         QVBoxLayout *central_layout = new QVBoxLayout();
+        central_layout->setContentsMargins(7,7,7,7);
         w->setLayout(central_layout);
         mw->setCentralWidget(w);
 
@@ -110,6 +114,7 @@ void MainWindow::openBrowseSketches()
         b = new Browser(&gvSketchesWalls);
         central_layout->addWidget(b);
         QHBoxLayout *v_browsers_layout = new QHBoxLayout();
+        v_browsers_layout->setContentsMargins(0,0,0,0);
         w = new QWidget();
         w->setLayout(v_browsers_layout);
         central_layout->addWidget(w);
@@ -132,6 +137,7 @@ void MainWindow::openBrowseSketches()
 
         /* Info */
         QVBoxLayout *info_layout = new QVBoxLayout();
+        info_layout->setContentsMargins(0,0,0,0);
         w = new QWidget();
         w->setLayout(info_layout);
         v_browsers_layout->addWidget(w);

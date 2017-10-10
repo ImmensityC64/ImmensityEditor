@@ -6,25 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>395</width>
-    <height>206</height>
+    <width>420</width>
+    <height>193</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">
-    <number>7</number>
+    <number>0</number>
    </property>
    <property name="topMargin">
-    <number>7</number>
+    <number>0</number>
    </property>
    <property name="rightMargin">
-    <number>7</number>
+    <number>0</number>
    </property>
    <property name="bottomMargin">
-    <number>7</number>
+    <number>0</number>
    </property>
    <item>
     <widget class="GfxEditorView" name="view">
@@ -78,49 +78,21 @@
      </property>
     </widget>
    </item>
-   <item>
-    <widget class="QFrame" name="frameControl">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::Box</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Sunken</enum>
-     </property>
-     <layout class="QVBoxLayout" name="controlLayout">
+   <item alignment="Qt::AlignLeft">
+    <widget class="QWidget" name="widget_2" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="leftMargin">
-       <number>7</number>
+       <number>0</number>
       </property>
       <property name="topMargin">
-       <number>7</number>
+       <number>0</number>
       </property>
       <property name="rightMargin">
-       <number>7</number>
+       <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>7</number>
+       <number>0</number>
       </property>
-      <item>
-       <widget class="QCheckBox" name="checkFineGrid">
-        <property name="text">
-         <string>Fine Grid</string>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
       <item>
        <widget class="QCheckBox" name="checkMainGrid">
         <property name="text">
@@ -132,12 +104,12 @@
        </widget>
       </item>
       <item>
-       <widget class="QWidget" name="widget" native="true">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <widget class="QCheckBox" name="checkFineGrid">
+        <property name="text">
+         <string>Fine Grid</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
