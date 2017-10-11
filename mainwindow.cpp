@@ -58,7 +58,9 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(data.get(), SIGNAL(dataChanged()), this, SLOT(wallChanged()));
     }
 
-    charSetWindow = nullptr;
+    charSet = nullptr;
+    browseSketches = nullptr;
+    browseScenery  = nullptr;
 
     /***   M E N U
      ******************************************************************************/
@@ -68,24 +70,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionFileRevert, SIGNAL(triggered()), this, SLOT(loadProject())  );
     connect(ui->actionFileExit,   SIGNAL(triggered()), this, SLOT(close())        );
 
-    connect(ui->actionEditSceneries,    SIGNAL(triggered()), this, SLOT(openEditSceneries())    );
-    connect(ui->actionEditThemes,       SIGNAL(triggered()), this, SLOT(openEditThemes())       );
+    connect(ui->actionEditSceneries, SIGNAL(triggered()), this, SLOT(openEditSceneries()));
+    connect(ui->actionEditThemes,    SIGNAL(triggered()), this, SLOT(openEditThemes())   );
 
-    connect(ui->actionSketchesCelinigs, SIGNAL(triggered()), this, SLOT(openSketchesCeilings()) );
-    connect(ui->actionSketchesFloors,   SIGNAL(triggered()), this, SLOT(openSketchesFloors())   );
-    connect(ui->actionSketchesWalls,    SIGNAL(triggered()), this, SLOT(openSketchesWalls())    );
-    connect(ui->actionSketchesBgTiles,  SIGNAL(triggered()), this, SLOT(openSketchesBgTiles())  );
-    connect(ui->actionSketchesCnfTiles, SIGNAL(triggered()), this, SLOT(openSketchesCnfTiles()) );
-    connect(ui->actionSketchesOpenAll,  SIGNAL(triggered()), this, SLOT(openSketchesAll())      );
-    connect(ui->actionSketchesCloseAll, SIGNAL(triggered()), this, SLOT(closeSketchesAll())     );
+    connect(ui->actionBrowseSketches, SIGNAL(triggered()), this, SLOT(openBrowseSketches()));
+    connect(ui->actionBrowseScenery,  SIGNAL(triggered()), this, SLOT(openBrowseScenery()) );
 
-    connect(ui->actionSceneryCharSet,  SIGNAL(triggered()), this, SLOT(openSceneryCharSet())    );
-    connect(ui->actionSceneryBgTiles,  SIGNAL(triggered()), this, SLOT(openSceneryBgTiles())    );
-    connect(ui->actionSceneryCnfTiles, SIGNAL(triggered()), this, SLOT(openSceneryCnfTiles())   );
-    connect(ui->actionScenerySprites,  SIGNAL(triggered()), this, SLOT(openScenerySprites())    );
-    connect(ui->actionSceneryWalls,    SIGNAL(triggered()), this, SLOT(openSceneryWalls())      );
-
-    connect(ui->actionMapSettings,     SIGNAL(triggered()), this, SLOT(settingsClicked())       );
+    connect(ui->actionMapSettings, SIGNAL(triggered()), this, SLOT(settingsClicked()));
 
     /***   F I L E
      ******************************************************************************/
@@ -230,7 +221,6 @@ MainWindow::~MainWindow()
     gvSketchesBgTiles.close();
     gvSketchesCnfTiles.close();
 
-    if(charSetWindow) charSetWindow->close();
     gvSceneryBgTiles.close();
     gvSceneryCnfTiles.close();
     gvScenerySprites.close();
@@ -238,6 +228,9 @@ MainWindow::~MainWindow()
 
     if(themeEditor) themeEditor->close();
     if(sceneryEditor) sceneryEditor->close();
+
+    if(browseSketches) browseSketches->close();
+    if(browseScenery) browseScenery->close();
 
     if(sectorCEditor) sectorCEditor->close();
     if(sectorBEditor) sectorBEditor->close();
@@ -360,7 +353,7 @@ void MainWindow::tileChanged()
 
 void MainWindow::spriteChanged()
 {
-    /* Scenery Wall Browser must be update all walls as some of them may contain the modified sprite */
+    /* Scenery Wall Browser must update all walls as some of them may contain the modified sprite */
     for(int v=0; v<SCENERY_WALL_NUM; v++)
         props.editor_modified_walls.setBit(v, true);
     tileChanged();
@@ -368,9 +361,27 @@ void MainWindow::spriteChanged()
 
 void MainWindow::wallChanged()
 {
-    /* Scenery Sprite Browser must be update all sprites as some of them may contained by the modified wall */
+    /* Scenery Sprite Browser must update all sprites as some of them may contained by the modified wall */
     for(int v=0; v<SCENERY_SPRITE_NUM; v++)
         props.editor_modified_sprites.setBit(v, true);
+    tileChanged();
+}
+
+void MainWindow::sectorCChanged()
+{
+    editor_img_c_modified = true;
+    tileChanged();
+}
+
+void MainWindow::sectorBChanged()
+{
+    editor_img_b_modified = true;
+    tileChanged();
+}
+
+void MainWindow::sectorFChanged()
+{
+    editor_img_f_modified = true;
     tileChanged();
 }
 
@@ -563,10 +574,12 @@ void MainWindow::openSectorCEditor()
 {
     if(nullptr == sectorCEditor)
     {
-        sectorCEditor = new CnfTileEditor(scrDatas.at((int)ScrPart::CeilingFgC));
+        shared_ptr<GfxData> data(scrDatas.at((int)ScrPart::CeilingFgC));
+        sectorCEditor = new CnfTileEditor(data, indexEditSectorCeiling);
         sectorCEditor->setAttribute(Qt::WA_DeleteOnClose, true);
         sectorCEditor->show();
-        connect(sectorCEditor, SIGNAL(destroyed()), this, SLOT(closeSectorCEditor()));
+        connect(sectorCEditor, SIGNAL(destroyed()),   this, SLOT(closeSectorCEditor()));
+        connect(data.get(),    SIGNAL(dataChanged()), this, SLOT(sectorCChanged()));
     }
     /* ... or activate the already existing one */
     else sectorCEditor->activateWindow();
@@ -576,10 +589,12 @@ void MainWindow::openSectorBEditor()
 {
     if(nullptr == sectorBEditor)
     {
-        sectorBEditor = new BgTileEditor(scrDatas.at((int)ScrPart::BackgroundC));
+        shared_ptr<GfxData> data(scrDatas.at((int)ScrPart::BackgroundC));
+        sectorBEditor = new BgTileEditor(data, indexEditSectorBackground);
         sectorBEditor->setAttribute(Qt::WA_DeleteOnClose, true);
         sectorBEditor->show();
-        connect(sectorBEditor, SIGNAL(destroyed()), this, SLOT(closeSectorBEditor()));
+        connect(sectorBEditor, SIGNAL(destroyed()),   this, SLOT(closeSectorBEditor()));
+        connect(data.get(),    SIGNAL(dataChanged()), this, SLOT(sectorBChanged()));
     }
     /* ... or activate the already existing one */
     else sectorBEditor->activateWindow();
@@ -589,10 +604,12 @@ void MainWindow::openSectorFEditor()
 {
     if(nullptr == sectorFEditor)
     {
-        sectorFEditor = new CnfTileEditor(scrDatas.at((int)ScrPart::FloorFgC));
+        shared_ptr<GfxData> data(scrDatas.at((int)ScrPart::FloorFgC));
+        sectorFEditor = new CnfTileEditor(data, indexEditSectorFloor);
         sectorFEditor->setAttribute(Qt::WA_DeleteOnClose, true);
         sectorFEditor->show();
-        connect(sectorFEditor, SIGNAL(destroyed()), this, SLOT(closeSectorFEditor()));
+        connect(sectorFEditor, SIGNAL(destroyed()),   this, SLOT(closeSectorFEditor()));
+        connect(data.get(),    SIGNAL(dataChanged()), this, SLOT(sectorFChanged()));
     }
     /* ... or activate the already existing one */
     else sectorFEditor->activateWindow();

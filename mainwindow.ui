@@ -1221,18 +1221,12 @@
     <addaction name="separator"/>
     <addaction name="actionFileExit"/>
    </widget>
-   <widget class="QMenu" name="menuSketches">
+   <widget class="QMenu" name="menuBrowse">
     <property name="title">
-     <string>Sketches</string>
+     <string>Browse</string>
     </property>
-    <addaction name="actionSketchesBgTiles"/>
-    <addaction name="actionSketchesCnfTiles"/>
-    <addaction name="actionSketchesCelinigs"/>
-    <addaction name="actionSketchesFloors"/>
-    <addaction name="actionSketchesWalls"/>
-    <addaction name="separator"/>
-    <addaction name="actionSketchesOpenAll"/>
-    <addaction name="actionSketchesCloseAll"/>
+    <addaction name="actionBrowseSketches"/>
+    <addaction name="actionBrowseScenery"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -1246,19 +1240,6 @@
     <addaction name="actionEditMusics"/>
     <addaction name="actionEditEnemies"/>
    </widget>
-   <widget class="QMenu" name="menuScenery">
-    <property name="title">
-     <string>Scenery</string>
-    </property>
-    <addaction name="actionSceneryCharSet"/>
-    <addaction name="actionSceneryBgTiles"/>
-    <addaction name="actionSceneryCnfTiles"/>
-    <addaction name="actionScenerySprites"/>
-    <addaction name="actionSceneryWalls"/>
-    <addaction name="separator"/>
-    <addaction name="actionSceneryOpenAll"/>
-    <addaction name="actionSceneryCloseAll"/>
-   </widget>
    <widget class="QMenu" name="menuMap">
     <property name="title">
      <string>Map</string>
@@ -1268,8 +1249,7 @@
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
-   <addaction name="menuSketches"/>
-   <addaction name="menuScenery"/>
+   <addaction name="menuBrowse"/>
    <addaction name="menuMap"/>
   </widget>
   <action name="actionGlobalCeiling">
@@ -1520,14 +1500,14 @@
     <string>Close all</string>
    </property>
   </action>
-  <action name="actionSketchesBgTiles">
+  <action name="actionBrowseSketches">
    <property name="text">
-    <string>Bg Tile Sketches</string>
+    <string>Sketches</string>
    </property>
   </action>
-  <action name="actionSketchesCnfTiles">
+  <action name="actionBrowseScenery">
    <property name="text">
-    <string>CnF Tile Sketches</string>
+    <string>Scenery</string>
    </property>
   </action>
   <action name="actionSketchesCelinigs">

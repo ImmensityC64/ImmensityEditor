@@ -97,7 +97,38 @@ CnfTileEditor::~CnfTileEditor() {}
 
 void CnfTileEditor::apply()
 {
-    if(props.img2cnfTile(I,data))
+    bool can_be_saved = false;
+
+    if (indexEditSectorCeiling == I)
+    {
+        /* Editing ceiling of main editor */
+        can_be_saved = props.img2mapCeiling(data);
+    }
+    else if (indexEditSectorFloor == I)
+    {
+        /* Editing floor of main editor */
+        can_be_saved = props.img2mapFloor(data);
+    }
+    else if (0 <= I)
+    {
+        /* Editing a tile */
+        if (props.editor_scenery.cnf_tile_vector.at(I).usage == 0)
+        {
+            QMessageBox msgBox;
+            msgBox.setText("Unused tiles are not allowed to be modified!\nSorry!");
+            msgBox.exec();
+            return;
+        }
+        can_be_saved = props.img2cnfTile(I,data);
+    }
+    else
+    {
+        /* Do not know what is being edited */
+        CnfSketchEditor::apply();
+        return;
+    }
+
+    if(can_be_saved)
     {
         shared_ptr<GfxData> d = src.lock();
         if(d)

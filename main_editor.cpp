@@ -656,7 +656,7 @@ void MainWindow::refreshSceneryBrowsers(void)
         {
             gvSceneryBgTiles.setDataAt(i, props.map2imgBgTile(map_index, i));
             props.editor_modified_bg_tiles.clearBit(i);
-            if(gvSceneryBgTiles.browser()) gvSceneryBgTiles.browser()->refreshTile(i);
+            if(browseScenery) gvSceneryBgTiles.browser()->refreshTile(i);
         }
     }
 
@@ -666,7 +666,7 @@ void MainWindow::refreshSceneryBrowsers(void)
         {
             gvSceneryCnfTiles.setDataAt(i, props.map2imgCnfTile(map_index, i));
             props.editor_modified_cnf_tiles.clearBit(i);
-            if(gvSceneryCnfTiles.browser()) gvSceneryCnfTiles.browser()->refreshTile(i);
+            if(browseScenery) gvSceneryCnfTiles.browser()->refreshTile(i);
         }
     }
 
@@ -676,7 +676,7 @@ void MainWindow::refreshSceneryBrowsers(void)
         {
             gvScenerySprites.setDataAt(i, props.map2imgSprite(map_index, i));
             props.editor_modified_sprites.clearBit(i);
-            if(gvScenerySprites.browser()) gvScenerySprites.browser()->refreshTile(i);
+            if(browseScenery) gvScenerySprites.browser()->refreshTile(i);
         }
     }
 
@@ -686,9 +686,9 @@ void MainWindow::refreshSceneryBrowsers(void)
         {
             gvSceneryWalls.setDataAt(i, props.map2imgWall(map_index, i));
             props.editor_modified_walls.clearBit(i);
-            if(gvSceneryWalls.browser()) gvSceneryWalls.browser()->refreshTile(i);
+            if(browseScenery) gvSceneryWalls.browser()->refreshTile(i);
         }
     }
 
-    if(charSetWindow) charSetWindow->refresh(props.map2imgCharSet(map_index));
+    if(browseScenery) charSet->refresh(props.map2imgCharSet(map_index));
 }

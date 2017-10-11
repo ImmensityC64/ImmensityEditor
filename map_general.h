@@ -29,6 +29,10 @@
 #define SCENERY_CNF_TILE_COLS 6
 #define SCENERY_WALL_ROWS 5
 
+#define indexEditSectorCeiling    -1
+#define indexEditSectorBackground -2
+#define indexEditSectorFloor      -3
+
 typedef modint<quint8, SCENERY_MAP_SECTORS> sector_modint;
 typedef modint<quint8, SCENERY_MAP_BLOCKS>  block_modint;
 

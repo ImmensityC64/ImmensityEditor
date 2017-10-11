@@ -44,8 +44,6 @@ void GfxVector::close(void)
         Element e = i.next();
         if(e.editor) ((QMainWindow*)e.editor)->close();
     }
-    /* Close Browser window */
-    if(pBrowser) ((QMainWindow*)pBrowser)->close();
 }
 
 shared_ptr<GfxData> GfxVector::dataAt(int index)

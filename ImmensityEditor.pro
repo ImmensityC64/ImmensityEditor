@@ -39,11 +39,11 @@ SOURCES += main.cpp\
     scenery_editor.cpp \
     props_map2img.cpp \
     props_img2map.cpp \
-    char_set_w.cpp \
     props.cpp \
     cnf_editor.cpp \
     bg_editor.cpp \
-    main_editor.cpp
+    main_editor.cpp \
+    char_set.cpp
 
 HEADERS  += general.h \
     theme_editor.h \
@@ -63,8 +63,8 @@ HEADERS  += general.h \
     cyber.h \
     enemy.h \
     new_dialog.h \
-    char_set_w.h \
-    modular_integer.h
+    modular_integer.h \
+    char_set.h
 
 FORMS    += mainwindow.ui \
     color_dialog.ui \
@@ -74,8 +74,8 @@ FORMS    += mainwindow.ui \
     new_dialog.ui \
     theme_editor.ui \
     scenery_editor.ui \
-    char_set_w.ui \
     bg_editor.ui \
-    cnf_editor.ui
+    cnf_editor.ui \
+    char_set.ui
 
 OTHER_FILES +=
