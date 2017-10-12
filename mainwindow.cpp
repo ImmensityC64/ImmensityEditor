@@ -526,49 +526,76 @@ void MainWindow::sectorMoveOrCopy()
 {
     editorImgSave();
     Map *m = props.maps.at(map_index);
+    Scenery *s = props.sceneries.at(m->scenery_index);
     Map *tmpM = m->copy();
 
-    for(int dst=0; dst<SCENERY_MAP_SECTORS; dst++)
+    for(int dst=0; dst<SCENERY_MAP_SECTORS; ++dst)
     {
+        /* sector indexes */
         int src = remapSectors.at(dst);
+
+        /* calculate index of left block */
         int srcL = props.sector2blockL(src);
-        int srcC = srcL+1;
-        int srcR = srcC+1;
         int dstL = props.sector2blockL(dst);
-        int dstC = dstL+1;
-        int dstR = dstC+1;
 
-        m->ceiling_idxs[dst] = tmpM->ceiling_idxs.at(src);
-        m->wall_idxs[dst]    = tmpM->wall_idxs.at(src);
-        m->floor_idxs[dst]   = tmpM->floor_idxs.at(src);
+        quint8 *idx;
+
+        idx = &(m->ceiling_idxs[dst]);
+        s->freeSprite(*idx);
+        *idx = tmpM->ceiling_idxs.at(src);
+        s->useSprite(*idx);
+
+        idx = &(m->floor_idxs[dst]);
+        s->freeSprite(*idx);
+        *idx = tmpM->floor_idxs.at(src);
+        s->useSprite(*idx);
+
+        idx = &(m->wall_idxs[dst]);
+        s->freeWall(*idx);
+        *idx = tmpM->wall_idxs.at(src);
+        s->useWall(*idx);
+
         m->ceiling_clrs[dst] = tmpM->ceiling_clrs.at(src);
-        m->wall_clrs[dst]    = tmpM->wall_clrs.at(src);
         m->floor_clrs[dst]   = tmpM->floor_clrs.at(src);
+        m->wall_clrs[dst]    = tmpM->wall_clrs.at(src);
 
-        m->block_c_idxs[dstL] = tmpM->block_c_idxs.at(srcL);
-        m->block_c_idxs[dstC] = tmpM->block_c_idxs.at(srcC);
-        m->block_c_idxs[dstR] = tmpM->block_c_idxs.at(srcR);
-        m->block_f_idxs[dstL] = tmpM->block_f_idxs.at(srcL);
-        m->block_f_idxs[dstC] = tmpM->block_f_idxs.at(srcC);
-        m->block_f_idxs[dstR] = tmpM->block_f_idxs.at(srcR);
-        m->block_0_idxs[dstL] = tmpM->block_0_idxs.at(srcL);
-        m->block_0_idxs[dstC] = tmpM->block_0_idxs.at(srcC);
-        m->block_0_idxs[dstR] = tmpM->block_0_idxs.at(srcR);
-        m->block_1_idxs[dstL] = tmpM->block_1_idxs.at(srcL);
-        m->block_1_idxs[dstC] = tmpM->block_1_idxs.at(srcC);
-        m->block_1_idxs[dstR] = tmpM->block_1_idxs.at(srcR);
-        m->block_2_idxs[dstL] = tmpM->block_2_idxs.at(srcL);
-        m->block_2_idxs[dstC] = tmpM->block_2_idxs.at(srcC);
-        m->block_2_idxs[dstR] = tmpM->block_2_idxs.at(srcR);
-        m->block_3_idxs[dstL] = tmpM->block_3_idxs.at(srcL);
-        m->block_3_idxs[dstC] = tmpM->block_3_idxs.at(srcC);
-        m->block_3_idxs[dstR] = tmpM->block_3_idxs.at(srcR);
+        for (int b=0; b<=2; ++b)
+        {
+            idx = &(m->block_c_idxs[dstL+b]);
+            s->freeCnfTile(*idx);
+            *idx = tmpM->block_c_idxs.at(srcL+b);
+            s->useCnfTile(*idx);
+
+            idx = &(m->block_f_idxs[dstL+b]);
+            s->freeCnfTile(*idx);
+            *idx = tmpM->block_f_idxs.at(srcL+b);
+            s->useCnfTile(*idx);
+
+            idx = &(m->block_0_idxs[dstL+b]);
+            s->freeBgTile(*idx);
+            *idx = tmpM->block_0_idxs.at(srcL+b);
+            s->useBgTile(*idx);
+
+            idx = &(m->block_1_idxs[dstL+b]);
+            s->freeBgTile(*idx);
+            *idx = tmpM->block_1_idxs.at(srcL+b);
+            s->useBgTile(*idx);
+
+            idx = &(m->block_2_idxs[dstL+b]);
+            s->freeBgTile(*idx);
+            *idx = tmpM->block_2_idxs.at(srcL+b);
+            s->useBgTile(*idx);
+
+            idx = &(m->block_3_idxs[dstL+b]);
+            s->freeBgTile(*idx);
+            *idx = tmpM->block_3_idxs.at(srcL+b);
+            s->useBgTile(*idx);
+        }
     }
 
     delete tmpM;
     refreshEditor();
 }
-
 
 void MainWindow::openSectorCEditor()
 {
