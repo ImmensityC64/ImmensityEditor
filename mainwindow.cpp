@@ -447,7 +447,7 @@ void MainWindow::calculateSectorSelection()
 {
     sectorMoveL = sector;
     sectorMoveR = sector;
-    sectorMoveR++;
+    --sectorMoveL;
 
     sectorCopyL = sector;
     sectorCopyR = sector+sectorSelectionR-sectorSelectionL;
