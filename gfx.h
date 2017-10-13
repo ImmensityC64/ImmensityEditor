@@ -66,7 +66,9 @@ public:
     bool setMask(bool tSM);
     void setData(shared_ptr<GfxData> tD);
 
+    QPoint img2dat(int x, int y);
     QPoint img2dat(QPoint i);
+    QPoint dat2img(int x, int y);
     QPoint dat2img(QPoint d);
 
     void bitDraw(QPoint i, int m);

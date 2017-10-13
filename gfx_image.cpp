@@ -266,6 +266,7 @@ void GfxImage::refresh(void)
 
 
 /* convert image coordinates to data coordinates */
+QPoint GfxImage::img2dat(int x, int y) { return img2dat(QPoint(x,y)); }
 QPoint GfxImage::img2dat(QPoint i)
 {
     int iX = i.x();
@@ -312,6 +313,7 @@ QPoint GfxImage::img2dat(QPoint i)
 } /* GfxImage::img2dat() */
 
 /* convert data coordinates to image coordinates */
+QPoint GfxImage::dat2img(int x, int y) { return dat2img(QPoint(x,y)); }
 QPoint GfxImage::dat2img(QPoint d)
 {
     int dX = d.x();
@@ -599,6 +601,7 @@ void GfxImage::selSrcDraw(QPoint i1, QPoint i2)
     /*      A-----B      *\
     |*      |     |      *|
     \*      D-----C      */
+    i1=img2dat(i1); i2=img2dat(i2);
     int Ax,Ay,Cx,Cy;
     shared_ptr<GfxData> tD = D.lock(); /* data */
     if(tD) /* data exists */
@@ -612,7 +615,8 @@ void GfxImage::selSrcDraw(QPoint i1, QPoint i2)
     }
     selSrcA = QPoint(Ax,Ay);
     selSrcC = QPoint(Cx,Cy);
-    emit selectSrc(Ax,Ay,Cx+1-Ax,Cy+1-Ay);
+    i1=dat2img(Ax,Ay); i2=dat2img(Cx+1-Ax,Cy+1-Ay);
+    emit selectSrc(i1.x(),i1.y(),i2.x(),i2.y());
 }
 
  /*================================================================================*\
@@ -621,6 +625,7 @@ void GfxImage::selSrcDraw(QPoint i1, QPoint i2)
 
 bool GfxImage::isSelectionDragged(QPoint start)
 {
+    start=img2dat(start);
     int x = start.x();
     int y = start.y();
 
@@ -641,6 +646,7 @@ bool GfxImage::isSelectionDragged(QPoint start)
 
 QByteArray GfxImage::exportData(QPoint start)
 {
+    start=img2dat(start);
     int x = start.x();
     int y = start.y();
 
@@ -676,6 +682,7 @@ QByteArray GfxImage::exportData(QPoint start)
 
 QByteArray GfxImage::exportDataFromSelection(QPoint start)
 {
+    start=img2dat(start);
     int x = start.x();
     int y = start.y();
 
@@ -724,6 +731,7 @@ void GfxImage::importDataToImage(QByteArray &src, QPoint p)
         /* paste source into the image */
         int Ax,Ay,Cx,Cy;
         int s=src.size();
+        p=img2dat(p);
         Ax=p.x()-src.at(s-2);
         Ay=p.y()-src.at(s-1);
         tD->validateSelectionStart(Ax,Ay);
@@ -733,7 +741,9 @@ void GfxImage::importDataToImage(QByteArray &src, QPoint p)
         Cx=Ax+src.at(s-4)-1;
         Cy=Ay+src.at(s-3)-1;
         tD->validateSelection(Ax,Ay,Cx,Cy);
-        emit selectTgt(Ax,Ay,Cx+1-Ax,Cy+1-Ay);
+        QPoint i1=dat2img(Ax,Ay);
+        QPoint i2=dat2img(Cx+1-Ax,Cy+1-Ay);
+        emit selectTgt(i1.x(),i1.y(),i2.x(),i2.y());
     }
 }
 
@@ -748,6 +758,7 @@ void GfxImage::importSpriteDataToImage(QByteArray &src, QPoint p)
 
         /* paste source into the image */
         int Ax,Ay,Cx,Cy;
+        p=img2dat(p);
         Ax=p.x();
         Ay=p.y();
         tD->validateSelectionStart(Ax,Ay);
@@ -757,7 +768,9 @@ void GfxImage::importSpriteDataToImage(QByteArray &src, QPoint p)
         Cx=Ax+d->bitW()-1;
         Cy=Ay+d->bitH()-1;
         tD->validateSelection(Ax,Ay,Cx,Cy);
-        emit selectTgt(Ax,Ay,Cx+1-Ax,Cy+1-Ay);
+        QPoint i1=dat2img(Ax,Ay);
+        QPoint i2=dat2img(Cx+1-Ax,Cy+1-Ay);
+        emit selectTgt(i1.x(),i1.y(),i2.x(),i2.y());
     }
 }
 

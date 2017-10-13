@@ -11,7 +11,12 @@ SpriteEditor::SpriteEditor(shared_ptr<GfxData> init, int index, QWidget *parent)
 
     setWindowTitle("Sprite Editor");
 
-    showSelTgt = false;
+    /* Selection rectangles are not displayed properly in
+     * Ceiling and Floor display modes!
+     * TODO: Think about how to solve this, or at least,
+     * display a warning message about it somewhere!
+     * Uncomment this to disable selection target rectangle: */
+    //showSelTgt = false;
 
     /* Colors */
 
@@ -25,6 +30,7 @@ SpriteEditor::SpriteEditor(shared_ptr<GfxData> init, int index, QWidget *parent)
     ui->toolbox->addTool(new GfxEditorToolBitDraw(img, this));
     ui->toolbox->addTool(new GfxEditorToolBitRect(img, this));
     ui->toolbox->addTool(new GfxEditorToolInvRect(img, this));
+    ui->toolbox->addTool(new GfxEditorToolSelect(img, this));
     ui->toolbox->changeTool(0);
 
     /* Buttons */
