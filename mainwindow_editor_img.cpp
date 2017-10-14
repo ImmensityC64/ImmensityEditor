@@ -449,7 +449,7 @@ void MainWindow::dndImport(QByteArray &src, QPoint p)
     int y = p.y();
     if ((quint8)GfxData::Type::Sprite == src.at(0))
     {
-        if (wallState)
+        if (ui->radioWall->isChecked())
         {
             int wy;
             if      ( y < -32 ) { wy =  0; }
@@ -469,7 +469,7 @@ void MainWindow::dndImport(QByteArray &src, QPoint p)
     }
     else if ((quint8)GfxData::Type::Wall == src.at(0))
     {
-        if (wallState)
+        if (ui->radioWall->isChecked())
         {
             scrImgs.at((int)ScrPart::WallC)->importSpriteDataToImage(src, QPoint(0,0));
         }
@@ -487,7 +487,7 @@ bool MainWindow::dndTest(QByteArray &src, QPoint p)
     int y = p.y();
     if ((quint8)GfxData::Type::Sprite == src.at(0))
     {
-        if (wallState)
+        if (ui->radioWall->isChecked())
         {
             return props.img2mapWall(scrDatas.at((int)ScrPart::WallC));
         }
@@ -499,7 +499,7 @@ bool MainWindow::dndTest(QByteArray &src, QPoint p)
     }
     else if ((quint8)GfxData::Type::Wall == src.at(0))
     {
-        if (wallState)
+        if (ui->radioWall->isChecked())
         {
             return props.img2mapWall(scrDatas.at((int)ScrPart::WallC));
         }
@@ -518,7 +518,7 @@ void MainWindow::dndSave(QByteArray &src, QPoint p)
     if ((quint8)GfxData::Type::Sprite == src.at(0))
     {
         editor_img_s_modified=true;
-        if (wallState)
+        if (ui->radioWall->isChecked())
         {
             scrHisWSpr->save(scrDatas.at((int)ScrPart::WallC));
             ui->colorWall->buttonColor(scrDatas.at((int)ScrPart::WallC)->color((int)GfxData::ColorIndex::Color));
@@ -539,7 +539,7 @@ void MainWindow::dndSave(QByteArray &src, QPoint p)
     }
     else if ((quint8)GfxData::Type::Wall == src.at(0))
     {
-        if (wallState)
+        if (ui->radioWall->isChecked())
         {
             editor_img_s_modified=true;
             scrHisWSpr->save(scrDatas.at((int)ScrPart::WallC));
@@ -558,7 +558,7 @@ void MainWindow::editorMousePressEvent(QPoint p, int /* unused */)
 {
     int x = p.x();
     int y = p.y();
-    if (wallState && -24 < x && x < 24)
+    if (wallState && -24 < x && x < 24 && -48 < y && y < 48)
     {
         QMessageBox msgBox;
         msgBox.setText("TODO:\nOpen wall editor");

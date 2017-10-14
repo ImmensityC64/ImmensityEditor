@@ -182,6 +182,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->checkWallGrid, SIGNAL(stateChanged(int)), this, SLOT(wallGridVisible(int)));
     connect(ui->checkWall,     SIGNAL(stateChanged(int)), this, SLOT(wallVisible(int)));
     connect(ui->checkPlayer,   SIGNAL(stateChanged(int)), this, SLOT(playerVisible(int)));
+    connect(ui->radioWall,     SIGNAL(toggled(bool)),     this, SLOT(radioWallToggled(bool)));
+    connect(ui->radioPlayer,   SIGNAL(toggled(bool)),     this, SLOT(radioPlayerToggled(bool)));
 
     /***   M I S C
      ******************************************************************************/
@@ -472,6 +474,29 @@ void MainWindow::createWallLine(Qt::PenStyle type, int x0, int y0, int x1, int y
     line->setPen(pen);
     wallItems.push_back(line);
     wallGridGrp->addToGroup(wallItems.back());
+}
+
+/****    R A D I O   B U T T O N S
+ ******************************************************************************/
+
+void MainWindow::radioWallToggled(bool checked)
+{
+    if (checked)
+    {
+        /* If you want to edit the wall, you have to see it! */
+        ui->checkWall->setChecked(true);
+    }
+}
+
+void MainWindow::radioPlayerToggled(bool checked)
+{
+    if (checked)
+    {
+        /* If you want to edit the player, you have to see it! */
+        ui->checkPlayer->setChecked(true);
+        /* Turn off the wall which would overlay the player */
+        ui->checkWall->setChecked(false);
+    }
 }
 
 /****    S P R I T E   C O L O R S

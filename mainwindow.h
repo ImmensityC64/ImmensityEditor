@@ -74,6 +74,9 @@ private slots:
     void receiveColorWall(quint8 i);
     void receiveColorFloor(quint8 i);
 
+    void radioWallToggled(bool checked);
+    void radioPlayerToggled(bool checked);
+
 public slots:
     void selectMap(int index);
     void mapSettingsChanged();
