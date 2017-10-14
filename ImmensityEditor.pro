@@ -16,7 +16,8 @@ CONFIG += c++11 \
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    sprite_editor.cpp \
+    mainwindow_open_close.cpp \
+    mainwindow_editor_img.cpp \
     file.cpp \
     browser.cpp \
     color_dialog.cpp \
@@ -42,8 +43,8 @@ SOURCES += main.cpp\
     cnf_editor.cpp \
     bg_editor.cpp \
     char_set.cpp \
-    mainwindow_open_close.cpp \
-    mainwindow_editor_img.cpp
+    sprite_editor.cpp \
+    wall_editor.cpp
 
 HEADERS  += general.h \
     theme_editor.h \
@@ -76,6 +77,7 @@ FORMS    += mainwindow.ui \
     scenery_editor.ui \
     bg_editor.ui \
     cnf_editor.ui \
-    char_set.ui
+    char_set.ui \
+    wall_editor.ui
 
 OTHER_FILES +=

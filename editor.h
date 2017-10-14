@@ -3,6 +3,7 @@
 
 #include "ui_editor.h"
 #include "ui_sprite_editor.h"
+#include "ui_wall_editor.h"
 #include "ui_bg_sketch_editor.h"
 #include "ui_cnf_sketch_editor.h"
 #include "color_dialog.h"
@@ -98,7 +99,23 @@ public slots:
     void revert(void);
 };
 
-class SceneryWallEditor : public SpriteEditor
+class WallEditor : public Editor
+{
+    Q_OBJECT
+protected:
+    Ui::WallEditorWidget *wui;
+
+public:
+    explicit WallEditor(shared_ptr<GfxData> init, int index, QWidget *parent = 0);
+    virtual ~WallEditor();
+
+public slots:
+    void receiveColor(quint8 i);
+    void receiveAlpha(quint8 i);
+    void refreshColorButtons(void);
+};
+
+class SceneryWallEditor : public WallEditor
 {
     Q_OBJECT
 public:

@@ -240,7 +240,7 @@ void Browser::openEditor(int index)
         case GfxData::Type::Wall:
         {
             if(GfxVector::Scope::Sketches == gv->scope())
-                e = (Editor *)new SpriteEditor(gv->dataAt(index), index);
+                e = (Editor *)new WallEditor(gv->dataAt(index), index);
             else
                 e = (Editor *)new SceneryWallEditor(gv->dataAt(index), index);
             break;
