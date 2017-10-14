@@ -154,7 +154,7 @@ void MainWindow::openBrowseSketches()
         connect(browseSketches, SIGNAL(destroyed()), this, SLOT(closeBrowseSketches()));
     }
     /* ... or activate the already existing one */
-    else browseScenery->activateWindow();
+    else browseSketches->activateWindow();
 }
 
 void MainWindow::closeBrowseSketches() { browseSketches = nullptr; }
