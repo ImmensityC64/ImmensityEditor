@@ -702,6 +702,11 @@ QByteArray GfxImage::exportDataFromSelection(QPoint start)
     {
         /* Load a copy of the selected area */
         d->load(tD->copy(sA,sC));
+        if(d->type() == GfxData::Type::Wall)
+        {
+            /* Selection from Wall should be handled as a sprite data */
+            d->setType(GfxData::Type::Sprite);
+        }
     }
 
     /* Serialize data of the selected area.
@@ -812,11 +817,7 @@ int GfxImage::hor_offset(int y)
     if(y<0) y=0;
     int offset = 0;
 
-    if (Mode::Expanded == M)
-    {
-        offset = 2;
-    }
-    else if (Mode::Ceiling == M)
+    if (Mode::Ceiling == M)
     {
         if(20<y) y=20;
 

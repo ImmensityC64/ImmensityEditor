@@ -42,9 +42,9 @@ void MainWindow::initScrRects()
     scrRects[(int)ScrPart::BackgroundL]->setRect(-180,  -32, 120,  64);
     scrRects[(int)ScrPart::BackgroundC]->setRect( -60,  -32, 120,  64);
     scrRects[(int)ScrPart::BackgroundR]->setRect(  60,  -32, 120,  64);
-    scrRects[(int)ScrPart::WallL]      ->setRect(-172,  -53,  52, 105);
-    scrRects[(int)ScrPart::WallC]      ->setRect( -26,  -53,  52, 105);
-    scrRects[(int)ScrPart::WallR]      ->setRect( 116,  -53,  52, 105);
+    scrRects[(int)ScrPart::WallL]      ->setRect(-168,  -53,  48, 105);
+    scrRects[(int)ScrPart::WallC]      ->setRect( -24,  -53,  48, 105);
+    scrRects[(int)ScrPart::WallR]      ->setRect( 120,  -53,  48, 105);
     scrRects[(int)ScrPart::FloorL]     ->setRect(-166,   30,  64,  21);
     scrRects[(int)ScrPart::FloorC]     ->setRect( -32,   30,  64,  21);
     scrRects[(int)ScrPart::FloorR]     ->setRect( 102,   30,  64,  21);
@@ -61,9 +61,9 @@ void MainWindow::initScrRects()
     scrRects[(int)ScrPart::BackgroundL]->setOffset(QPoint(-180,  -32));
     scrRects[(int)ScrPart::BackgroundC]->setOffset(QPoint( -60,  -32));
     scrRects[(int)ScrPart::BackgroundR]->setOffset(QPoint(  60,  -32));
-    scrRects[(int)ScrPart::WallL]      ->setOffset(QPoint(-170,  -53));
-    scrRects[(int)ScrPart::WallC]      ->setOffset(QPoint( -26,  -53));
-    scrRects[(int)ScrPart::WallR]      ->setOffset(QPoint( 118,  -53));
+    scrRects[(int)ScrPart::WallL]      ->setOffset(QPoint(-168,  -53));
+    scrRects[(int)ScrPart::WallC]      ->setOffset(QPoint( -24,  -53));
+    scrRects[(int)ScrPart::WallR]      ->setOffset(QPoint( 120,  -53));
     scrRects[(int)ScrPart::FloorL]     ->setOffset(QPoint(-166,   30));
     scrRects[(int)ScrPart::FloorC]     ->setOffset(QPoint( -24,   30));
     scrRects[(int)ScrPart::FloorR]     ->setOffset(QPoint( 102,   30));
