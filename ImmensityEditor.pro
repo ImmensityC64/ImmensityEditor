@@ -29,7 +29,6 @@ SOURCES += main.cpp\
     gfx_view.cpp \
     editor.cpp \
     gfx_vector.cpp \
-    menu.cpp \
     serialize.cpp \
     scenery.cpp \
     map.cpp \
@@ -42,8 +41,9 @@ SOURCES += main.cpp\
     props.cpp \
     cnf_editor.cpp \
     bg_editor.cpp \
-    main_editor.cpp \
-    char_set.cpp
+    char_set.cpp \
+    mainwindow_open_close.cpp \
+    mainwindow_editor_img.cpp
 
 HEADERS  += general.h \
     theme_editor.h \

@@ -266,6 +266,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 }
 
+/****    I N I T
+ ******************************************************************************/
+
 void MainWindow::initGv(GfxVector &gv,
                         QString title,
                         GfxVector::Scope scope,
@@ -279,6 +282,223 @@ void MainWindow::initGv(GfxVector &gv,
     gv.setMode(mode);
     gv.setType(type);
 }
+
+void MainWindow::initScrPart(ScrPart part,
+                             GfxData::Type type,
+                             int width,
+                             int height,
+                             GfxImage::Mode mode)
+{
+    /* Initialize L, C and R */
+    for(int i=0; i<=2; i++)
+    {
+        int index = (int)part + i;
+        scrDatas[index] = shared_ptr<GfxData>(new GfxData(type, width, height));
+        if(GfxImage::Mode::Ceiling == mode || GfxImage::Mode::Floor == mode)
+        {
+            scrRects[index] = new GfxRectItemImage(scrDatas.at(index), i-1);
+            scrImgs[index] = scrRects.at(index)->getImg();
+            scrImgs[index]->setMode(mode);
+        }
+        else
+        {
+            scrRects[index] = new GfxRectItemImage(scrDatas.at(index));
+            scrImgs[index] = scrRects.at(index)->getImg();
+        }
+        ui->view->scene->addItem(scrRects.at(index));
+        connect(scrImgs[index], SIGNAL(refreshHappened()), scrRects[index], SLOT(refresh()));
+    }
+}
+
+void MainWindow::initScrRects()
+{
+    scrRects[(int)ScrPart::CeilingFgL] ->setRect(-216,  -72, 144,  24);
+    scrRects[(int)ScrPart::CeilingFgC] ->setRect( -72,  -72, 144,  24);
+    scrRects[(int)ScrPart::CeilingFgR] ->setRect(  72,  -72, 144,  24);
+    scrRects[(int)ScrPart::CeilingL]   ->setRect(-166,  -51,  64,  21);
+    scrRects[(int)ScrPart::CeilingC]   ->setRect( -32,  -51,  64,  21);
+    scrRects[(int)ScrPart::CeilingR]   ->setRect( 102,  -51,  64,  21);
+    scrRects[(int)ScrPart::BackgroundL]->setRect(-180,  -32, 120,  64);
+    scrRects[(int)ScrPart::BackgroundC]->setRect( -60,  -32, 120,  64);
+    scrRects[(int)ScrPart::BackgroundR]->setRect(  60,  -32, 120,  64);
+    scrRects[(int)ScrPart::WallL]      ->setRect(-168,  -53,  48, 105);
+    scrRects[(int)ScrPart::WallC]      ->setRect( -24,  -53,  48, 105);
+    scrRects[(int)ScrPart::WallR]      ->setRect( 120,  -53,  48, 105);
+    scrRects[(int)ScrPart::FloorL]     ->setRect(-166,   30,  64,  21);
+    scrRects[(int)ScrPart::FloorC]     ->setRect( -32,   30,  64,  21);
+    scrRects[(int)ScrPart::FloorR]     ->setRect( 102,   30,  64,  21);
+    scrRects[(int)ScrPart::FloorFgL]   ->setRect(-216,   48, 144,  24);
+    scrRects[(int)ScrPart::FloorFgC]   ->setRect( -72,   48, 144,  24);
+    scrRects[(int)ScrPart::FloorFgR]   ->setRect(  72,   48, 144,  24);
+
+    scrRects[(int)ScrPart::CeilingFgL] ->setOffset(QPoint(-216,  -72));
+    scrRects[(int)ScrPart::CeilingFgC] ->setOffset(QPoint( -72,  -72));
+    scrRects[(int)ScrPart::CeilingFgR] ->setOffset(QPoint(  72,  -72));
+    scrRects[(int)ScrPart::CeilingL]   ->setOffset(QPoint(-166,  -51));
+    scrRects[(int)ScrPart::CeilingC]   ->setOffset(QPoint( -24,  -51));
+    scrRects[(int)ScrPart::CeilingR]   ->setOffset(QPoint( 102,  -51));
+    scrRects[(int)ScrPart::BackgroundL]->setOffset(QPoint(-180,  -32));
+    scrRects[(int)ScrPart::BackgroundC]->setOffset(QPoint( -60,  -32));
+    scrRects[(int)ScrPart::BackgroundR]->setOffset(QPoint(  60,  -32));
+    scrRects[(int)ScrPart::WallL]      ->setOffset(QPoint(-168,  -53));
+    scrRects[(int)ScrPart::WallC]      ->setOffset(QPoint( -24,  -53));
+    scrRects[(int)ScrPart::WallR]      ->setOffset(QPoint( 120,  -53));
+    scrRects[(int)ScrPart::FloorL]     ->setOffset(QPoint(-166,   30));
+    scrRects[(int)ScrPart::FloorC]     ->setOffset(QPoint( -24,   30));
+    scrRects[(int)ScrPart::FloorR]     ->setOffset(QPoint( 102,   30));
+    scrRects[(int)ScrPart::FloorFgL]   ->setOffset(QPoint(-216,   48));
+    scrRects[(int)ScrPart::FloorFgC]   ->setOffset(QPoint( -72,   48));
+    scrRects[(int)ScrPart::FloorFgR]   ->setOffset(QPoint(  72,   48));
+
+    scrRects[(int)ScrPart::WallL]->setZValue(5);
+    scrRects[(int)ScrPart::WallC]->setZValue(5);
+    scrRects[(int)ScrPart::WallR]->setZValue(5);
+}
+
+void MainWindow::initScrBgs()
+{
+    scrBgs[(int)ScrBg::CeilingFg]  = new QGraphicsRectItem(-152, -72, 304,  24);
+    scrBgs[(int)ScrBg::Background] = new QGraphicsRectItem(-152, -32, 304,  64);
+    scrBgs[(int)ScrBg::FloorFg]    = new QGraphicsRectItem(-152,  48, 304,  24);
+
+    scrBgs[(int)ScrBg::Ceiling0]   = new QGraphicsRectItem(-152, -48, 304,   3);
+    scrBgs[(int)ScrBg::Ceiling1]   = new QGraphicsRectItem(-152, -45, 304,   2);
+    scrBgs[(int)ScrBg::Ceiling2]   = new QGraphicsRectItem(-152, -43, 304,   2);
+    scrBgs[(int)ScrBg::Ceiling3]   = new QGraphicsRectItem(-152, -41, 304,   2);
+    scrBgs[(int)ScrBg::Ceiling4]   = new QGraphicsRectItem(-152, -39, 304,   2);
+    scrBgs[(int)ScrBg::Ceiling5]   = new QGraphicsRectItem(-152, -37, 304,   2);
+    scrBgs[(int)ScrBg::Ceiling6]   = new QGraphicsRectItem(-152, -35, 304,   3);
+
+    scrBgs[(int)ScrBg::Floor6]     = new QGraphicsRectItem(-152,  32, 304,   3);
+    scrBgs[(int)ScrBg::Floor5]     = new QGraphicsRectItem(-152,  35, 304,   2);
+    scrBgs[(int)ScrBg::Floor4]     = new QGraphicsRectItem(-152,  37, 304,   2);
+    scrBgs[(int)ScrBg::Floor3]     = new QGraphicsRectItem(-152,  39, 304,   2);
+    scrBgs[(int)ScrBg::Floor2]     = new QGraphicsRectItem(-152,  41, 304,   2);
+    scrBgs[(int)ScrBg::Floor1]     = new QGraphicsRectItem(-152,  43, 304,   2);
+    scrBgs[(int)ScrBg::Floor0]     = new QGraphicsRectItem(-152,  45, 304,   3);
+
+    scrBgs[(int)ScrBg::BorderL]    = new QGraphicsRectItem(-216, -72,  64, 144);
+    scrBgs[(int)ScrBg::BorderR]    = new QGraphicsRectItem( 152, -72,  64, 144);
+}
+
+void MainWindow::initScrBgColors()
+{
+    int t = props.maps.at(map_index)->theme_index; /* current theme of current map */
+    scrBgs[(int)ScrBg::CeilingFg]  ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::CeilingFg]));
+    scrBgs[(int)ScrBg::Ceiling0]   ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::Ceiling0]));
+    scrBgs[(int)ScrBg::Ceiling1]   ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::Ceiling1]));
+    scrBgs[(int)ScrBg::Ceiling2]   ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::Ceiling2]));
+    scrBgs[(int)ScrBg::Ceiling3]   ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::Ceiling3]));
+    scrBgs[(int)ScrBg::Ceiling4]   ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::Ceiling4]));
+    scrBgs[(int)ScrBg::Ceiling5]   ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::Ceiling5]));
+    scrBgs[(int)ScrBg::Ceiling6]   ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::Ceiling6]));
+    scrBgs[(int)ScrBg::Background] ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::Background]));
+    scrBgs[(int)ScrBg::Floor6]     ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::Floor6]));
+    scrBgs[(int)ScrBg::Floor5]     ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::Floor5]));
+    scrBgs[(int)ScrBg::Floor4]     ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::Floor4]));
+    scrBgs[(int)ScrBg::Floor3]     ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::Floor3]));
+    scrBgs[(int)ScrBg::Floor2]     ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::Floor2]));
+    scrBgs[(int)ScrBg::Floor1]     ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::Floor1]));
+    scrBgs[(int)ScrBg::Floor0]     ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::Floor0]));
+    scrBgs[(int)ScrBg::FloorFg]    ->setBrush(C64::ins().brush_hires(props.themes.at(t)->colors[Theme::Enum::FloorFg]));
+}
+
+/****    G R I D S
+ ******************************************************************************/
+
+void MainWindow::wallVisible    (int state) { wallState     = state; vrfyWallVisibility(); }
+void MainWindow::wallGridVisible(int state) { wallGridState = state; vrfyWallVisibility(); }
+void MainWindow::playerVisible  (int state) { playerState   = state; vrfyPlayerVisibility(); }
+
+void MainWindow::vrfyWallVisibility()
+{
+    if (wallState)
+    {
+        wallGrp->show();
+        if (wallGridState) wallGridGrp->show();
+        else               wallGridGrp->hide();
+    }
+    else
+    {
+        wallGrp->hide();
+        wallGridGrp->hide();
+    }
+}
+
+void MainWindow::vrfyPlayerVisibility()
+{
+
+}
+
+void MainWindow::createGrids()
+{
+    grid->createSeries(Grid::Type::Fine, 8, 8, -72, -72, 72, -48);
+    grid->createSeries(Grid::Type::Fine, 8, 8, -60, -32, 60,  32);
+    grid->createSeries(Grid::Type::Fine, 8, 8, -72,  48, 72,  72);
+
+    grid->createSeries(Grid::Type::Main, 48, 24, -72, -72, 72, -48);
+    grid->createSeries(Grid::Type::Main, 40, 16, -60, -32, 60,  32);
+    grid->createSeries(Grid::Type::Main, 48, 24, -72,  48, 72,  72);
+
+    grid->createMainLine( -24, -48,  -20, -32);
+    grid->createMainLine(  24, -48,   20, -32);
+    grid->createMainLine( -24,  48,  -20,  32);
+    grid->createMainLine(  24,  48,   20,  32);
+
+    createWallLine(Qt::SolidLine, -24, -53,  24, -53);
+    createWallLine(Qt::SolidLine, -24,  52,  24,  52);
+    createWallLine(Qt::SolidLine, -24, -53, -24,  52);
+    createWallLine(Qt::SolidLine,  24, -53,  24,  52);
+    createWallLine(Qt::DotLine, -24, -32,  24, -32);
+    createWallLine(Qt::DotLine, -24, -11,  24, -11);
+    createWallLine(Qt::DotLine, -24,  10,  24,  10);
+    createWallLine(Qt::DotLine, -24,  31,  24,  31);
+}
+
+void MainWindow::createWallLine(Qt::PenStyle type, int x0, int y0, int x1, int y1)
+{
+    QGraphicsLineItem *line;
+    QPen pen = QPen(QColor::fromRgba( Cfg::ins().val(Cfg::EditorWallGridColor) ));
+    pen.setWidth(0);
+    pen.setStyle(type);
+    line = new QGraphicsLineItem(x0,y0,x1,y1);
+    line->setPen(pen);
+    wallItems.push_back(line);
+    wallGridGrp->addToGroup(wallItems.back());
+}
+
+/****    S P R I T E   C O L O R S
+ ******************************************************************************/
+
+void MainWindow::receiveColorCeiling(quint8 i)
+{
+    props.editor_ceiling_clr = i;
+    scrDatas.at((int)ScrPart::CeilingC)->setColor((int)GfxData::ColorIndex::Color, i);
+    scrImgs.at((int)ScrPart::CeilingC)->refresh();
+    editor_img_t_modified=true;
+    ui->colorCeiling->buttonColor(i);
+}
+
+void MainWindow::receiveColorWall(quint8 i)
+{
+    props.editor_wall_clr = i;
+    scrDatas.at((int)ScrPart::WallC)->setColor((int)GfxData::ColorIndex::Color, i);
+    scrImgs.at((int)ScrPart::WallC)->refresh();
+    editor_img_t_modified=true;
+    ui->colorWall->buttonColor(i);
+}
+
+void MainWindow::receiveColorFloor(quint8 i)
+{
+    props.editor_floor_clr = i;
+    scrDatas.at((int)ScrPart::FloorC)->setColor((int)GfxData::ColorIndex::Color, i);
+    scrImgs.at((int)ScrPart::FloorC)->refresh();
+    editor_img_t_modified=true;
+    ui->colorFloor->buttonColor(i);
+}
+
+/****    M A P
+ ******************************************************************************/
 
 void MainWindow::selectMap(int index)
 {
@@ -324,94 +544,8 @@ void MainWindow::deleteMap()
         ui->mapBox->removeItem(map_index); // this will trigger the currentIndexChanged signal
 }
 
-void MainWindow::mapSettingsChanged()
-{
-    int i = ui->mapBox->currentIndex();
-    QString s = props.maps.at(map_index)->name;
-    ui->mapBox->setItemText(i, s);
-    refreshEditor();
-}
-
-void MainWindow::themeChanged(int i)
-{
-    if(props.maps.at(map_index)->theme_index == i)
-        refreshEditor();
-}
-
-void MainWindow::sceneryChanged(int i)
-{
-    if(props.maps.at(map_index)->scenery_index == i)
-        refreshEditor();
-}
-
-void MainWindow::tileChanged()
-{
-    editor_img_t_modified = true;
-    editorImgSave();
-    refreshEditor();
-}
-
-void MainWindow::spriteChanged()
-{
-    /* Scenery Wall Browser must update all walls as some of them may contain the modified sprite */
-    for(int v=0; v<SCENERY_WALL_NUM; v++)
-        props.editor_modified_walls.setBit(v, true);
-    tileChanged();
-}
-
-void MainWindow::wallChanged()
-{
-    /* Scenery Sprite Browser must update all sprites as some of them may contained by the modified wall */
-    for(int v=0; v<SCENERY_SPRITE_NUM; v++)
-        props.editor_modified_sprites.setBit(v, true);
-    tileChanged();
-}
-
-void MainWindow::sectorCChanged()
-{
-    editor_img_c_modified = true;
-    tileChanged();
-}
-
-void MainWindow::sectorBChanged()
-{
-    editor_img_b_modified = true;
-    tileChanged();
-}
-
-void MainWindow::sectorFChanged()
-{
-    editor_img_f_modified = true;
-    tileChanged();
-}
-
-void MainWindow::incSector()
-{
-    editorImgSave();
-    sector++;
-    refreshEditor();
-}
-
-void MainWindow::decSector()
-{
-    editorImgSave();
-    sector--;
-    refreshEditor();
-}
-
-void MainWindow::setSector(int s)
-{
-    editorImgSave();
-    sector = s;
-    refreshEditor();
-}
-
-void MainWindow::setSector(QString s)
-{
-    editorImgSave();
-    sector = s.toInt();
-    refreshEditor();
-}
+/****    S E C T O R   M O V E / C O P Y
+ ******************************************************************************/
 
 void MainWindow::setSectorSelectionL()
 {
@@ -422,24 +556,6 @@ void MainWindow::setSectorSelectionL()
 void MainWindow::setSectorSelectionR()
 {
     sectorSelectionR = sector;
-    calculateSectorSelection();
-}
-
-void MainWindow::saveModifications()
-{
-    editorImgSave();
-    refreshEditor();
-}
-
-void MainWindow::refreshEditor()
-{
-    initScrBgColors();
-    editorImgLoad();
-    refreshSceneryBrowsers();
-    ui->checkDelete->setChecked(false);
-    enableDeletBtn(false);
-    ui->sector->setText(QString::number(sector));
-    ui->sectorSlider->setSliderPosition(sector);
     calculateSectorSelection();
 }
 
@@ -596,52 +712,3 @@ void MainWindow::sectorMoveOrCopy()
     delete tmpM;
     refreshEditor();
 }
-
-void MainWindow::openSectorCEditor()
-{
-    if(nullptr == sectorCEditor)
-    {
-        shared_ptr<GfxData> data(scrDatas.at((int)ScrPart::CeilingFgC));
-        sectorCEditor = new CnfTileEditor(data, indexEditSectorCeiling);
-        sectorCEditor->setAttribute(Qt::WA_DeleteOnClose, true);
-        sectorCEditor->show();
-        connect(sectorCEditor, SIGNAL(destroyed()),   this, SLOT(closeSectorCEditor()));
-        connect(data.get(),    SIGNAL(dataChanged()), this, SLOT(sectorCChanged()));
-    }
-    /* ... or activate the already existing one */
-    else sectorCEditor->activateWindow();
-}
-
-void MainWindow::openSectorBEditor()
-{
-    if(nullptr == sectorBEditor)
-    {
-        shared_ptr<GfxData> data(scrDatas.at((int)ScrPart::BackgroundC));
-        sectorBEditor = new BgTileEditor(data, indexEditSectorBackground);
-        sectorBEditor->setAttribute(Qt::WA_DeleteOnClose, true);
-        sectorBEditor->show();
-        connect(sectorBEditor, SIGNAL(destroyed()),   this, SLOT(closeSectorBEditor()));
-        connect(data.get(),    SIGNAL(dataChanged()), this, SLOT(sectorBChanged()));
-    }
-    /* ... or activate the already existing one */
-    else sectorBEditor->activateWindow();
-}
-
-void MainWindow::openSectorFEditor()
-{
-    if(nullptr == sectorFEditor)
-    {
-        shared_ptr<GfxData> data(scrDatas.at((int)ScrPart::FloorFgC));
-        sectorFEditor = new CnfTileEditor(data, indexEditSectorFloor);
-        sectorFEditor->setAttribute(Qt::WA_DeleteOnClose, true);
-        sectorFEditor->show();
-        connect(sectorFEditor, SIGNAL(destroyed()),   this, SLOT(closeSectorFEditor()));
-        connect(data.get(),    SIGNAL(dataChanged()), this, SLOT(sectorFChanged()));
-    }
-    /* ... or activate the already existing one */
-    else sectorFEditor->activateWindow();
-}
-
-void MainWindow::closeSectorCEditor() { sectorCEditor = nullptr; }
-void MainWindow::closeSectorBEditor() { sectorBEditor = nullptr; }
-void MainWindow::closeSectorFEditor() { sectorFEditor = nullptr; }
