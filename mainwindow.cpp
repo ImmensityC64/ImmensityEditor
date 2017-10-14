@@ -103,7 +103,7 @@ MainWindow::MainWindow(QWidget *parent) :
     initScrPart(ScrPart::CeilingFg,  GfxData::Type::CnfSketch, 144,  24, GfxImage::Mode::Nothing);
     initScrPart(ScrPart::Ceiling,    GfxData::Type::Sprite,     24,  21, GfxImage::Mode::Ceiling);
     initScrPart(ScrPart::Background, GfxData::Type::Sketch,    120,  64, GfxImage::Mode::Nothing);
-    initScrPart(ScrPart::Wall,       GfxData::Type::Sprite,     24, 105, GfxImage::Mode::Expanded);
+    initScrPart(ScrPart::Wall,       GfxData::Type::Wall,       24, 105, GfxImage::Mode::Wall);
     initScrPart(ScrPart::Floor,      GfxData::Type::Sprite,     24,  21, GfxImage::Mode::Floor);
     initScrPart(ScrPart::FloorFg,    GfxData::Type::CnfSketch, 144,  24, GfxImage::Mode::Nothing);
 
@@ -122,6 +122,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     initScrRects();
     initScrBgs();
+
+    scrRects[(int)ScrPart::CeilingL]->setZValue(10);
+    scrRects[(int)ScrPart::CeilingC]->setZValue(10);
+    scrRects[(int)ScrPart::CeilingR]->setZValue(10);
+    scrRects[(int)ScrPart::FloorL]->setZValue(10);
+    scrRects[(int)ScrPart::FloorC]->setZValue(10);
+    scrRects[(int)ScrPart::FloorR]->setZValue(10);
 
     scrBgs[(int)ScrBg::BorderL]->setBrush(QBrush(QColor(QRgb( Cfg::ins().val(Cfg::ViewSceneColor) ))));
     scrBgs[(int)ScrBg::BorderR]->setBrush(QBrush(QColor(QRgb( Cfg::ins().val(Cfg::ViewSceneColor) ))));

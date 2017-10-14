@@ -463,7 +463,8 @@ void MainWindow::dndImport(QByteArray &src, QPoint p)
         else
         {
             if ( y < 0 ) scrImgs.at((int)ScrPart::CeilingC)->importSpriteDataToImage(src, QPoint(0,0));
-            else         scrImgs.at((int)ScrPart::FloorC)->  importSpriteDataToImage(src, QPoint(0,0));
+            /* x is 4 to compensate initial horizontal offset of floor sprite */
+            else         scrImgs.at((int)ScrPart::FloorC)->  importSpriteDataToImage(src, QPoint(4,0));
         }
     }
     else if ((quint8)GfxData::Type::Wall == src.at(0))
