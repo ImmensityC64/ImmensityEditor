@@ -247,7 +247,7 @@ QDataStream& operator >>(QDataStream& in, Scenery &dst)
             quint8 chr_idx;
             in >> chr_idx;
             tile.char_idxs[row][col] = chr_idx & 0x3F;
-            tile.colors[row][col] = chr_idx & 0x70;
+            tile.colors[row][col] = chr_idx & 0xC0;
         }
         in >> tile_c.keep;
         tile_c.usage = 0;
