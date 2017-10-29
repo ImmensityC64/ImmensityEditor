@@ -1,5 +1,6 @@
 
 #include "gfx.h"
+#include <QScrollBar>
 
  /*================================================================================*\
 ( *     G F X   V I E W
@@ -27,7 +28,10 @@ GfxView::~GfxView()
 void GfxView::mousePressEvent(QMouseEvent *event)
 {
     /* Handle left & right buttons only! */
-    if(! (event->button() & (Qt::LeftButton|Qt::RightButton)) ) return;
+    if (! (event->button() & (Qt::LeftButton|Qt::RightButton)) ) return;
+    /* Don't handle canvas scrolling! */
+    if (event->modifiers() & Qt::ShiftModifier) return;
+
     event->accept();
 
     if( (event->buttons() & Qt::LeftButton) &&
@@ -63,8 +67,12 @@ void GfxView::mousePressEvent(QMouseEvent *event)
 
 void GfxView::mouseReleaseEvent(QMouseEvent *event)
 {
+    scrolling = false;
     /* Handle left & right buttons only! */
     if(! (event->button() & (Qt::LeftButton|Qt::RightButton)) ) return;
+    /* Don't handle canvas scrolling! */
+    if (event->modifiers() & Qt::ShiftModifier) return;
+
     event->accept();
 
     if(event->buttons() & (Qt::LeftButton|Qt::RightButton))
@@ -99,16 +107,38 @@ void GfxView::mouseReleaseEvent(QMouseEvent *event)
 
 void GfxView::mouseMoveEvent(QMouseEvent *event)
 {
+    event->accept();
+    int buttons = event->buttons() & (Qt::LeftButton|Qt::RightButton);
+
+    /* Scroll canvas if Shift key or
+     * middle mouse button is pressed
+     */
+    if (((event->modifiers() & Qt::ShiftModifier) && buttons) ||
+        event->buttons() & Qt::MidButton)
+    {
+        int x_curr = event->globalX();
+        int y_curr = event->globalY();
+        if (scrolling)
+        {
+            verticalScrollBar()->setValue(verticalScrollBar()->value()+y_curr-y_prev);
+            horizontalScrollBar()->setValue(horizontalScrollBar()->value()+x_curr-x_prev);
+        }
+        x_prev = x_curr;
+        y_prev = y_curr;
+        scrolling = true;
+        return;
+    }
+
     /* Do not forward the event
      * either if none of the buttons are pressed
      * or both buttons are pressed!
      */
-    int state = event->buttons() & (Qt::LeftButton|Qt::RightButton);
-    if(!state) return;
-    event->accept();
+    if(!buttons)
+        return;
+    if((buttons&Qt::LeftButton) && (buttons&Qt::RightButton))
+        return;
 
-    if((state&Qt::LeftButton) && (state&Qt::RightButton)) return;
-
+    /* Accept event, gfx is being edited */
     emit gfxEditorViewMoveEvent(
                 QPoint( (int) mapToScene(event->pos()).x(),
                         (int) mapToScene(event->pos()).y() ) );
@@ -143,11 +173,11 @@ GfxEditorView::~GfxEditorView() {}
 
 void GfxEditorView::wheelEvent(QWheelEvent *event)
 {
+    event->accept();
     /* TODO: CAD-like scroll */
     qreal factor = (event->delta() > 0) ? scaleFactor : 1.0/scaleFactor;
     scale(factor, factor);
     emit gfxEditorViewScaleEvent(); // Tell Editor to verify grids!
-    event->accept();
 }
 
 void GfxEditorView::dragEnterEvent(QDragEnterEvent *event)

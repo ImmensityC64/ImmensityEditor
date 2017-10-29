@@ -252,6 +252,9 @@ private:
     void mousePressEvent  (QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent   (QMouseEvent *event);
+    int x_prev = 0;
+    int y_prev = 0;
+    bool scrolling = false;
 
 signals:
    void gfxEditorViewPressEvent  (QPoint p, int m);
