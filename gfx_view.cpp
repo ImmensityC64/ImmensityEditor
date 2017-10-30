@@ -120,8 +120,8 @@ void GfxView::mouseMoveEvent(QMouseEvent *event)
         int y_curr = event->globalY();
         if (scrolling)
         {
-            verticalScrollBar()->setValue(verticalScrollBar()->value()+y_curr-y_prev);
-            horizontalScrollBar()->setValue(horizontalScrollBar()->value()+x_curr-x_prev);
+            verticalScrollBar()->setValue(verticalScrollBar()->value()-y_curr+y_prev);
+            horizontalScrollBar()->setValue(horizontalScrollBar()->value()-x_curr+x_prev);
         }
         x_prev = x_curr;
         y_prev = y_curr;
