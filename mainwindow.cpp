@@ -210,6 +210,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->btnReload, SIGNAL(clicked()), this, SLOT(refreshEditor()));
     connect(ui->btnApply,  SIGNAL(clicked()), this, SLOT(saveModifications()));
 
+    scSectorInc = new QShortcut(QKeySequence("Right"), this);
+    scSectorDec = new QShortcut(QKeySequence("Left"), this);
+    connect(scSectorInc, SIGNAL(activated()), this, SLOT(incSector()));
+    connect(scSectorDec, SIGNAL(activated()), this, SLOT(decSector()));
+
     refreshEditor();
 }
 
@@ -223,6 +228,9 @@ MainWindow::~MainWindow()
     }
     wallItems.clear();
     delete grid;
+
+    delete scSectorInc;
+    delete scSectorDec;
 
     gvSketchesCeilings.close();
     gvSketchesFloors.close();

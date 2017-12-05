@@ -185,6 +185,9 @@ private:
 
     void refreshSceneryBrowsers(void);
 
+    QShortcut *scSectorInc;
+    QShortcut *scSectorDec;
+
     /* Grids */
     Grid *grid;
     int wallState;
