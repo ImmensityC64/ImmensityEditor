@@ -102,6 +102,32 @@ void Editor::addSpecWidget(void)
     ui->controlLayout->insertWidget(2,spec);
 }
 
+void Editor::closeEvent(QCloseEvent *event)
+{
+    QMessageBox msgBox;
+    msgBox.setText("Closing "+windowTitle());
+    msgBox.setInformativeText("Do you want to apply your changes?");
+    msgBox.setStandardButtons(QMessageBox::Apply | QMessageBox::Discard | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Apply);
+    int ret = msgBox.exec();
+
+    switch (ret) {
+      case QMessageBox::Apply:
+          apply();
+          event->accept();
+          break;
+      case QMessageBox::Discard:
+          event->accept();
+          break;
+      case QMessageBox::Cancel:
+          event->ignore();
+          break;
+      default:
+          // should never be reached
+          break;
+    }
+}
+
 /****    H I S T O R Y
  ******************************************************************************/
 

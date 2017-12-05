@@ -29,6 +29,7 @@ protected:
     QWidget *spec;  /* Editor specific widget */
     void addSpecWidget(void);
     Props &props;
+    void closeEvent(QCloseEvent *event);
 
     int I; /* index of GfxData in GfxVector */
 
