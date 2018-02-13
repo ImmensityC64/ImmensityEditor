@@ -835,7 +835,7 @@
                 <item>
                  <widget class="QLabel" name="label_2">
                   <property name="text">
-                   <string>insert selection between these</string>
+                   <string>cut selection and insert between these</string>
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>
@@ -995,7 +995,7 @@
                    </font>
                   </property>
                   <property name="text">
-                   <string>overwrite these with selection</string>
+                   <string>keep selection and copy here</string>
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>
