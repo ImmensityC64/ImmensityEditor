@@ -1315,6 +1315,9 @@
     <addaction name="actionFileSaveAs"/>
     <addaction name="actionFileRevert"/>
     <addaction name="separator"/>
+    <addaction name="actionFileExportBin"/>
+    <addaction name="actionFileExportD64"/>
+    <addaction name="separator"/>
     <addaction name="actionFileExit"/>
    </widget>
    <widget class="QMenu" name="menuBrowse">
@@ -1670,6 +1673,16 @@
   <action name="actionRepair">
    <property name="text">
     <string>Repair</string>
+   </property>
+  </action>
+  <action name="actionFileExportBin">
+   <property name="text">
+    <string>Export to bin</string>
+   </property>
+  </action>
+  <action name="actionFileExportD64">
+   <property name="text">
+    <string>Export to D64</string>
    </property>
   </action>
  </widget>

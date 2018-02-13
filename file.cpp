@@ -238,3 +238,19 @@ void MainWindow::saveMapVector(QDataStream &out)
     for(int i=0; i<size; i++)
         out << *props.maps.at(i);
 }
+
+void MainWindow::exportProjectToBinary(void)
+{
+    /* TODO: open file browser of get filename and path from settings */
+    QMessageBox msgBox;
+    msgBox.setText("TODO:\nExport to binary");
+    msgBox.exec();
+}
+
+void MainWindow::exportProjectToD64(void)
+{
+    /* TODO: open file browser of get filename and path from settings */
+    QMessageBox msgBox;
+    msgBox.setText("TODO:\nExport to D64");
+    msgBox.exec();
+}

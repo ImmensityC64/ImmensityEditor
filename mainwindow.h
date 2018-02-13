@@ -102,6 +102,8 @@ public slots:
     void saveProject(void);
     void saveAsProject(void);
     void loadProject(void);
+    void exportProjectToBinary(void);
+    void exportProjectToD64(void);
 
 private:
     Ui::MainWindow *ui;
