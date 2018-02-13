@@ -28,11 +28,64 @@ WallEditor::WallEditor(shared_ptr<GfxData> init, int index, QWidget *parent) :
 
     /* Buttons */
 
+    connect(wui->btnCopy2_4,  SIGNAL(clicked()), this, SLOT(copy2_4()));
+    connect(wui->btnCopy2_34, SIGNAL(clicked()), this, SLOT(copy2_34()));
+    connect(wui->btnCopy3,    SIGNAL(clicked()), this, SLOT(copy3()));
+    connect(wui->btnCopy4_2,  SIGNAL(clicked()), this, SLOT(copy4_2()));
+    connect(wui->btnCopy4_23, SIGNAL(clicked()), this, SLOT(copy4_23()));
 }
 WallEditor::~WallEditor()
 {
     delete wui;
     delete spec;
+}
+
+void WallEditor::copy2_4()
+{
+    int y=21;
+    shared_ptr<GfxData> src_data(data->copy(0,y,23,y+20));
+    data->paste(src_data,0,63);
+    his->save(data);
+    img->refresh();
+}
+
+void WallEditor::copy2_34()
+{
+    int y=21;
+    shared_ptr<GfxData> src_data(data->copy(0,y,23,y+20));
+    data->paste(src_data,0,42);
+    data->paste(src_data,0,63);
+    his->save(data);
+    img->refresh();
+}
+
+void WallEditor::copy3()
+{
+    int y=42;
+    shared_ptr<GfxData> src_data(data->copy(0,y,23,y+20));
+    data->paste(src_data,0,21);
+    data->paste(src_data,0,63);
+    his->save(data);
+    img->refresh();
+}
+
+void WallEditor::copy4_2()
+{
+    int y=63;
+    shared_ptr<GfxData> src_data(data->copy(0,y,23,y+20));
+    data->paste(src_data,0,21);
+    his->save(data);
+    img->refresh();
+}
+
+void WallEditor::copy4_23()
+{
+    int y=63;
+    shared_ptr<GfxData> src_data(data->copy(0,y,23,y+20));
+    data->paste(src_data,0,21);
+    data->paste(src_data,0,42);
+    his->save(data);
+    img->refresh();
 }
 
 /****    C O L O R S

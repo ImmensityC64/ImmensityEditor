@@ -114,6 +114,11 @@ public slots:
     void receiveColor(quint8 i);
     void receiveAlpha(quint8 i);
     void refreshColorButtons(void);
+    void copy2_34(void);
+    void copy2_4(void);
+    void copy3(void);
+    void copy4_2(void);
+    void copy4_23(void);
 };
 
 class SceneryWallEditor : public WallEditor
