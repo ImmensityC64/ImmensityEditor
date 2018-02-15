@@ -252,7 +252,8 @@ void MainWindow::exportProjectToBinary(void)
      */
 
     int size;
-    char name[sizeof("x000.b")+1];
+    QString id;
+    QString ext(".b");
 
     size = props.sceneries.size();
     for(int s=0; s<size; s++)
@@ -261,8 +262,14 @@ void MainWindow::exportProjectToBinary(void)
 
         /* Export Sprite Pack */
 
-        sprintf(name, "a%03d.b", s);
-        exportBinaryFiles = new QFile(exportBinaryPath+QString(name));
+        id = src.id;
+        if (!id.length())
+        {
+            char tmp[4] = {0};
+            sprintf(tmp, "%03d", s);
+            id = QString(tmp);
+        }
+        exportBinaryFiles = new QFile(exportBinaryPath+QString("a")+id+ext);
         if(exportBinaryFiles->open(QIODevice::WriteOnly))
         {
             QDataStream file(exportBinaryFiles);

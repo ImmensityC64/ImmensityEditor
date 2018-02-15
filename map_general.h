@@ -50,9 +50,31 @@ public:
     };
 
     QString name = "";
+    QString id   = "";
     int mapping  = 0;
-    explicit VE(){}
+    explicit VE()
+    {
+        loadDefaultValues();
+    }
     virtual ~VE(){}
+    VE& operator=(const VE& other)
+    {
+        name = other.name;
+        id   = other.id;
+    }
+    void loadDefaultValues()
+    {
+        id = "";
+    }
+
+    /* TODO: make it possible to edit 'id'
+     * 'id' could be used in filename when data is exported to binary or d64
+     * and serial number of element if 'id' is empty.
+     * Currently, serial number is used only when data is exported.
+     * For example, if you leave 'id' empty, then filename is like 't000.b'
+     * If you set 'id' to 'big', then filename is like 'tbig.b'
+     * Beware! 'id' must be unique and it must be exactly 3 characters long!
+     */
 };
 
 class Scenery;
@@ -369,7 +391,9 @@ public:
 
     void loadDefaultValues(void)
     {
+        VE::loadDefaultValues();
         name = "Default Theme";
+
         colors[(int)Enum::CeilingFg]       = (quint8)C64::IndexBlue;
         colors[(int)Enum::CeilingFgECM0]   = (quint8)C64::IndexLightGrey;
         colors[(int)Enum::CeilingFgECM1]   = (quint8)C64::IndexGrey;
@@ -404,9 +428,9 @@ public:
 
     Theme& operator=(const Theme& other)
     {
+        VE::operator =((const VE&)other);
         for(int i=0; i<(int)Enum::Size; i++)
             colors[i] = other.colors.at(i);
-        name = other.name;
         return *this;
     }
     Theme *copy()
@@ -421,21 +445,39 @@ class Human : public VE {
 public:
     explicit Human(){}
     virtual ~Human(){}
-    Human *copy() { return this; } /* TODO */
+    Human& operator=(const Human& other){}; /* TODO */
+    Human *copy()
+    {
+        Human *ret = new Human();
+        *ret = *this;
+        return ret;
+    }
 };
 
 class Cyber : public VE {
 public:
     explicit Cyber(){}
     virtual ~Cyber(){}
-    Cyber *copy() { return this; } /* TODO */
+    Cyber& operator=(const Cyber& other){}; /* TODO */
+    Cyber *copy()
+    {
+        Cyber *ret = new Cyber();
+        *ret = *this;
+        return ret;
+    }
 };
 
 class Enemy : public VE {
 public:
     explicit Enemy(){}
     virtual ~Enemy(){}
-    Enemy *copy() { return this; } /* TODO */
+    Enemy& operator=(const Enemy& other){}; /* TODO */
+    Enemy *copy()
+    {
+        Enemy *ret = new Enemy();
+        *ret = *this;
+        return ret;
+    }
 };
 
 class Music : public VE {
@@ -479,7 +521,7 @@ public:
 
     friend QDataStream& operator <<(QDataStream& out, Map const &data);
     friend QDataStream& operator >>(QDataStream& in, Map &data);
-
+    Map& operator=(const Map& other);
     Map *copy();
 };
 

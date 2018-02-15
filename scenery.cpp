@@ -19,6 +19,7 @@ Scenery::~Scenery()
 
 void Scenery::loadDefaultValues()
 {
+    VE::loadDefaultValues();
     name = "Default Scenery";
     clearUsage();
 }
@@ -55,7 +56,7 @@ void Scenery::clearUsage()
 
 Scenery &Scenery::operator=(const Scenery& other)
 {
-    name = other.name;
+    VE::operator =((const VE&)other);
 
     chr_vector      = other.chr_vector;
     bg_tile_vector  = other.bg_tile_vector;
@@ -76,9 +77,7 @@ Scenery &Scenery::operator=(const Scenery& other)
 Scenery *Scenery::copy()
 {
     Scenery *ret = new Scenery();
-
     *ret = *this;
-
     return ret;
 }
 

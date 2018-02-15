@@ -16,6 +16,7 @@ Map::~Map(){}
 
 void Map::loadDefaultValues()
 {
+    VE::loadDefaultValues();
     name = "Default Map";
 
     for(int i=0; i<SCENERY_MAP_SECTORS; ceiling_idxs[i]=0, i++);
@@ -44,47 +45,54 @@ void Map::loadDefaultValues()
     cyber_comm1_index = 3;
 }
 
+Map &Map::operator=(const Map& other)
+{
+    VE::operator =((const VE&)other);
+
+    for(int i=0; i<SCENERY_MAP_SECTORS; ceiling_idxs[i]=other.ceiling_idxs[i], i++);
+    for(int i=0; i<SCENERY_MAP_SECTORS;    wall_idxs[i]=other.wall_idxs[i],    i++);
+    for(int i=0; i<SCENERY_MAP_SECTORS;   floor_idxs[i]=other.floor_idxs[i],   i++);
+    for(int i=0; i<SCENERY_MAP_SECTORS; ceiling_clrs[i]=other.ceiling_clrs[i], i++);
+    for(int i=0; i<SCENERY_MAP_SECTORS;    wall_clrs[i]=other.wall_clrs[i],    i++);
+    for(int i=0; i<SCENERY_MAP_SECTORS;   floor_clrs[i]=other.floor_clrs[i],   i++);
+
+    for(int i=0; i<SCENERY_MAP_BLOCKS; block_c_idxs[i]=other.block_c_idxs[i], i++);
+    for(int i=0; i<SCENERY_MAP_BLOCKS; block_f_idxs[i]=other.block_f_idxs[i], i++);
+    for(int i=0; i<SCENERY_MAP_BLOCKS; block_0_idxs[i]=other.block_0_idxs[i], i++);
+    for(int i=0; i<SCENERY_MAP_BLOCKS; block_1_idxs[i]=other.block_1_idxs[i], i++);
+    for(int i=0; i<SCENERY_MAP_BLOCKS; block_2_idxs[i]=other.block_2_idxs[i], i++);
+    for(int i=0; i<SCENERY_MAP_BLOCKS; block_3_idxs[i]=other.block_3_idxs[i], i++);
+
+    ceiling_idxs  = other.ceiling_idxs;
+    wall_idxs     = other.wall_idxs;
+    floor_idxs    = other.floor_idxs;
+    ceiling_clrs  = other.ceiling_clrs;
+    wall_clrs     = other.wall_clrs;
+    floor_clrs    = other.floor_clrs;
+    block_c_idxs  = other.block_c_idxs;
+    block_f_idxs  = other.block_f_idxs;
+    block_0_idxs  = other.block_0_idxs;
+    block_1_idxs  = other.block_1_idxs;
+    block_2_idxs  = other.block_2_idxs;
+    block_3_idxs  = other.block_3_idxs;
+
+    scenery_index = other.scenery_index;
+    theme_index   = other.theme_index;
+    human_index   = other.human_index;
+    cyber_index   = other.cyber_index;
+    music_index   = other.music_index;
+
+    human_comm0_index = other.human_comm0_index;
+    human_comm1_index = other.human_comm1_index;
+    cyber_comm0_index = other.cyber_comm0_index;
+    cyber_comm1_index = other.cyber_comm1_index;
+
+    return *this;
+}
+
 Map *Map::copy()
 {
     Map *ret = new Map();
-
-    for(int i=0; i<SCENERY_MAP_SECTORS; ret->ceiling_idxs[i]=ceiling_idxs[i], i++);
-    for(int i=0; i<SCENERY_MAP_SECTORS;    ret->wall_idxs[i]=wall_idxs[i],    i++);
-    for(int i=0; i<SCENERY_MAP_SECTORS;   ret->floor_idxs[i]=floor_idxs[i],   i++);
-    for(int i=0; i<SCENERY_MAP_SECTORS; ret->ceiling_clrs[i]=ceiling_clrs[i], i++);
-    for(int i=0; i<SCENERY_MAP_SECTORS;    ret->wall_clrs[i]=wall_clrs[i],    i++);
-    for(int i=0; i<SCENERY_MAP_SECTORS;   ret->floor_clrs[i]=floor_clrs[i],   i++);
-
-    for(int i=0; i<SCENERY_MAP_BLOCKS; ret->block_c_idxs[i]=block_c_idxs[i], i++);
-    for(int i=0; i<SCENERY_MAP_BLOCKS; ret->block_f_idxs[i]=block_f_idxs[i], i++);
-    for(int i=0; i<SCENERY_MAP_BLOCKS; ret->block_0_idxs[i]=block_0_idxs[i], i++);
-    for(int i=0; i<SCENERY_MAP_BLOCKS; ret->block_1_idxs[i]=block_1_idxs[i], i++);
-    for(int i=0; i<SCENERY_MAP_BLOCKS; ret->block_2_idxs[i]=block_2_idxs[i], i++);
-    for(int i=0; i<SCENERY_MAP_BLOCKS; ret->block_3_idxs[i]=block_3_idxs[i], i++);
-
-    ret->ceiling_idxs  = ceiling_idxs;
-    ret->wall_idxs     = wall_idxs;
-    ret->floor_idxs    = floor_idxs;
-    ret->ceiling_clrs  = ceiling_clrs;
-    ret->wall_clrs     = wall_clrs;
-    ret->floor_clrs    = floor_clrs;
-    ret->block_c_idxs  = block_c_idxs;
-    ret->block_f_idxs  = block_f_idxs;
-    ret->block_0_idxs  = block_0_idxs;
-    ret->block_1_idxs  = block_1_idxs;
-    ret->block_2_idxs  = block_2_idxs;
-    ret->block_3_idxs  = block_3_idxs;
-
-    ret->scenery_index = scenery_index;
-    ret->theme_index   = theme_index;
-    ret->human_index   = human_index;
-    ret->cyber_index   = cyber_index;
-    ret->music_index   = music_index;
-
-    ret->human_comm0_index = human_comm0_index;
-    ret->human_comm1_index = human_comm1_index;
-    ret->cyber_comm0_index = cyber_comm0_index;
-    ret->cyber_comm1_index = cyber_comm1_index;
-
+    *ret = *this;
     return ret;
 }
