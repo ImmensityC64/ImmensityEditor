@@ -114,6 +114,8 @@ private:
     QString projExt;
     QString projName;
     QFile *projFile;
+    QString exportBinaryPath;
+    QFile *exportBinaryFiles;
 
     void initGv(GfxVector &gv,
                 QString title,

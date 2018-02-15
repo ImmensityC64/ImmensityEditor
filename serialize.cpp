@@ -186,24 +186,7 @@ QDataStream& operator <<(QDataStream& out, Scenery &src)
     }
 
     /* Sprites */
-    for(int i=0; i<SCENERY_SPRITE_NUM; i++)
-    {
-        const Sprite &sprite = src.sprite_vector.at(i).sprite;
-
-        quint8 byte=0;
-        for(int row=0; row<(int)C64::SpriteHeight; row++)
-        for(int col=0; col<(int)C64::SpriteWidth; col++)
-        {
-            int bit = col%8;
-            byte |= sprite.sprite_bits.at(row).at(col) << bit ;
-            if( 7==bit )
-            {
-                out << byte;
-                byte = 0;
-            }
-        }
-        out << src.sprite_vector.at(i).keep;
-    }
+    src.serOutSprites(out);
 
     /* Walls */
     for(int i=0; i<SCENERY_WALL_NUM; i++)
@@ -271,22 +254,7 @@ QDataStream& operator >>(QDataStream& in, Scenery &dst)
     }
 
     /* Sprites */
-    for(int i=0; i<SCENERY_SPRITE_NUM; i++)
-    {
-        sprite_container &sprite_c = dst.sprite_vector[i];
-        Sprite &sprite = sprite_c.sprite;
-        for(int row=0; row<(int)C64::SpriteHeight; row++)
-        for(int col=0; col<(int)C64::SpriteWidth; col++)
-        {
-            quint8 byte;
-            int bit = col%8;
-            if( 0==bit ) in >> byte;
-            sprite.sprite_bits[row].setBit(col, byte & (1<<bit) );
-        }
-        in >> sprite_c.keep;
-        sprite_c.usage = 0;
-        sprite_c.reserved = false;
-    }
+    dst.serInSprites(in);
 
     /* Walls */
     for(int i=0; i<SCENERY_WALL_NUM; i++)

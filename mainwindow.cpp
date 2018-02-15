@@ -89,6 +89,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     loadGfxData();
 
+    exportBinaryPath = qApp->applicationDirPath()+"/project/";
+
     /***   M A P
      ******************************************************************************/
     for(int i=0; i<props.maps.size(); i++)

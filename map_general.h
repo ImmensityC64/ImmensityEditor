@@ -278,6 +278,14 @@ public:
     Scenery& operator=(const Scenery& other);
     Scenery *copy();
 
+    enum SerializeFor {
+        Project,
+        Export,
+    };
+
+    QDataStream& serOutSprites(QDataStream& out, SerializeFor ser = Project);
+    QDataStream& serInSprites(QDataStream& in);
+
 public:
     qint16 createChar(quint64 chr);
     qint16 findChar(quint64 chr);

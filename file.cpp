@@ -241,15 +241,46 @@ void MainWindow::saveMapVector(QDataStream &out)
 
 void MainWindow::exportProjectToBinary(void)
 {
-    /* TODO: open file browser of get filename and path from settings */
-    QMessageBox msgBox;
-    msgBox.setText("TODO:\nExport to binary");
-    msgBox.exec();
+    /* TODO: open file browser to set filename and path */
+
+    /*
+     *   a - f600-feff  900 Sprite Pack
+     *   b - 6300-....  300 CnF Tiles + 500 Bg Tiles + 500 Bg Tile Colors
+     *   c - c000-c7ff  800 CharSet
+     *   d - be00-befe   ff Sprite Wall Ptrs
+     *   m - a000-bdff 1e00 Map Data
+     */
+
+    int size;
+    char name[sizeof("x000.b")+1];
+
+    size = props.sceneries.size();
+    for(int s=0; s<size; s++)
+    {
+        Scenery &src = *(props.sceneries.at(s));
+
+        /* Export Sprite Pack */
+
+        sprintf(name, "a%03d.b", s);
+        exportBinaryFiles = new QFile(exportBinaryPath+QString(name));
+        if(exportBinaryFiles->open(QIODevice::WriteOnly))
+        {
+            QDataStream file(exportBinaryFiles);
+
+            /* base address (low, high) */
+            file << quint8(0x00);
+            file << quint8(0xf6);
+            src.serOutSprites(file, Scenery::SerializeFor::Export);
+
+            exportBinaryFiles->close();
+        }
+        else cerr << exportBinaryFiles->errorString().toUtf8().constData() << endl;
+    }
 }
 
 void MainWindow::exportProjectToD64(void)
 {
-    /* TODO: open file browser of get filename and path from settings */
+    /* TODO: open file browser to set filename and path */
     QMessageBox msgBox;
     msgBox.setText("TODO:\nExport to D64");
     msgBox.exec();
