@@ -260,8 +260,6 @@ void MainWindow::exportProjectToBinary(void)
     {
         Scenery &src = *(props.sceneries.at(s));
 
-        /* Export Sprite Pack */
-
         id = src.id;
         if (!id.length())
         {
@@ -269,6 +267,8 @@ void MainWindow::exportProjectToBinary(void)
             sprintf(tmp, "%03d", s);
             id = QString(tmp);
         }
+
+        /* Export Sprites */
         exportBinaryFiles = new QFile(exportBinaryPath+QString("a")+id+ext);
         if(exportBinaryFiles->open(QIODevice::WriteOnly))
         {
@@ -278,6 +278,52 @@ void MainWindow::exportProjectToBinary(void)
             file << quint8(0x00);
             file << quint8(0xf6);
             src.serOutSprites(file, Scenery::SerializeFor::Export);
+
+            exportBinaryFiles->close();
+        }
+        else cerr << exportBinaryFiles->errorString().toUtf8().constData() << endl;
+
+        /* Export Tiles */
+        exportBinaryFiles = new QFile(exportBinaryPath+QString("b")+id+ext);
+        if(exportBinaryFiles->open(QIODevice::WriteOnly))
+        {
+            QDataStream file(exportBinaryFiles);
+
+            /* base address (low, high) */
+            file << quint8(0x00);
+            file << quint8(0x73);
+            src.serOutCnfTiles(file, Scenery::SerializeFor::Export);
+            src.serOutBgTiles(file, Scenery::SerializeFor::Export);
+
+            exportBinaryFiles->close();
+        }
+        else cerr << exportBinaryFiles->errorString().toUtf8().constData() << endl;
+
+        /* Export CharSets */
+        exportBinaryFiles = new QFile(exportBinaryPath+QString("c")+id+ext);
+        if(exportBinaryFiles->open(QIODevice::WriteOnly))
+        {
+            QDataStream file(exportBinaryFiles);
+
+            /* base address (low, high) */
+            file << quint8(0x00);
+            file << quint8(0xc0);
+            src.serOutCharSets(file, Scenery::SerializeFor::Export);
+
+            exportBinaryFiles->close();
+        }
+        else cerr << exportBinaryFiles->errorString().toUtf8().constData() << endl;
+
+        /* Export Walls */
+        exportBinaryFiles = new QFile(exportBinaryPath+QString("d")+id+ext);
+        if(exportBinaryFiles->open(QIODevice::WriteOnly))
+        {
+            QDataStream file(exportBinaryFiles);
+
+            /* base address (low, high) */
+            file << quint8(0x00);
+            file << quint8(0xbe);
+            src.serOutWalls(file, Scenery::SerializeFor::Export);
 
             exportBinaryFiles->close();
         }

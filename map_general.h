@@ -305,8 +305,16 @@ public:
         Export,
     };
 
-    QDataStream& serOutSprites(QDataStream& out, SerializeFor ser = Project);
+    QDataStream& serOutCharSets(QDataStream& out, SerializeFor mode = Project);
+    QDataStream& serInCharSets(QDataStream& in);
+    QDataStream& serOutCnfTiles(QDataStream& out, SerializeFor mode = Project);
+    QDataStream& serInCnfTiles(QDataStream& in);
+    QDataStream& serOutBgTiles(QDataStream& out, SerializeFor mode = Project);
+    QDataStream& serInBgTiles(QDataStream& in);
+    QDataStream& serOutSprites(QDataStream& out, SerializeFor mode = Project);
     QDataStream& serInSprites(QDataStream& in);
+    QDataStream& serOutWalls(QDataStream& out, SerializeFor mode = Project);
+    QDataStream& serInWalls(QDataStream& in);
 
 public:
     qint16 createChar(quint64 chr);

@@ -137,92 +137,80 @@ QDataStream& operator >>(QDataStream& in, Map &dst)
 QDataStream& operator <<(QDataStream& out, Scenery &src)
 {
     out << src.name;
-
-    /* Character Set */
-
-    src.calculateRealCharIndexes();
-
-    /* loop through character set */
-    for(int mapped_index=0; mapped_index<SCENERY_CHR_NUM; mapped_index++)
-    {
-        quint64 chr_data = 0;
-        /* loop through char mapping vector */
-        for(int index=0; index<SCENERY_CHR_NUM; index++)
-        {
-            if(src.realCharIndex(index) == mapped_index)
-            {
-                chr_data = src.chr_vector.at(index).chr;
-                break;
-            }
-        }
-        out << chr_data;
-    }
-
-    /* C&F Tiles */
-    for(int i=0; i<SCENERY_CNF_TILE_NUM; i++)
-    {
-        const CnfTile &tile = src.cnf_tile_vector.at(i).tile;
-        for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
-        for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
-        {
-            quint8 chr_idx = src.realCharIndex(tile.char_idxs.at(row).at(col));
-            chr_idx |= tile.colors.at(row).at(col);
-            out << chr_idx;
-        }
-        out << src.cnf_tile_vector.at(i).keep;
-    }
-
-    /* BG Tiles */
-    for(int i=0; i<SCENERY_BG_TILE_NUM; i++)
-    {
-        const BgTile &tile = src.bg_tile_vector.at(i).tile;
-        for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
-        for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
-            out << src.realCharIndex(tile.char_idxs.at(row).at(col));
-        for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
-        for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
-            out << tile.colors.at(row).at(col);
-        out << src.bg_tile_vector.at(i).keep;
-    }
-
-    /* Sprites */
+    src.serOutCharSets(out);
+    src.serOutCnfTiles(out);
+    src.serOutBgTiles(out);
     src.serOutSprites(out);
-
-    /* Walls */
-    for(int i=0; i<SCENERY_WALL_NUM; i++)
-    {
-        const Wall &wall = src.wall_vector.at(i).wall;
-        for(int row=0; row<SCENERY_WALL_ROWS; row++)
-            out << wall.sprite_idxs.at(row);
-        out << src.wall_vector.at(i).keep;
-    }
-
+    src.serOutWalls(out);
     return out;
 }
 
 QDataStream& operator >>(QDataStream& in, Scenery &dst)
 {
     in >> dst.name;
+    dst.serInCharSets(in);
+    dst.serInCnfTiles(in);
+    dst.serInBgTiles(in);
+    dst.serInSprites(in);
+    dst.serInWalls(in);
+    return in;
+}
 
-    /* Character Set */
+QDataStream& Scenery::serOutCharSets(QDataStream& out, SerializeFor mode)
+{
+    calculateRealCharIndexes();
+    for(int mapped_index=0; mapped_index<SCENERY_CHR_NUM; mapped_index++)
+    {
+        quint64 chr_data = 0;
+        /* loop through char mapping vector */
+        for(int index=0; index<SCENERY_CHR_NUM; index++)
+        {
+            if(realCharIndex(index) == mapped_index)
+            {
+                chr_data = chr_vector.at(index).chr;
+                break;
+            }
+        }
+        out << chr_data;
+    }
+}
 
-    //dst.resetRealCharIndexes();
-
-    /* loop through character SET */
+QDataStream& Scenery::serInCharSets(QDataStream &in)
+{
+    //resetRealCharIndexes(); /* I think it is not needed here... */
     for(int i=0; i<SCENERY_CHR_NUM; i++)
     {
-        chr_container &chr_c = dst.chr_vector[i];
+        chr_container &chr_c = chr_vector[i];
         in >> chr_c.chr;
         chr_c.usage     = 0;
         chr_c.cnf_usage = 0;
         chr_c.mapping   = i;
         chr_c.reserved  = false;
     }
+}
 
-    /* C&F Tiles */
+QDataStream& Scenery::serOutCnfTiles(QDataStream& out, SerializeFor mode)
+{
     for(int i=0; i<SCENERY_CNF_TILE_NUM; i++)
     {
-        cnf_tile_container &tile_c = dst.cnf_tile_vector[i];
+        const CnfTile &tile = cnf_tile_vector.at(i).tile;
+        for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
+        for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
+        {
+            quint8 chr_idx = realCharIndex(tile.char_idxs.at(row).at(col));
+            chr_idx |= tile.colors.at(row).at(col);
+            out << chr_idx;
+        }
+        if (mode != Export) /* do not export 'keep' value */
+            out << cnf_tile_vector.at(i).keep;
+    }
+}
+
+QDataStream& Scenery::serInCnfTiles(QDataStream &in)
+{
+    for(int i=0; i<SCENERY_CNF_TILE_NUM; i++)
+    {
+        cnf_tile_container &tile_c = cnf_tile_vector[i];
         CnfTile &tile = tile_c.tile;
         for(int row=0; row<SCENERY_CNF_TILE_ROWS; row++)
         for(int col=0; col<SCENERY_CNF_TILE_COLS; col++)
@@ -236,11 +224,43 @@ QDataStream& operator >>(QDataStream& in, Scenery &dst)
         tile_c.usage = 0;
         tile_c.reserved = false;
     }
+}
 
-    /* BG Tiles */
+QDataStream& Scenery::serOutBgTiles(QDataStream& out, SerializeFor mode)
+{
     for(int i=0; i<SCENERY_BG_TILE_NUM; i++)
     {
-        bg_tile_container &tile_c = dst.bg_tile_vector[i];
+        const BgTile &tile = bg_tile_vector.at(i).tile;
+        for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
+        for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
+            out << realCharIndex(tile.char_idxs.at(row).at(col));
+        if (mode != Export) /* colors are stored separately in C64's memory */
+        {
+            for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
+            for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
+                out << tile.colors.at(row).at(col);
+            out << bg_tile_vector.at(i).keep;
+        }
+    }
+
+    if (mode == Export) /* colors are stored separately in C64's memory */
+    {
+        for(int i=0; i<SCENERY_BG_TILE_NUM; i++)
+        {
+            const BgTile &tile = bg_tile_vector.at(i).tile;
+            for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
+            for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
+                out << tile.colors.at(row).at(col);
+            /* do not export 'keep' value */
+        }
+    }
+}
+
+QDataStream& Scenery::serInBgTiles(QDataStream &in)
+{
+    for(int i=0; i<SCENERY_BG_TILE_NUM; i++)
+    {
+        bg_tile_container &tile_c = bg_tile_vector[i];
         BgTile &tile = tile_c.tile;
         for(int row=0; row<SCENERY_BG_TILE_ROWS; row++)
         for(int col=0; col<SCENERY_BG_TILE_COLS; col++)
@@ -252,14 +272,71 @@ QDataStream& operator >>(QDataStream& in, Scenery &dst)
         tile_c.usage = 0;
         tile_c.reserved = false;
     }
+}
 
-    /* Sprites */
-    dst.serInSprites(in);
+QDataStream& Scenery::serOutSprites(QDataStream& out, SerializeFor mode)
+{
+    for(int i=0; i<SCENERY_SPRITE_NUM; i++)
+    {
+        const Sprite &sprite = sprite_vector.at(i).sprite;
 
-    /* Walls */
+        quint8 byte=0;
+        for(int row=0; row<(int)C64::SpriteHeight; row++)
+        for(int col=0; col<(int)C64::SpriteWidth; col++)
+        {
+            int bit = col%8;
+            byte |= sprite.sprite_bits.at(row).at(col) << bit ;
+            if( 7==bit )
+            {
+                out << byte;
+                byte = 0;
+            }
+        }
+        if (mode == Export)
+            out << quint8(0); /* 64th byte */
+            /* do not export 'keep' value */
+        else
+            out << sprite_vector.at(i).keep;
+    }
+}
+
+QDataStream& Scenery::serInSprites(QDataStream &in)
+{
+    for(int i=0; i<SCENERY_SPRITE_NUM; i++)
+    {
+        sprite_container &sprite_c = sprite_vector[i];
+        Sprite &sprite = sprite_c.sprite;
+        for(int row=0; row<(int)C64::SpriteHeight; row++)
+        for(int col=0; col<(int)C64::SpriteWidth; col++)
+        {
+            quint8 byte;
+            int bit = col%8;
+            if( 0==bit ) in >> byte;
+            sprite.sprite_bits[row].setBit(col, byte & (1<<bit) );
+        }
+        in >> sprite_c.keep;
+        sprite_c.usage = 0;
+        sprite_c.reserved = false;
+    }
+}
+
+QDataStream& Scenery::serOutWalls(QDataStream& out, SerializeFor mode)
+{
     for(int i=0; i<SCENERY_WALL_NUM; i++)
     {
-        wall_container &wall_c = dst.wall_vector[i];
+        const Wall &wall = wall_vector.at(i).wall;
+        for(int row=0; row<SCENERY_WALL_ROWS; row++)
+            out << wall.sprite_idxs.at(row);
+        if (mode != Export) /* do not export 'keep' value */
+            out << wall_vector.at(i).keep;
+    }
+}
+
+QDataStream& Scenery::serInWalls(QDataStream &in)
+{
+    for(int i=0; i<SCENERY_WALL_NUM; i++)
+    {
+        wall_container &wall_c = wall_vector[i];
         Wall &wall = wall_c.wall;
         for(int row=0; row<SCENERY_WALL_ROWS; row++)
             in >> wall.sprite_idxs[row];
@@ -267,8 +344,6 @@ QDataStream& operator >>(QDataStream& in, Scenery &dst)
         wall_c.usage = 0;
         wall_c.reserved = false;
     }
-
-    return in;
 }
 
 QDataStream& operator <<(QDataStream& out, Theme const &src)
