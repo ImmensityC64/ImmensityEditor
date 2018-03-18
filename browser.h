@@ -26,6 +26,7 @@ private:
     int no_of_elements;
 
     void addGfxTile(int index);
+    void addGfxTileWithInfo(int index);
     void addNewTile(int index);
 public:
     explicit Browser(GfxVector *gv, QWidget *parent = 0);
@@ -84,6 +85,25 @@ public slots:
     void browserMousePressEvent  (QPoint p, int m);
     void browserMouseMoveEvent   (QPoint p);
     void browserMouseReleaseEvent(QPoint p);
+};
+
+class BrowserGfxTileWithInfo : public BrowserGfxTile
+{
+    Q_OBJECT
+
+private:
+    QLabel *pLabel;
+public:
+    explicit BrowserGfxTileWithInfo(int index,
+                                    Qt::Orientation ori,
+                                    shared_ptr<GfxData> src,
+                                    /* use default image display mode if it is not given */
+                                    GfxImage::Mode mode = GfxImage::Mode::Nothing,
+                                    QString tLabel = "",
+                                    QWidget *parent = 0);
+    virtual ~BrowserGfxTileWithInfo();
+    QString label(void);
+    void setLabel(QString tLabel);
 };
 
 /* BrowserNewTile is functioning as a 'new' button to create and edit new graphical objects */

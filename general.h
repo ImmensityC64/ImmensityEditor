@@ -10,8 +10,8 @@
 #include <stdio.h>
 
 
-#define BrowserTileSizeLong  150
-#define BrowserTileSizeShort  60
+#define BrowserTileSizeLong  150+20 /* gfxImage + info label */
+#define BrowserTileSizeShort  60    /* gfxImage */
 #define BrowserTileFrameWidth  4
 #define EditorViewSize 480
 #define NewDialogNoCopyString "- no copy - create a blank one -"

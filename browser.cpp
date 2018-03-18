@@ -60,7 +60,7 @@ Browser::Browser(GfxVector *gv, QWidget *parent) :
 
     if(GfxVector::Scope::Scenery == gv->scope())
         for(int i=0; i<gv->size(); i++)
-            addGfxTile(i);
+            addGfxTileWithInfo(i);
 
     refresh();
 }
@@ -201,6 +201,14 @@ void Browser::addGfxTile(int index)
     connect(gv->dataAt(index).get(), SIGNAL(dataChanged()), tile->img, SLOT(refresh()));
 }
 
+void Browser::addGfxTileWithInfo(int index)
+{
+    BrowserGfxTileWithInfo *tile = new BrowserGfxTileWithInfo(index, gv->ori(), gv->dataAt(index), gv->mode(), QString::number(index));
+    layout->addWidget((QWidget *) tile);
+    connect(tile, SIGNAL(clicked(int)), this, SLOT(openEditor(int)));
+    connect(gv->dataAt(index).get(), SIGNAL(dataChanged()), tile->img, SLOT(refresh()));
+}
+
 void Browser::addNewTile(int index)
 {
     BrowserNewTile *tile = new BrowserNewTile(index, gv->ori());
@@ -310,12 +318,14 @@ BrowserGfxTile::BrowserGfxTile(int index,
 
     if(Qt::Horizontal == ori)
     {
+        view->setAlignment(Qt::AlignLeft);
         layout = new QHBoxLayout();
         w = BrowserTileSizeLong;
         h = BrowserTileSizeShort;
     }
     else /* Qt::Vertical */
     {
+        view->setAlignment(Qt::AlignTop);
         layout = new QVBoxLayout();
         w = BrowserTileSizeShort;
         h = BrowserTileSizeLong;
@@ -398,6 +408,26 @@ void BrowserGfxTile::browserMouseReleaseEvent(QPoint p)
         emit clicked(I);
     }
 }
+
+
+ /*================================================================================*\
+( *     T I L E   -   G F X + I N F O
+ \*================================================================================*/
+
+BrowserGfxTileWithInfo::BrowserGfxTileWithInfo(int index,
+                               Qt::Orientation ori,
+                               shared_ptr<GfxData> src,
+                               GfxImage::Mode mode,
+                               QString tLabel,
+                               QWidget *parent) :
+    BrowserGfxTile(index, ori, src, mode, parent)
+{
+    pLabel = new QLabel(tLabel);
+    layout->addWidget(pLabel);
+}
+BrowserGfxTileWithInfo::~BrowserGfxTileWithInfo() {}
+QString BrowserGfxTileWithInfo::label() { return pLabel->text(); }
+void BrowserGfxTileWithInfo::setLabel(QString tLabel) { pLabel->setText(tLabel); }
 
  /*================================================================================*\
 ( *     T I L E   -   N E W
