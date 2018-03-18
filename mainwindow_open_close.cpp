@@ -89,7 +89,7 @@ void MainWindow::openBrowseScenery()
         w = new QWidget();
         w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         w->setLayout(info_layout);
-        v_browsers_layout->addWidget(w, 0, Qt::AlignTop);
+        v_browsers_layout->addWidget(w);
         charSet = new CharSet(props.map2imgCharSet(map_index));
         charSet->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         QFrame *line = new QFrame();
@@ -100,7 +100,7 @@ void MainWindow::openBrowseScenery()
         sceneryInfo->setReadOnly(true);
         sceneryInfo->setFrameShape(QFrame::NoFrame);
         sceneryInfo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        info_layout->addWidget(charSet,     0, Qt::AlignTop);
+        info_layout->addWidget(charSet);
         info_layout->addWidget(line,        0, Qt::AlignBottom);
         info_layout->addWidget(sceneryInfo, 0, Qt::AlignBottom);
 
@@ -134,6 +134,7 @@ void MainWindow::openBrowseSketches()
 
         /* Walls */
         b = new Browser(&gvSketchesWalls);
+        b->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         central_layout->addWidget(b);
         QHBoxLayout *v_browsers_layout = new QHBoxLayout();
         v_browsers_layout->setContentsMargins(0,0,0,0);
@@ -143,18 +144,22 @@ void MainWindow::openBrowseSketches()
 
         /* Ceiling Sprites */
         b = new Browser(&gvSketchesCeilings);
+        b->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         v_browsers_layout->addWidget(b);
 
         /* Floor Sprites */
         b = new Browser(&gvSketchesFloors);
+        b->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         v_browsers_layout->addWidget(b);
 
         /* C&F Tiles */
         b = new Browser(&gvSketchesCnfTiles);
+        b->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         v_browsers_layout->addWidget(b);
 
         /* Bg Tiles */
         b = new Browser(&gvSketchesBgTiles);
+        b->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         v_browsers_layout->addWidget(b);
 
         /* Info */
@@ -162,6 +167,7 @@ void MainWindow::openBrowseSketches()
         info_layout->setContentsMargins(0,0,0,0);
         w = new QWidget();
         w->setLayout(info_layout);
+        w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         v_browsers_layout->addWidget(w);
         /* TODO */
 

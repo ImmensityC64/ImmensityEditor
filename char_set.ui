@@ -84,7 +84,7 @@
      </property>
     </widget>
    </item>
-   <item alignment="Qt::AlignLeft">
+   <item alignment="Qt::AlignLeft|Qt::AlignBottom">
     <widget class="QWidget" name="widget_2" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="leftMargin">
