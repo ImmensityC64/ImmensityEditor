@@ -60,7 +60,8 @@ void MainWindow::openBrowseScenery()
 
         /* Walls */
         b = new Browser(&gvSceneryWalls);
-        central_layout->addWidget(b);
+        b->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        central_layout->addWidget(b, 0, Qt::AlignTop);
         QHBoxLayout *v_browsers_layout = new QHBoxLayout();
         v_browsers_layout->setContentsMargins(0,0,0,0);
         w = new QWidget();
@@ -69,24 +70,39 @@ void MainWindow::openBrowseScenery()
 
         /* Sprites */
         b = new Browser(&gvScenerySprites);
+        b->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         v_browsers_layout->addWidget(b);
 
         /* C&F Tiles */
         b = new Browser(&gvSceneryCnfTiles);
+        b->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         v_browsers_layout->addWidget(b);
 
         /* Bg Tiles */
         b = new Browser(&gvSceneryBgTiles);
+        b->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         v_browsers_layout->addWidget(b);
 
         /* CharSet */
         QVBoxLayout *info_layout = new QVBoxLayout();
         info_layout->setContentsMargins(0,0,0,0);
         w = new QWidget();
+        w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         w->setLayout(info_layout);
-        v_browsers_layout->addWidget(w);
+        v_browsers_layout->addWidget(w, 0, Qt::AlignTop);
         charSet = new CharSet(props.map2imgCharSet(map_index));
-        info_layout->addWidget(charSet);
+        charSet->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        QFrame *line = new QFrame();
+        line->setFrameShape(QFrame::HLine);
+        line->setFrameShadow(QFrame::Sunken);
+        line->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        sceneryInfo = new QPlainTextEdit("Scenery Info");
+        sceneryInfo->setReadOnly(true);
+        sceneryInfo->setFrameShape(QFrame::NoFrame);
+        sceneryInfo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        info_layout->addWidget(charSet,     0, Qt::AlignTop);
+        info_layout->addWidget(line,        0, Qt::AlignBottom);
+        info_layout->addWidget(sceneryInfo, 0, Qt::AlignBottom);
 
         /* Info */
         /* TODO */

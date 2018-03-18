@@ -17,6 +17,7 @@
 #include <QFile>
 #include <QDataStream>
 #include <QMessageBox>
+#include <QPlainTextEdit>
 #include <Qt>
 
 class SceneryEditor;
@@ -217,6 +218,7 @@ private:
     SceneryEditor* sceneryEditor;
     ThemeEditor* themeEditor;
 
+    QPlainTextEdit *sceneryInfo;
     CharSet *charSet;
     QMainWindow *browseSketches;
     QMainWindow *browseScenery;
