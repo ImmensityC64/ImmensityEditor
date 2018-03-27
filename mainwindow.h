@@ -222,14 +222,6 @@ private:
     CharSet *charSet;
     QMainWindow *browseSketches;
     QMainWindow *browseScenery;
-    Browser *browseSceneryBgTiles;
-    Browser *browseSceneryCnfTiles;
-    Browser *browseScenerySprites;
-    Browser *browseSceneryWalls;
-
-    void connectSceneryUsageSignals(void);
-    void disconnectSceneryUsageSignals(void);
-    void refreshAllSceneryUsages(void);
 };
 
 #endif // MAINWINDOW_H

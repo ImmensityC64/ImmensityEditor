@@ -67,25 +67,21 @@ void MainWindow::openBrowseScenery()
         w = new QWidget();
         w->setLayout(v_browsers_layout);
         central_layout->addWidget(w);
-        browseSceneryWalls = b;
 
         /* Sprites */
         b = new Browser(&gvScenerySprites);
         b->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         v_browsers_layout->addWidget(b);
-        browseScenerySprites = b;
 
         /* C&F Tiles */
         b = new Browser(&gvSceneryCnfTiles);
         b->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         v_browsers_layout->addWidget(b);
-        browseSceneryCnfTiles = b;
 
         /* Bg Tiles */
         b = new Browser(&gvSceneryBgTiles);
         b->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         v_browsers_layout->addWidget(b);
-        browseSceneryBgTiles = b;
 
         /* CharSet */
         QVBoxLayout *info_layout = new QVBoxLayout();
@@ -110,36 +106,13 @@ void MainWindow::openBrowseScenery()
 
         mw->show();
         browseScenery = mw;
-        connectSceneryUsageSignals();
-        refreshAllSceneryUsages();
         connect(browseScenery, SIGNAL(destroyed()), this, SLOT(closeBrowseScenery()));
+
+        props.all_tiles_need_refresh();
+        refreshSceneryBrowsers();
     }
     /* ... or activate the already existing one */
     else browseScenery->activateWindow();
-}
-
-void MainWindow::connectSceneryUsageSignals(void)
-{
-    if(nullptr != browseScenery)
-    {
-
-    }
-}
-
-void MainWindow::disconnectSceneryUsageSignals(void)
-{
-    if(nullptr != browseScenery)
-    {
-
-    }
-}
-
-void MainWindow::refreshAllSceneryUsages(void)
-{
-    if(nullptr != browseScenery)
-    {
-
-    }
 }
 
 void MainWindow::closeBrowseScenery() { browseScenery = nullptr; }

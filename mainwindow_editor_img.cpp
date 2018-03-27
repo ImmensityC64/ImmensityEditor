@@ -342,13 +342,20 @@ void MainWindow::refreshEditor()
 
 void MainWindow::refreshSceneryBrowsers(void)
 {
+    int s_ind = props.maps.at(map_index)->scenery_index;
+    Scenery *s = props.sceneries.at(s_ind);
+
     for(int i=0; i<SCENERY_BG_TILE_NUM; i++)
     {
         if(props.editor_modified_bg_tiles.at(i))
         {
             gvSceneryBgTiles.setDataAt(i, props.map2imgBgTile(map_index, i));
             props.editor_modified_bg_tiles.clearBit(i);
-            if(browseScenery) gvSceneryBgTiles.browser()->refreshTile(i);
+            if(browseScenery)
+            {
+                gvSceneryBgTiles.browser()->refreshTile(i);
+                gvSceneryBgTiles.browser()->refreshUsage(i, s->bg_tile_vector.at(i).usage);
+            }
         }
     }
 
@@ -358,7 +365,11 @@ void MainWindow::refreshSceneryBrowsers(void)
         {
             gvSceneryCnfTiles.setDataAt(i, props.map2imgCnfTile(map_index, i));
             props.editor_modified_cnf_tiles.clearBit(i);
-            if(browseScenery) gvSceneryCnfTiles.browser()->refreshTile(i);
+            if(browseScenery)
+            {
+                gvSceneryCnfTiles.browser()->refreshTile(i);
+                gvSceneryCnfTiles.browser()->refreshUsage(i, s->cnf_tile_vector.at(i).usage);
+            }
         }
     }
 
@@ -368,7 +379,11 @@ void MainWindow::refreshSceneryBrowsers(void)
         {
             gvScenerySprites.setDataAt(i, props.map2imgSprite(map_index, i));
             props.editor_modified_sprites.clearBit(i);
-            if(browseScenery) gvScenerySprites.browser()->refreshTile(i);
+            if(browseScenery)
+            {
+                gvScenerySprites.browser()->refreshTile(i);
+                gvScenerySprites.browser()->refreshUsage(i, s->sprite_vector.at(i).usage);
+            }
         }
     }
 
@@ -378,7 +393,11 @@ void MainWindow::refreshSceneryBrowsers(void)
         {
             gvSceneryWalls.setDataAt(i, props.map2imgWall(map_index, i));
             props.editor_modified_walls.clearBit(i);
-            if(browseScenery) gvSceneryWalls.browser()->refreshTile(i);
+            if(browseScenery)
+            {
+                gvSceneryWalls.browser()->refreshTile(i);
+                gvSceneryWalls.browser()->refreshUsage(i, s->wall_vector.at(i).usage);
+            }
         }
     }
 
