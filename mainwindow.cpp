@@ -61,6 +61,10 @@ MainWindow::MainWindow(QWidget *parent) :
     charSet = nullptr;
     browseSketches = nullptr;
     browseScenery  = nullptr;
+    browseSceneryBgTiles  = nullptr;
+    browseSceneryCnfTiles = nullptr;
+    browseScenerySprites  = nullptr;
+    browseSceneryWalls    = nullptr;
 
     /***   M E N U
      ******************************************************************************/

@@ -34,6 +34,7 @@ public:
 public slots:
     void refresh(void);
     void refreshTile(int index);
+    void refreshUsage(quint8 index, quint32 usage);
     void createGfx(int index);
     void openEditor(int index);
 };
@@ -80,6 +81,8 @@ public:
                             GfxImage::Mode mode = GfxImage::Mode::Nothing,
                             QWidget *parent = 0);
     virtual ~BrowserGfxTile();
+    QString label(void) { return QString("");}
+    void setLabel(QString /*unused*/) {}
 
 public slots:
     void browserMousePressEvent  (QPoint p, int m);

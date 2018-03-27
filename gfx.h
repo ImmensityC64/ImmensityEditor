@@ -165,7 +165,7 @@ public slots:
     void closeEditorAt(int index);
 
 signals:
-    void vectorChanged(void);
+    void newElementAppended(void);
 };
 
  /*================================================================================*\

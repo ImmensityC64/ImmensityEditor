@@ -7,7 +7,7 @@ Browser::Browser(GfxVector *gv, QWidget *parent) :
     no_of_elements = 0;
     this->gv = gv;
     gv->setBrowser(this);
-    connect(gv, SIGNAL(vectorChanged()), this, SLOT(refresh()));
+    connect(gv, SIGNAL(newElementAppended()), this, SLOT(refresh()));
 
     /* Widget and layout arrangement of the Browser window:
      * @ this (like central widget)
@@ -188,6 +188,28 @@ void Browser::refreshTile(int index)
             if(tile->type() == BrowserTile::Type::Gfx)
                 /* We have just found the corresponding tile. Let's refresh it! */
                 ((BrowserGfxTile *)tile)->img->refresh();
+            break;
+        }
+    }
+}
+
+void Browser::refreshUsage(quint8 index, quint32 usage)
+{
+    /* Let's find the tile which holds that data! */
+    BrowserTile *tile = nullptr;
+    for(int l=0; l<layout->count(); l++)
+    {
+        /* Give my tile back! */
+        QLayoutItem *li = layout->itemAt(l);
+        tile = (BrowserTile *)li->widget();
+
+        if(tile->index() == index)
+        {
+            if(tile->type() == BrowserTile::Type::Gfx)
+            {
+                /* We have just found the corresponding tile. Let's refresh it! */
+                ((BrowserGfxTileWithInfo *)tile)->setLabel(QString::number(usage));
+            }
             break;
         }
     }
