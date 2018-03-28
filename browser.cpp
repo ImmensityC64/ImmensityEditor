@@ -60,7 +60,8 @@ Browser::Browser(GfxVector *gv, QWidget *parent) :
 
     if(GfxVector::Scope::Scenery == gv->scope())
         for(int i=0; i<gv->size(); i++)
-            addGfxTileWithInfo(i);
+            addGfxTile(i);
+    /* Tiles of Sketches are created on refresh() */
 
     refresh();
 }
@@ -208,7 +209,7 @@ void Browser::refreshUsage(quint8 index, quint32 usage)
             if(tile->type() == BrowserTile::Type::Gfx)
             {
                 /* We have just found the corresponding tile. Let's refresh it! */
-                ((BrowserGfxTileWithInfo *)tile)->setLabel(QString::number(usage));
+                ((BrowserGfxTile *)tile)->setLabel(QString::number(usage));
             }
             break;
         }
@@ -219,15 +220,9 @@ void Browser::addGfxTile(int index)
 {
     BrowserGfxTile *tile = new BrowserGfxTile(index, gv->ori(), gv->dataAt(index), gv->mode());
     layout->addWidget((QWidget *) tile);
-    connect(tile, SIGNAL(clicked(int)), this, SLOT(openEditor(int)));
-    connect(gv->dataAt(index).get(), SIGNAL(dataChanged()), tile->img, SLOT(refresh()));
-}
-
-void Browser::addGfxTileWithInfo(int index)
-{
-    BrowserGfxTileWithInfo *tile = new BrowserGfxTileWithInfo(index, gv->ori(), gv->dataAt(index), gv->mode(), QString::number(index));
-    layout->addWidget((QWidget *) tile);
-    connect(tile, SIGNAL(clicked(int)), this, SLOT(openEditor(int)));
+    connect(tile, SIGNAL(clicked(QPoint,int)), this, SLOT(openEditor(QPoint,int)));
+    if (gv->scope() == GfxVector::Scope::Sketches)
+        connect(tile, SIGNAL(rightClicked(QPoint,int)), this, SLOT(openMenu(QPoint,int)));
     connect(gv->dataAt(index).get(), SIGNAL(dataChanged()), tile->img, SLOT(refresh()));
 }
 
@@ -235,11 +230,11 @@ void Browser::addNewTile(int index)
 {
     BrowserNewTile *tile = new BrowserNewTile(index, gv->ori());
     layout->addWidget((QWidget *) tile);
-    connect(tile, SIGNAL(clicked(int)), this, SLOT(createGfx(int)));
+    connect(tile, SIGNAL(clicked(QPoint,int)), this, SLOT(createGfx(QPoint,int)));
 }
 
 /* It is called when a BrowserNewTile is clicked. */
-void Browser::createGfx(int index)
+void Browser::createGfx(QPoint /*unused*/, int index)
 {
     shared_ptr<GfxData> data(new GfxData(gv->type()));
     /* 'index' is 'GfxData::Id::Append' in case of sketch browser */
@@ -247,7 +242,7 @@ void Browser::createGfx(int index)
 }
 
 /* It is called when a BrowserGfxTile is clicked. */
-void Browser::openEditor(int index)
+void Browser::openEditor(QPoint /*unused*/, int index)
 {
     Editor *e = gv->editorAt(index);
     if(e) e->activateWindow();
@@ -298,6 +293,42 @@ void Browser::openEditor(int index)
         e->show();
         connect(e, SIGNAL(destroyed(int)), gv, SLOT(closeEditorAt(int)));
         gv->setEditorAt(index, e);
+    }
+}
+
+/* It is called when a BrowserGfxTile is right-clicked. */
+void Browser::openMenu(QPoint p, int index)
+{
+    QMenu menu;
+    QAction *actDelete = menu.addAction(tr("&Delete"));
+    /* ... add more later */
+
+    QAction* action = menu.exec(p);
+
+    if (action == actDelete)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Delete Element");
+        msgBox.setInformativeText("Do you really want to delete element #"+QString::number(index)+" ?");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Cancel);
+        int ret = msgBox.exec();
+
+        QMessageBox msgTodo;
+        msgTodo.setText("TODO: delete element");
+        switch (ret)
+        {
+        case QMessageBox::Yes:
+            msgTodo.exec();
+            break;
+        case QMessageBox::Cancel:
+        default:
+            break;
+        }
+    }
+    else
+    {
+        /* nothing was chosen */
     }
 }
 
@@ -357,6 +388,9 @@ BrowserGfxTile::BrowserGfxTile(int index,
     layout->setSpacing(0);
     layout->addWidget(view);
 
+    pLabel = new QLabel(QString("#")+QString::number(index));
+    layout->addWidget(pLabel);
+
     qreal x_factor = (w-BrowserTileFrameWidth) / src->imgW();
     qreal y_factor = (h-BrowserTileFrameWidth) / src->imgH();
     qreal factor = x_factor<y_factor ? x_factor : y_factor;
@@ -382,20 +416,15 @@ BrowserGfxTile::BrowserGfxTile(int index,
 
     img->refresh();
 }
-BrowserGfxTile::~BrowserGfxTile() {}
+BrowserGfxTile::~BrowserGfxTile()
+{
+    delete pLabel;
+}
 
 void BrowserGfxTile::browserMousePressEvent(QPoint p, int m)
 {
     mouse_start = p;
     mouse_mode = m&1; /* Do not care about Ctrl key */
-
-    if (!mouse_mode) /* Right click */
-    {
-        QMessageBox msgBox;
-        msgBox.setText("TODO:\nA menu will pop-up here");
-        msgBox.exec();
-        return;
-    }
 
     browserMouseMoveEvent(p);
 }
@@ -423,33 +452,23 @@ void BrowserGfxTile::browserMouseMoveEvent(QPoint p)
 
 void BrowserGfxTile::browserMouseReleaseEvent(QPoint p)
 {
-    if ( (p-mouse_start).manhattanLength() <
-         QApplication::startDragDistance() )
+    if (mouse_mode) /* Left click */
     {
-        /* not dragged */
-        emit clicked(I);
+        if ( (p-mouse_start).manhattanLength() <
+             QApplication::startDragDistance() )
+        {
+            /* not dragged */
+            emit clicked(mapToGlobal(p),I);
+        }
+    }
+    else /* Right click */
+    {
+        emit rightClicked(mapToGlobal(p),I);
     }
 }
 
-
- /*================================================================================*\
-( *     T I L E   -   G F X + I N F O
- \*================================================================================*/
-
-BrowserGfxTileWithInfo::BrowserGfxTileWithInfo(int index,
-                               Qt::Orientation ori,
-                               shared_ptr<GfxData> src,
-                               GfxImage::Mode mode,
-                               QString tLabel,
-                               QWidget *parent) :
-    BrowserGfxTile(index, ori, src, mode, parent)
-{
-    pLabel = new QLabel(tLabel);
-    layout->addWidget(pLabel);
-}
-BrowserGfxTileWithInfo::~BrowserGfxTileWithInfo() {}
-QString BrowserGfxTileWithInfo::label() { return pLabel->text(); }
-void BrowserGfxTileWithInfo::setLabel(QString tLabel) { pLabel->setText(tLabel); }
+QString BrowserGfxTile::label() { return pLabel->text(); }
+void BrowserGfxTile::setLabel(QString tLabel) { pLabel->setText(tLabel); }
 
  /*================================================================================*\
 ( *     T I L E   -   N E W
@@ -467,7 +486,8 @@ BrowserNewTile::BrowserNewTile(int index, Qt::Orientation ori, QWidget *parent) 
 }
 BrowserNewTile::~BrowserNewTile() {}
 
-void BrowserNewTile::mousePressEvent(QMouseEvent *event)
+void BrowserNewTile::mouseReleaseEvent(QMouseEvent *event)
 {
-    emit clicked(I);
+    /* TODO: emit signal on left-click only! */
+    emit clicked(QPoint(0,0),I);
 }

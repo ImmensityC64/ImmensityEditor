@@ -7,6 +7,8 @@
 #include <QScrollArea>
 #include <QLabel>
 #include <QRect>
+#include <QMenu>
+#include <QAction>
 #include <QStatusBar>
 #include <QString>
 #include <Qt>
@@ -26,7 +28,6 @@ private:
     int no_of_elements;
 
     void addGfxTile(int index);
-    void addGfxTileWithInfo(int index);
     void addNewTile(int index);
 public:
     explicit Browser(GfxVector *gv, QWidget *parent = 0);
@@ -35,8 +36,9 @@ public slots:
     void refresh(void);
     void refreshTile(int index);
     void refreshUsage(quint8 index, quint32 usage);
-    void createGfx(int index);
-    void openEditor(int index);
+    void createGfx(QPoint /*unused*/, int index);
+    void openEditor(QPoint /*unused*/, int index);
+    void openMenu(QPoint p, int index);
 };
 
 class BrowserTile : public QFrame
@@ -58,7 +60,8 @@ public:
     int setIndex(int tI);
     Type    type(void);
 signals:
-    void clicked(int index);
+    void clicked(QPoint p, int index);
+    void rightClicked(QPoint p, int index);
 };
 
 /* BrowserGfxTile displays a graphical object in read-only mode. */
@@ -69,6 +72,7 @@ class BrowserGfxTile : public BrowserTile
 private:
     QPoint mouse_start;
     int mouse_mode;
+    QLabel *pLabel;
 
 public:
     GfxRectItemImage *rect;     /* Rect item for image */
@@ -81,8 +85,8 @@ public:
                             GfxImage::Mode mode = GfxImage::Mode::Nothing,
                             QWidget *parent = 0);
     virtual ~BrowserGfxTile();
-    QString label(void) { return QString("");}
-    void setLabel(QString /*unused*/) {}
+    QString label(void);
+    void setLabel(QString tLabel);
 
 public slots:
     void browserMousePressEvent  (QPoint p, int m);
@@ -90,31 +94,12 @@ public slots:
     void browserMouseReleaseEvent(QPoint p);
 };
 
-class BrowserGfxTileWithInfo : public BrowserGfxTile
-{
-    Q_OBJECT
-
-private:
-    QLabel *pLabel;
-public:
-    explicit BrowserGfxTileWithInfo(int index,
-                                    Qt::Orientation ori,
-                                    shared_ptr<GfxData> src,
-                                    /* use default image display mode if it is not given */
-                                    GfxImage::Mode mode = GfxImage::Mode::Nothing,
-                                    QString tLabel = "",
-                                    QWidget *parent = 0);
-    virtual ~BrowserGfxTileWithInfo();
-    QString label(void);
-    void setLabel(QString tLabel);
-};
-
 /* BrowserNewTile is functioning as a 'new' button to create and edit new graphical objects */
 class BrowserNewTile : public BrowserTile
 {
     Q_OBJECT
 private:
-    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 public:
     explicit BrowserNewTile(int index, Qt::Orientation ori, QWidget *parent = 0);
     virtual ~BrowserNewTile();
