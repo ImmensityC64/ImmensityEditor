@@ -185,6 +185,7 @@ private:
     void editorImgSave(void);
 
     void refreshSceneryBrowsers(void);
+    QString sceneryInfoLine(char *name, quint32 used, quint32 total);
 
     QShortcut *scSectorInc;
     QShortcut *scSectorDec;

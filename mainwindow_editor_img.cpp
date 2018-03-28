@@ -401,7 +401,32 @@ void MainWindow::refreshSceneryBrowsers(void)
         }
     }
 
-    if(browseScenery) charSet->refresh(props.map2imgCharSet(map_index));
+    if(browseScenery)
+    {
+        charSet->refresh(props.map2imgCharSet(map_index));
+        quint32 used, pused, free, pfree, total;
+        QString info("Entity\t\tFree\tUsed\tTotal\n");
+        info.append(sceneryInfoLine("All Chars", s->chr_counter,      SCENERY_CHR_NUM         ));
+        info.append(sceneryInfoLine("C&F Chars", s->cnf_chr_counter,  SCENERY_CNF_CHR_NUM     ));
+        info.append(sceneryInfoLine("Bg Tiles",  s->bg_tile_counter,  SCENERY_BG_TILE_NUM     ));
+        info.append(sceneryInfoLine("C&F Tiles", s->cnf_tile_counter, SCENERY_CNF_TILE_NUM    ));
+        info.append(sceneryInfoLine("Sprites",   s->sprite_counter,   SCENERY_BASIC_SPRITE_NUM));
+        info.append(sceneryInfoLine("Walls\t",   s->wall_counter,     SCENERY_WALL_NUM        ));
+        sceneryInfo->document()->setPlainText(info);
+        /* TODO: change SCENERY_BASIC_SPRITE_NUM to SCENERY_SPRITE_NUM
+         * when usage of enemy sprite packs for scenery becomes an available feature */
+    }
+}
+
+QString MainWindow::sceneryInfoLine(char *name, quint32 used, quint32 total)
+{
+    quint32 free  = total-used;
+    QString info(name);
+    info.append(QString("\t%1\t%2\t%3\n")
+            .arg(QString::number(free))
+            .arg(QString::number(used))
+            .arg(QString::number(total)));
+    return info;
 }
 
 /****    D R A G  &  D R O P

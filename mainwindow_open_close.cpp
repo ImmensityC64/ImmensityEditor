@@ -98,6 +98,7 @@ void MainWindow::openBrowseScenery()
         line->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         sceneryInfo = new QPlainTextEdit("Scenery Info");
         sceneryInfo->setReadOnly(true);
+        sceneryInfo->setTabStopWidth(40);
         sceneryInfo->setFrameShape(QFrame::NoFrame);
         sceneryInfo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         info_layout->addWidget(charSet);
